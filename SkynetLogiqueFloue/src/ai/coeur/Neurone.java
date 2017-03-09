@@ -90,8 +90,58 @@ public class Neurone implements Serializable, Cloneable {
 		return so;
 	}
 
+	public void ajouterLienEntree(Lien lien) {
+		if (lien == null) {
+			throw new IllegalArgumentException("Tentative d'ajouter un lien null à la neurone!");
+		}
+		if (lien.getJusquANeurone() != this) {
+
+			throw new IllegalArgumentException("Impossible d'ajouter le lien - mauvaise jusquANeurone spécifiée!");
+		}
+
+		if (this.aLienAPartirDe(lien.getAPartirDeNeurone())) {
+			System.out.println("le lien existe déjà");
+			return;
+		}
+		this.liensEntrees.add(lien);
+
+		Neurone aPartirDeNeurone = lien.aPartirDeNeurone;
+		aPartirDeNeurone.ajouterLienSortie(lien);
+
+	}
+
+	public void ajouterLienEntree(Neurone aPartirDeNeurone) {
+		Lien lien = new Lien(aPartirDeNeurone, this);
+		this.ajouterLienEntree(lien);
+	}
+
 	public void ajouterLienEntree(Neurone aPartirDeNeurone, double valImportance) {
 		Lien lien = new Lien(aPartirDeNeurone, this, valImportance);
+		this.ajouterLienEntree(lien);
+	}
+
+	public void ajouterLienSortie(Lien lien) {
+		if (lien == null) {
+			throw new IllegalArgumentException("Tentative d'ajouter un lien null à la neurone!");
+		}
+
+		if (lien.getAPartirDeNeurone() != this) {
+			throw new IllegalArgumentException("Impossible d'ajouter le lien - mauvaise aPartirDeNeurone spécifiée!");
+		}
+
+		if (this.aLienVers(lien.getJusquANeurone())) {
+			return;
+		}
+
+		this.liensSorties.add(lien);
+	}
+
+	public ArrayList<Lien> getLiensEntrees() {
+		return liensEntrees;
+	}
+
+	public ArrayList<Lien> getLiensSorties() {
+		return liensSorties;
 	}
 
 	@Override
@@ -100,4 +150,5 @@ public class Neurone implements Serializable, Cloneable {
 		Object clone = null;
 		return clone;
 	}
+
 }
