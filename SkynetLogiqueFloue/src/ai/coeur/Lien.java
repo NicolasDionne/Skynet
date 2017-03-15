@@ -64,13 +64,11 @@ public class Lien implements Serializable {
 	}
 
 	public double getEntree() {
-		// TODO prendre le output de la neurone d'entrée
-		return 0;
+		return this.aPartirDeNeurone.getSortie();
 	}
 
-	public double getSortieImportance() {
-		// TODO définir le output
-		return 0;
+	public double getEntreeSelonImportance() {
+		return this.aPartirDeNeurone.getSortie() * importance.getValImportance();
 	}
 
 	public Neurone getAPartirDeNeurone() {

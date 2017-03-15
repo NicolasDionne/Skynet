@@ -3,6 +3,11 @@ package ai.coeur;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import ai.coeur.entree.FonctionEntree;
+import ai.coeur.entree.SommeImportance;
+import ai.coeur.transfers.Etape;
+import ai.coeur.transfers.FonctionTransfers;
+
 public class Neurone implements Serializable, Cloneable {
 	// TODO la classe
 	private static final long serialVersionUID = 8822213784188310686L;
@@ -17,14 +22,14 @@ public class Neurone implements Serializable, Cloneable {
 	protected transient double sortie;
 	protected transient double erreur;
 
-	// TODO FonctionEntree fonctionEntree
-	// TODO FonctionTransfers fonctionTransfers
+	protected FonctionEntree fonctionEntree;
+	protected FonctionTransfers fonctionTransfers;
 
 	private String nom;
 
 	public Neurone() {
-		// this.fonctionEntree = new SommeImportance();
-		// this.fonctionTransfers = new Etape();
+		this.fonctionEntree = new SommeImportance();
+		this.fonctionTransfers = new Etape();
 		this.liensEntree = new ArrayList<>();
 		this.liensSortie = new ArrayList<>();
 	}

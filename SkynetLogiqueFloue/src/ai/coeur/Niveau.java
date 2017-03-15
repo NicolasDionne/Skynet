@@ -18,6 +18,9 @@ public class Niveau {
 		listeNeuronesNiveau = new ArrayList<>(nbrNeurones);
 	}
 
+	// TODO constructeur avec (int nbrNeurones, ProprieteNeurones
+	// proprieteNeurones)
+
 	public Reseau getReseauParent() {
 		return reseauParent;
 	}
@@ -29,5 +32,7 @@ public class Niveau {
 	public void ajouterNeurone() {
 		listeNeuronesNiveau.add(new Neurone());
 	}
+	
+	
 
 }
