@@ -5,6 +5,8 @@ package tests.ai.coeur;
 
 import static org.junit.Assert.*;
 
+import java.util.Random;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -78,7 +80,8 @@ public class ImportanceTest {
 	 */
 	@Test
 	public void testSetValImportance() {
-		fail("Not yet implemented");
+		i1.setValImportance(5);
+		assertTrue(i1.valImportance == 5);
 	}
 
 	/**
@@ -86,7 +89,7 @@ public class ImportanceTest {
 	 */
 	@Test
 	public void testGetValImportance() {
-		fail("Not yet implemented");
+		assertTrue(i1.getValImportance() == 9001);
 	}
 
 	/**
@@ -94,7 +97,21 @@ public class ImportanceTest {
 	 */
 	@Test
 	public void testSetImportanceAleatoire() {
-		fail("Not yet implemented");
+		boolean test1 = true, test2 = true, test3 = true, test4 = true, test5 = true;
+
+		i1.setImportanceAleatoire();
+		test1 = 9001 != i1.getValImportance();
+		i1.setImportanceAleatoire();
+		test2 = 9001 != i1.getValImportance();
+		i1.setImportanceAleatoire();
+		test3 = 9001 != i1.getValImportance();
+		i1.setImportanceAleatoire();
+		test4 = 9001 != i1.getValImportance();
+		i1.setImportanceAleatoire();
+		test5 = 9001 != i1.getValImportance();
+
+		assertTrue(test1 || test2 || test3 || test4 || test5);
+
 	}
 
 	/**
@@ -103,7 +120,8 @@ public class ImportanceTest {
 	 */
 	@Test
 	public void testSetImportanceAleatoireDoubleDouble() {
-		fail("Not yet implemented");
+		i1.setImportanceAleatoire(5, 6);
+		assertTrue(5 <= i1.getValImportance() && i1.getValImportance() <= 6);
 	}
 
 	/**
@@ -112,7 +130,20 @@ public class ImportanceTest {
 	 */
 	@Test
 	public void testSetImportanceAleatoireRandom() {
-		fail("Not yet implemented");
+		Random r1 = new Random(), r2 = new Random(), r3 = new Random(), r4 = new Random(), r5 = new Random();
+		boolean test1 = true, test2 = true, test3 = true, test4 = true, test5 = true;
+
+		i1.setImportanceAleatoire(r1);
+		test1 = 9001 != i1.getValImportance();
+		i1.setImportanceAleatoire(r2);
+		test2 = 9001 != i1.getValImportance();
+		i1.setImportanceAleatoire(r3);
+		test3 = 9001 != i1.getValImportance();
+		i1.setImportanceAleatoire(r4);
+		test4 = 9001 != i1.getValImportance();
+		i1.setImportanceAleatoire(r5);
+		test5 = 9001 != i1.getValImportance();
+		assertTrue(test1 || test2 || test3 || test4 || test5);
 	}
 
 	/**

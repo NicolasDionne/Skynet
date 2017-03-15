@@ -9,9 +9,9 @@ public class Neurone implements Serializable, Cloneable {
 
 	protected Niveau niveauParent;
 
-	protected ArrayList<Lien> liensEntrees;
+	protected ArrayList<Lien> liensEntree;
 
-	protected ArrayList<Lien> liensSorties;
+	protected ArrayList<Lien> liensSortie;
 
 	protected transient double totalEntrees;
 	protected transient double sortie;
@@ -25,8 +25,8 @@ public class Neurone implements Serializable, Cloneable {
 	public Neurone() {
 		// this.fonctionEntree = new SommeImportance();
 		// this.fonctionTransfers = new Etape();
-		this.liensEntrees = new ArrayList<>();
-		this.liensSorties = new ArrayList<>();
+		this.liensEntree = new ArrayList<>();
+		this.liensSortie = new ArrayList<>();
 	}
 	// TODO constructeur après que les deux fonctions sont faites
 	/*
@@ -62,13 +62,17 @@ public class Neurone implements Serializable, Cloneable {
 		return this.sortie;
 	}
 
-	public boolean aLiensEntrees() {
-		return (this.liensEntrees.size() > 0);
+	public boolean aLiensEntree() {
+		return (0 < this.liensEntree.size());
+	}
+
+	public boolean aLiensSortie() {
+		return (0 < this.liensSortie.size());
 	}
 
 	public boolean aLienVers(Neurone neurone) {
 		boolean so = false;
-		for (Lien lien : liensSorties) {
+		for (Lien lien : liensSortie) {
 			if (lien.jusquANeurone == neurone) {
 				so = true;
 				break;
@@ -80,7 +84,7 @@ public class Neurone implements Serializable, Cloneable {
 	public boolean aLienAPartirDe(Neurone neurone) {
 		boolean so = false;
 
-		for (Lien lien : liensSorties) {
+		for (Lien lien : liensSortie) {
 			if (lien.aPartirDeNeurone == neurone) {
 				so = true;
 				break;
@@ -103,7 +107,7 @@ public class Neurone implements Serializable, Cloneable {
 			System.out.println("le lien existe déjà");
 			return;
 		}
-		this.liensEntrees.add(lien);
+		this.liensEntree.add(lien);
 
 		Neurone aPartirDeNeurone = lien.aPartirDeNeurone;
 		aPartirDeNeurone.ajouterLienSortie(lien);
@@ -133,22 +137,127 @@ public class Neurone implements Serializable, Cloneable {
 			return;
 		}
 
-		this.liensSorties.add(lien);
+		this.liensSortie.add(lien);
 	}
 
-	public ArrayList<Lien> getLiensEntrees() {
-		return liensEntrees;
+	public ArrayList<Lien> getLiensEntree() {
+		return liensEntree;
 	}
 
-	public ArrayList<Lien> getLiensSorties() {
-		return liensSorties;
+	public ArrayList<Lien> getLiensSortie() {
+		return liensSortie;
+	}
+
+	public void retirerLienEntree(Lien lien) {
+		liensEntree.remove(lien);
+	}
+
+	public void retirerLienEntree(Neurone aPartirDeNeurone) {
+		for (Lien lien : liensEntree) {
+			if (lien.getAPartirDeNeurone() == aPartirDeNeurone) {
+				aPartirDeNeurone.retirerLienSortie(lien);
+				this.retirerLienEntree(lien);
+				// ne jamais assumer qu'un paire de neurones n'a pas
+				// malencontreusement plusieurs fois un lien entre elles
+			}
+		}
+	}
+
+	public void retirerLienSortie(Lien lien) {
+		liensSortie.remove(lien);
+	}
+
+	public void retirerLienSortie(Neurone neurone) {
+		for (Lien lien : liensSortie) {
+			if (lien.getAPartirDeNeurone() == neurone) {
+				neurone.retirerLienSortie(lien);
+				this.retirerLienEntree(lien);
+				// ne jamais assumer qu'un paire de neurones n'a pas
+				// malencontreusement plusieurs fois un lien entre elles
+			}
+		}
+	}
+
+	public void retirerTousLiensEntree() {
+		liensEntree.clear();
+	}
+
+	public void retirerTousLiensSortie() {
+		liensSortie.clear();
+	}
+
+	public void retirerTousLiens() {
+		retirerTousLiensEntree();
+		retirerTousLiensSortie();
+	}
+
+	public Lien getLienAPartirDeNeurone(Neurone neurone) {
+		Lien lienAPartirDeNeurone = null;
+		for (Lien lien : liensEntree) {
+			if (lien.getAPartirDeNeurone() == neurone) {
+				lienAPartirDeNeurone = lien;
+				break;
+			}
+		}
+		return lienAPartirDeNeurone;
+	}
+
+	// TODO public void setFonctionEntree(FonctionEntree fonctionEntree)
+	// TODO public void setFonctionTransfers(FonctionTransfers
+	// fonctionTransfers)
+
+	// TODO public FonctionEntree getFonctionEntree()
+	// TODO public FonctionTransfers getFonctionTransfers()
+
+	public Niveau getNiveauParent() {
+		return this.niveauParent;
+	}
+
+	public Importance[] getImportancesEntree() {
+		Importance[] importances = new Importance[liensEntree.size()];
+
+		for (int i = 0; i < liensEntree.size(); i++) {
+			importances[i] = liensEntree.get(i).getImportance();
+		}
+
+		return importances;
+	}
+
+	public double getErreur() {
+		return erreur;
+	}
+
+	public void setErreur(double erreur) {
+		this.erreur = erreur;
+	}
+
+	public void setSortie(double sortie) {
+		this.sortie = sortie;
+	}
+
+	/**
+	 * Mets la valeur de tous les liens entrants à la même selon la valeur
+	 * spécifiée
+	 * 
+	 * @param valImportance
+	 *            double, la valeur spécifiée
+	 */
+	public void initialiserImportanceLiensEntree(double valImportance) {
+		for (Lien lien : liensEntree) {
+			lien.getImportance().setValImportance(valImportance);
+		}
+	}
+
+	public String getNom() {
+		return this.nom;
+	}
+
+	public void setNom(String nom) {
+		this.nom = nom;
 	}
 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		// TODO clone()
-		Object clone = null;
-		return clone;
+		return null;
 	}
-
 }
