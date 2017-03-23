@@ -9,7 +9,7 @@ import ai.coeur.transfers.Etape;
 import ai.coeur.transfers.FonctionTransfers;
 
 public class Neurone implements Serializable, Cloneable {
-	// TODO la classe
+
 	private static final long serialVersionUID = 8822213784188310686L;
 
 	protected Niveau niveauParent;
@@ -33,26 +33,27 @@ public class Neurone implements Serializable, Cloneable {
 		this.liensEntree = new ArrayList<>();
 		this.liensSortie = new ArrayList<>();
 	}
-	// TODO constructeur après que les deux fonctions sont faites
-	/*
-	 * public Neurone(FonctionEntree fonctionEntree, FonctionTransfers
-	 * fonctionTransfers) { if (fonctionEntree == null) { throw new
-	 * IllegalArgumentException("Fonction d'entrée ne peut être nulle!"); }
-	 * 
-	 * if (fonctionTransfers == null) { throw new
-	 * IllegalArgumentException("Fonction de transfers ne peut être nulle!"); }
-	 * 
-	 * this.fonctionEntree = fonctionEntree; this.fonctionTransfers =
-	 * fonctionTransfers; this.liensEntrees = new ArrayList<>();
-	 * this.liensSorties = new ArrayList<>(); }
-	 */
+
+	public Neurone(FonctionEntree fonctionEntree, FonctionTransfers fonctionTransfers) {
+		if (fonctionEntree == null) {
+			throw new IllegalArgumentException("Fonction d'entrée ne peut être nulle!");
+		}
+
+		if (fonctionTransfers == null) {
+			throw new IllegalArgumentException("Fonction de transfers ne peut être nulle!");
+		}
+
+		this.fonctionEntree = fonctionEntree;
+		this.fonctionTransfers = fonctionTransfers;
+		this.liensEntree = new ArrayList<>();
+		this.liensSortie = new ArrayList<>();
+	}
 
 	public void calculer() {
-		// TODO en meme temps que constructeur
-		/*
-		 * this.totalInput = inputFunction.getOutput(inputConnections);
-		 * this.output = transferFunction.getOutput(totalInput);
-		 */
+
+		this.totalEntrees = fonctionEntree.getSortie(liensEntree);
+		this.sortie = fonctionTransfers.getSortie(totalEntrees);
+
 	}
 
 	public void setInput(double entree) {
@@ -207,15 +208,28 @@ public class Neurone implements Serializable, Cloneable {
 		return lienAPartirDeNeurone;
 	}
 
-	// TODO public void setFonctionEntree(FonctionEntree fonctionEntree)
-	// TODO public void setFonctionTransfers(FonctionTransfers
-	// fonctionTransfers)
+	public void setFonctionEntree(FonctionEntree fonctionEntree) {
+		this.fonctionEntree = fonctionEntree;
+	}
 
-	// TODO public FonctionEntree getFonctionEntree()
-	// TODO public FonctionTransfers getFonctionTransfers()
+	public void setFonctionTransfers(FonctionTransfers fonctionTransfers) {
+		this.fonctionTransfers = fonctionTransfers;
+	}
+
+	public FonctionEntree getFonctionEntree() {
+		return this.fonctionEntree;
+	}
+
+	public FonctionTransfers getFonctionTransfers() {
+		return this.fonctionTransfers;
+	}
 
 	public Niveau getNiveauParent() {
 		return this.niveauParent;
+	}
+
+	public void setNiveauParent(Niveau niveauParent) {
+		this.niveauParent = niveauParent;
 	}
 
 	public Importance[] getImportancesEntree() {

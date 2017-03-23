@@ -1,0 +1,26 @@
+package ai.utilitaire;
+
+import java.util.HashMap;
+
+public class Proprietes extends HashMap {
+	private static final long serialVersionUID = 6351772504551099195L;
+
+	protected void creerClees(String... clees) {
+		for (int i = 0; i < clees.length; i++) {
+			this.put(clees[i], "");
+		}
+	}
+
+	public void setPropriete(String clee, Object valeur) {
+		this.put(clee, valeur);
+	}
+
+	public Object getPropriete(String clee) {
+		return this.get(clee);
+	}
+
+	public boolean aPropriete(String clee) {
+		return this.containsKey(clee);
+	}
+
+}

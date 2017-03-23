@@ -29,10 +29,18 @@ public class Niveau {
 		this.reseauParent = reseauParent;
 	}
 
-	public void ajouterNeurone() {
-		listeNeuronesNiveau.add(new Neurone());
+	public ArrayList<Neurone> getListeNeuronesNiveau() {
+		return listeNeuronesNiveau;
 	}
-	
-	
+
+	public void ajouterNeurone(Neurone neurone) {
+		if (neurone != null) {
+			listeNeuronesNiveau.add(new Neurone());
+			neurone.setNiveauParent(this);
+		} else {
+			throw new IllegalArgumentException("La neurone ne peut être nulle");
+		}
+		//TODO faire event
+	}
 
 }
