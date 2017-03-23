@@ -51,14 +51,21 @@ public class Controleur {
 	@FXML
 	private ImageView imgJoueur;
 
+	@FXML
+	private ImageView limitUp;
+
+	@FXML
+	private ImageView limitDown;
+
 	Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-	private Joueur j = new Joueur(100,imgJoueur);
+	private Joueur j = new Joueur(100, imgJoueur);
 	private int gen;
-	private IntegerProperty scoreP;
+	public static IntegerProperty scoreP;
 	private TypeJoueur tj;
 	private Image imageObst;
 	private ObservableList<Obstacle> obstacles;
 	public ZoneDeJeu zoneJeu;
+	private boolean dejaDemare = false;
 
 	@FXML
 	public void initialize() {
@@ -70,15 +77,20 @@ public class Controleur {
 		scoreLabel.textProperty().bind(scoreP.asString());
 		scoreP.set(0);
 
-		zoneJeu = new ZoneDeJeu(displayJeu, obstacles, scoreP,j);
+		zoneJeu = new ZoneDeJeu(displayJeu, obstacles, scoreP, j);
 
 	}
 
 	@FXML
 	void play(ActionEvent event) {
-		ImageView obs = new ImageView();
-		obs.setImage(imageObst);
-		zoneJeu.demarerAnimation();
+		if (!dejaDemare) {
+			ImageView obs = new ImageView();
+			obs.setImage(imageObst);
+			zoneJeu.demarerAnimation();
+			dejaDemare = true;
+		} else {
+			zoneJeu.redemarer();
+		}
 		// TODO Implémenter la méthode play lorsque le jeu est construit.
 	}
 
@@ -103,7 +115,7 @@ public class Controleur {
 		confirm.setContentText("Voulez-vous vraiment réinitialiser la progression et le score?");
 
 		// if (confirm.showAndWait().get() == ButtonType.OK) {
-		initialize();
+		zoneJeu.reinitialiser();
 		// }
 	}
 

@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="733.0" prefWidth="1067.0" styleClass="background" stylesheets="@../../res/styles/style1.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controleur.Controleur">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="733.0" prefWidth="1067.0" styleClass="background" stylesheets="@../../res/styles/style1.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controleur.Controleur">
     <children>
         <Pane fx:id="displayJeu" layoutY="29.0" prefHeight="350.0" prefWidth="1068.0" styleClass="display" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="29.0">
          <children>
@@ -20,12 +20,12 @@
                   <Image url="@../../res/images/joueur.png" />
                </image>
             </ImageView>
-            <ImageView fitHeight="64.0" fitWidth="1068.0" layoutX="-1.0" layoutY="271.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="limitDown" fitHeight="64.0" fitWidth="1068.0" layoutX="-1.0" layoutY="271.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../res/images/sol.png" />
                </image>
             </ImageView>
-            <ImageView fitHeight="71.0" fitWidth="1068.0" layoutX="-1.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="limitUp" fitHeight="71.0" fitWidth="1068.0" layoutX="-1.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../res/images/plafon.png" />
                </image>
@@ -44,7 +44,7 @@
         </MenuBar>
       <VBox layoutX="442.0" layoutY="348.0" prefHeight="64.0" prefWidth="185.0" styleClass="VBox">
          <children>
-            <Label fx:id="scoreLabel" styleClass="labelScore" text="Score : " />
+            <Label fx:id="scoreLabel" styleClass="labelScore" text="0" />
          </children>
       </VBox>
           <Button fx:id="btnJouer" layoutX="627.0" layoutY="673.0" mnemonicParsing="false" onAction="#play" prefHeight="46.0" prefWidth="185.0" text="Jouer" />

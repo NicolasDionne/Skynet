@@ -1,7 +1,9 @@
 package modele;
 
+import java.util.ArrayList;
 import java.util.ListIterator;
 
+import controleur.Controleur;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -11,16 +13,18 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 
 public class ZoneDeJeu {
 	public ObservableList<Obstacle> obstacles = FXCollections.observableArrayList();
+	public ObservableList<ImageView> imgObstacles = FXCollections.observableArrayList();
 	private DoubleProperty largeur = new SimpleDoubleProperty();
 	private DoubleProperty hauteur = new SimpleDoubleProperty();
 	private boolean animationDemaree = false;
 	private boolean enPause = true;
-	private Pane pane;
+	private Pane displayJeu;
 	public static final int RGB_MAX = 255;
 	public IntegerProperty scoreProperty;
 	private boolean obst = false;
@@ -28,13 +32,17 @@ public class ZoneDeJeu {
 	public int vitesseDesObstacles = -1;
 	public Joueur joueur;
 	private int mouvementJoueur;
+	AnimationTimer timer;
 
-	public ZoneDeJeu(Pane pane, ObservableList<Obstacle> obstacles, IntegerProperty score, Joueur joueur) {
-		this.pane = pane;
+	public ZoneDeJeu(Pane displayJeu, ObservableList<Obstacle> obstacles, IntegerProperty score, Joueur joueur) {
+		this.displayJeu = displayJeu;
 		scoreProperty = score;
-		largeur.bind(this.pane.widthProperty());
-		hauteur.bind(this.pane.heightProperty());
+		largeur.bind(this.displayJeu.widthProperty());
+		hauteur.bind(this.displayJeu.heightProperty());
 		this.obstacles = obstacles;
+		for (Obstacle obstacle : obstacles) {
+
+		}
 		this.mouvementJoueur = 0;
 		this.joueur = joueur;
 	}
@@ -51,7 +59,7 @@ public class ZoneDeJeu {
 			obst = false;
 			lancerJoueur();
 			LongProperty tempsEcouleDepuisDerniereVerification = new SimpleLongProperty(0);
-			AnimationTimer timer = new AnimationTimer() {
+			timer = new AnimationTimer() {
 				@Override
 				public void handle(long tempsEcoulé) {
 
@@ -71,6 +79,7 @@ public class ZoneDeJeu {
 							bougerJoueur();
 							incrementerScore();
 							bougerObstacles();
+							suprimerInutiles();
 							// TODO regarder si il y a des collisions a ce point
 						}
 					}
@@ -86,9 +95,11 @@ public class ZoneDeJeu {
 	 * cree un obstacle a une hauteur aleatoire juste hors de l'ecran.
 	 */
 	private void ajouterObstacle() {
-		Obstacle ob = new Obstacle();
-		obstacles.add(ob);
-		pane.getChildren().add(ob.getApparence());
+		if (animationDemaree) {
+			Obstacle ob = new Obstacle();
+			obstacles.add(ob);
+			displayJeu.getChildren().add(ob.getApparence());
+		}
 	}
 
 	/**
@@ -105,7 +116,7 @@ public class ZoneDeJeu {
 	 * boucle et le remets en fonction quand il est arreter
 	 */
 	public void pause() {
-		enPause = !enPause;
+		timer.stop();
 	}
 
 	/**
@@ -145,21 +156,21 @@ public class ZoneDeJeu {
 	 */
 	private void lancerJoueur() {
 
-		pane.setOnKeyPressed(new EventHandler<KeyEvent>() {
+		displayJeu.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
 				switch (event.getCode()) {
 				case UP: {
 					mouvementJoueur = -1;
-					joueur.setPosition(joueur.getPosition()-1);
-					joueur.getApparence().setY(joueur.getApparence().getY()-1);
+					joueur.setPosition(joueur.getPosition() - 1);
+					joueur.getApparence().setY(joueur.getApparence().getY() - 1);
 				}
 					break;
 				case DOWN: {
 					{
 						mouvementJoueur = 1;
-						joueur.setPosition(joueur.getPosition()-1);
-						joueur.getApparence().setY(joueur.getApparence().getY()+1);
+						joueur.setPosition(joueur.getPosition() - 1);
+						joueur.getApparence().setY(joueur.getApparence().getY() + 1);
 					}
 					break;
 				}
@@ -173,9 +184,36 @@ public class ZoneDeJeu {
 			}
 		});
 	}
-	private void bougerJoueur(){
-		joueur.getPositionProperty().set(joueur.getPositionProperty().get()+mouvementJoueur);
-		
-		mouvementJoueur=0;
+
+	private void bougerJoueur() {
+		joueur.getPositionProperty().set(joueur.getPositionProperty().get() + mouvementJoueur);
+
+		mouvementJoueur = 0;
+	}
+
+	public void reinitialiser() {
+		for (Obstacle obstacle : obstacles) {
+			displayJeu.getChildren().remove(obstacle.getApparence());
+		}
+		obstacles.clear();
+		timer.stop();
+		Controleur.scoreP.set(0);
+	}
+
+	public void suprimerInutiles() {
+		ArrayList<Obstacle> obstaclesASuprimer = new ArrayList<>();
+		for (int i = 0; i < obstacles.size(); i++) {
+			if (obstacles.get(i).positionX < -40) {
+				displayJeu.getChildren().remove(obstacles.get(i).getApparence());
+				obstaclesASuprimer.add(obstacles.get(i));
+			}
+		}
+		if (!obstaclesASuprimer.isEmpty()) {
+			obstacles.removeAll(obstaclesASuprimer);
+		}
+	}
+
+	public void redemarer() {
+		timer.start();
 	}
 }
