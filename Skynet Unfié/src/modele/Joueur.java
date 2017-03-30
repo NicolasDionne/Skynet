@@ -18,13 +18,14 @@ import javafx.scene.image.ImageView;
 public class Joueur {
 	public static final short HAUTEUR_JOUEUR = 20;
 	public static final short LONGUEUR_JOUEUR = 32;
-	private static final double HAUTEUR_MAX = -95;
-	private static final double BASSEUR_MAX = 79;
+	public static final double HAUTEUR_MAX = -86;
+	public static final double BASSEUR_MAX = 90;
 	public short hauteur;
 	public short longueur;
 	public double position;
 	public DoubleProperty positionProperty;
-	public ImageView apparence;
+	public Image image;
+	private ImageView apparence;
 
 	/**
 	 * constructeur pour les objets joueurs, reçoit sa position initiale en
@@ -39,6 +40,7 @@ public class Joueur {
 		positionProperty.set(this.position);
 		this.setPosition(position);
 		this.apparence=image;
+		this.getApparence().yProperty().bindBidirectional(positionProperty);
 	}
 
 	public DoubleProperty getPositionProperty() {

@@ -28,8 +28,8 @@ public class ZoneDeJeu {
 	public static final int RGB_MAX = 255;
 	public IntegerProperty scoreProperty;
 	private boolean obst = false;
-	public int delaiEntreObstacles = 4;
-	public int vitesseDesObstacles = -1;
+	public int delaiEntreObstacles = 2;
+	public int vitesseDesObstacles = -2;
 	public Joueur joueur;
 	private int mouvementJoueur;
 	AnimationTimer timer;
@@ -57,7 +57,6 @@ public class ZoneDeJeu {
 		if (!animationDemaree) {
 			enPause = false;
 			obst = false;
-			lancerJoueur();
 			LongProperty tempsEcouleDepuisDerniereVerification = new SimpleLongProperty(0);
 			timer = new AnimationTimer() {
 				@Override
@@ -151,44 +150,16 @@ public class ZoneDeJeu {
 
 	}
 
-	/**
-	 * mets un ecouteur sur le clavier pour savoir quand bouger le joueur
-	 */
-	private void lancerJoueur() {
-
-		displayJeu.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
-				switch (event.getCode()) {
-				case UP: {
-					mouvementJoueur = -1;
-					joueur.setPosition(joueur.getPosition() - 1);
-					joueur.getApparence().setY(joueur.getApparence().getY() - 1);
-				}
-					break;
-				case DOWN: {
-					{
-						mouvementJoueur = 1;
-						joueur.setPosition(joueur.getPosition() - 1);
-						joueur.getApparence().setY(joueur.getApparence().getY() + 1);
-					}
-					break;
-				}
-				default: {
-					mouvementJoueur = 0;
-					break;
-				}
-
-				}
-
-			}
-		});
+	public void joueurBouge(int direction){
+		mouvementJoueur = direction;
+	}
+	public void joueurBougePas(){
+		mouvementJoueur=0;
 	}
 
 	private void bougerJoueur() {
+		if((joueur.getPositionProperty().get() + mouvementJoueur+(joueur.HAUTEUR_JOUEUR/2)>joueur.HAUTEUR_MAX)&&joueur.getPositionProperty().get() + mouvementJoueur+(joueur.HAUTEUR_JOUEUR/2)<joueur.BASSEUR_MAX)
 		joueur.getPositionProperty().set(joueur.getPositionProperty().get() + mouvementJoueur);
-
-		mouvementJoueur = 0;
 	}
 
 	public void reinitialiser() {
@@ -215,5 +186,8 @@ public class ZoneDeJeu {
 
 	public void redemarer() {
 		timer.start();
+	}
+	public int getMouvementJoueur(){
+		return mouvementJoueur;
 	}
 }

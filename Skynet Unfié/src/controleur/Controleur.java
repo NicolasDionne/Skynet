@@ -18,6 +18,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import modele.Joueur;
 import modele.MouvementJoueur;
@@ -58,7 +59,7 @@ public class Controleur {
 	private ImageView limitDown;
 
 	Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-	private Joueur j = new Joueur(100, imgJoueur);
+	private Joueur j;
 	private int gen;
 	public static IntegerProperty scoreP;
 	private TypeJoueur tj;
@@ -76,7 +77,7 @@ public class Controleur {
 		scoreP = new SimpleIntegerProperty();
 		scoreLabel.textProperty().bind(scoreP.asString());
 		scoreP.set(0);
-
+		j = new Joueur(100, imgJoueur);
 		zoneJeu = new ZoneDeJeu(displayJeu, obstacles, scoreP, j);
 
 	}
@@ -166,6 +167,47 @@ public class Controleur {
 
 		if (confirm.showAndWait().get() == ButtonType.OK) {
 			confirm.close();
+		}
+	}
+
+	@FXML
+	void debutMouvement(KeyEvent event) {
+
+		switch (event.getCode()) {
+		case UP: {
+			zoneJeu.joueurBouge(-1);
+		}
+			break;
+		case DOWN: {
+			zoneJeu.joueurBouge(1);
+			break;
+		}
+		default: {
+			break;
+		}
+
+		}
+	}
+
+	@FXML
+	void finMouvement(KeyEvent event) {
+		switch (event.getCode()) {
+		case UP: {
+			if(zoneJeu.getMouvementJoueur()==-1){
+				zoneJeu.joueurBougePas();
+			}
+		}
+			break;
+		case DOWN: {
+			if(zoneJeu.getMouvementJoueur()==1){
+				zoneJeu.joueurBougePas();
+			}
+			break;
+		}
+		default: {
+			break;
+		}
+
 		}
 	}
 
