@@ -1,15 +1,12 @@
 package modele.game;
 
 
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
 import modele.elements.HitBox;
 import modele.elements.MotionPoint;
 import modele.exceptions.ConstructorException;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.TreeSet;
 
 public class Game {
 
@@ -20,21 +17,27 @@ public class Game {
     private ArrayList<Player> playersSet = new ArrayList<>();
     private LinkedList<Enemy> enemiesSet = new LinkedList<>();
 
+
     public Game(short numberOfPlayers) throws ConstructorException {
         for (int i = 0; i < numberOfPlayers; i++) {
-            Player p = new Player();
-            playersSet.add(p);
+            createPlayer();
         }
     }
 
     public void run() {
         isGameRunning = true;
-        while (isGameRunning) {
+        if (isGameRunning) {
             playersSet.forEach(p -> {
+                p.checkObjectBeyondEdges();
                 handleMovement(p.getHitBox());
             });
             enemiesSet.forEach(e -> {
                 handleMovement(e.getHitBox());
+
+                if (e.checkObjectBeyondEdges()) {
+                    enemiesSet.remove(e);
+                    e = null;
+                }
             });
             playersSet.forEach(p -> {
                 enemiesSet.forEach(e -> {
@@ -44,11 +47,12 @@ public class Game {
                 });
             });
         }
+
     }
 
     private void handleMovement(HitBox hb) {
         hb.getCenterPoint().move();
-        hb.getOrigin().move();
+        hb.moveOrigin();
         hb.rotateSelf();
         hb.getCenterPoint().rotate(hb.getOrigin());
     }
@@ -70,6 +74,8 @@ public class Game {
     public void createPlayer() throws ConstructorException {
         Player p = new Player();
         playersSet.add(p);
+        p.getHitBox().getCenterPoint().setX(200);
+        p.getHitBox().getCenterPoint().setY(200);
     }
 
     public static boolean isIsGameRunning() {

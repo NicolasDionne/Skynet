@@ -11,10 +11,10 @@ public class HitBox implements Comparable<HitBox>, AddressString {
 
     //TODO Tester rigoureusement la combinaison de mouvement linéaire et rotationnel.
 
-    public static final short MAX_WIDTH = 100;
-    public static final short MAX_HEIGHT = 100;
-    public static final short MIN_WIDTH = 10;
-    public static final short MIN_HEIGHT = 10;
+    public static final short MAX_WIDTH = 400;
+    public static final short MAX_HEIGHT = 400;
+    public static final short MIN_WIDTH = 2;
+    public static final short MIN_HEIGHT = 2;
 
     private short width;
     private short height;

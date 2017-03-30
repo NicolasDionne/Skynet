@@ -7,10 +7,10 @@ import utilitaires.MathUtilitaires;
 
 public class MotionPoint extends Point {
 
-    public static final short MAX_VELOCITY = 50;
-    public static final short MIN_VELOCITY = -50;
-    public static final short MAX_ACCELERATION = 10;
-    public static final short MIN_ACCELERATION = -10;
+    public static final short MAX_VELOCITY = 10;
+    public static final short MIN_VELOCITY = -10;
+    public static final short MAX_ACCELERATION = 1;
+    public static final short MIN_ACCELERATION = -1;
 
     private Vector2D velocityVector;
     private Vector2D accelerationVector;
@@ -120,6 +120,42 @@ public class MotionPoint extends Point {
 
     public float accelerationY() {
         return accelerationVector.yParam();
+    }
+
+    public void setAccelerationX(float accelerationX) {
+        float xBuffer = accelerationVector.xParam();
+        accelerationVector.setxParam(accelerationX);
+
+        if (!validerAcceleration(accelerationVector.getMagnitude())) {
+            accelerationVector.setxParam(xBuffer);
+        }
+    }
+
+    public void setAccelerationY(float accelerationY) {
+        float yBuffer = accelerationVector.yParam();
+        accelerationVector.setyParam(accelerationY);
+
+        if (!validerAcceleration(accelerationVector.getMagnitude())) {
+            accelerationVector.setyParam(yBuffer);
+        }
+    }
+
+    public void setVelocityX(float velocityX) {
+        float xBuffer = velocityVector.xParam();
+        velocityVector.setxParam(velocityX);
+
+        if (!validerVelocite(velocityVector.getMagnitude())) {
+            velocityVector.setxParam(xBuffer);
+        }
+    }
+
+    public void setVelocityY(float velocityY) {
+        float yBuffer = velocityVector.yParam();
+        velocityVector.setyParam(velocityY);
+
+        if (!validerVelocite(velocityVector.getMagnitude())) {
+            velocityVector.setyParam(yBuffer);
+        }
     }
 
     public RotationParameters getRotationParameters() {
