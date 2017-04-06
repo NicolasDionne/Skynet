@@ -16,6 +16,8 @@ import javafx.event.EventHandler;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
+import modele.exceptions.ConstructorException;
+import modele.graphique.GraphiqueIA;
 
 public class ZoneDeJeu {
 	public ObservableList<Obstacle> obstacles = FXCollections.observableArrayList();
@@ -33,18 +35,17 @@ public class ZoneDeJeu {
 	public Joueur joueur;
 	private int mouvementJoueur;
 	AnimationTimer timer;
+	public GraphiqueIA graph;
 
-	public ZoneDeJeu(Pane displayJeu, ObservableList<Obstacle> obstacles, IntegerProperty score, Joueur joueur) {
+	public ZoneDeJeu(Pane displayJeu, ObservableList<Obstacle> obstacles, IntegerProperty score, Joueur joueur, GraphiqueIA graph) {
 		this.displayJeu = displayJeu;
 		scoreProperty = score;
 		largeur.bind(this.displayJeu.widthProperty());
 		hauteur.bind(this.displayJeu.heightProperty());
 		this.obstacles = obstacles;
-		for (Obstacle obstacle : obstacles) {
-
-		}
 		this.mouvementJoueur = 0;
 		this.joueur = joueur;
+		this.graph = graph;
 	}
 
 	/**
@@ -67,19 +68,28 @@ public class ZoneDeJeu {
 						if (!enPause) {
 							if ((Math.round(Math.round(tempsEcoulé / 1_000_000_000.0)) % delaiEntreObstacles) == 0
 									&& !obst) {
-								ajouterObstacle();
+								try {
+									ajouterObstacle();
+								} catch (ConstructorException e) {
+									e.printStackTrace();
+								}
 								obst = true;
 							} else if (!((Math.round(Math.round(tempsEcoulé / 1_000_000_000.0)) % 2) == 0)) {
 								obst = false;
 							}
 
-							// TODO mettre le traitement du déplacement du
-							// joueur
 							bougerJoueur();
 							incrementerScore();
 							bougerObstacles();
 							suprimerInutiles();
-							// TODO regarder si il y a des collisions a ce point
+							//TODO ajouter envoyer les infos a l'ia et recevoir sa reponse
+							//graph.setResau(reseau);
+							graph.refreshGraph(mouvementJoueur);
+
+							for (Obstacle o : obstacles) {
+								if(joueur.getHitBox().checkCollision(o.getHitBox()))
+									System.out.println("collision");
+							}
 						}
 					}
 					tempsEcouleDepuisDerniereVerification.set(tempsEcoulé);
@@ -92,8 +102,10 @@ public class ZoneDeJeu {
 
 	/**
 	 * cree un obstacle a une hauteur aleatoire juste hors de l'ecran.
+	 * 
+	 * @throws ConstructorException
 	 */
-	private void ajouterObstacle() {
+	private void ajouterObstacle() throws ConstructorException {
 		if (animationDemaree) {
 			Obstacle ob = new Obstacle();
 			obstacles.add(ob);
@@ -150,16 +162,19 @@ public class ZoneDeJeu {
 
 	}
 
-	public void joueurBouge(int direction){
+	public void joueurBouge(int direction) {
 		mouvementJoueur = direction;
 	}
-	public void joueurBougePas(){
-		mouvementJoueur=0;
+
+	public void joueurBougePas() {
+		mouvementJoueur = 0;
 	}
 
 	private void bougerJoueur() {
-		if((joueur.getPositionProperty().get() + mouvementJoueur+(joueur.HAUTEUR_JOUEUR/2)>joueur.HAUTEUR_MAX)&&joueur.getPositionProperty().get() + mouvementJoueur+(joueur.HAUTEUR_JOUEUR/2)<joueur.BASSEUR_MAX)
-		joueur.getPositionProperty().set(joueur.getPositionProperty().get() + mouvementJoueur);
+		if ((joueur.getPositionProperty().get() + mouvementJoueur + (joueur.HAUTEUR_JOUEUR / 2) > joueur.HAUTEUR_MAX)
+				&& joueur.getPositionProperty().get() + mouvementJoueur
+						+ (joueur.HAUTEUR_JOUEUR / 2) < joueur.BASSEUR_MAX)
+			joueur.getPositionProperty().set(joueur.getPositionProperty().get() + mouvementJoueur);
 	}
 
 	public void reinitialiser() {
@@ -187,7 +202,8 @@ public class ZoneDeJeu {
 	public void redemarer() {
 		timer.start();
 	}
-	public int getMouvementJoueur(){
+
+	public int getMouvementJoueur() {
 		return mouvementJoueur;
 	}
 }

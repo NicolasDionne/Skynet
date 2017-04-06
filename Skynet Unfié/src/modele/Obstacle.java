@@ -12,6 +12,8 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import modele.elements.HitBox;
+import modele.exceptions.ConstructorException;
 
 public class Obstacle {
 	public static final short TAILLE_OBSTACLE = 32;
@@ -24,24 +26,30 @@ public class Obstacle {
 	public DoubleProperty positionYProperty;
 	public Image image;
 	private ImageView apparence;
-	
-/**
- * constructeur d'obstacles, prends en compte la hauteur de départ de l'obstacle et l'image qui lui est assignée, de préférence de 32x32 pixels
- * @param position position en Y de départ de l'obstacle
- * @param image l'image assignée à l'obstacle (32x32)
- */
-	public Obstacle() {
+	private HitBox hitBox;
+
+	/**
+	 * constructeur d'obstacles, prends en compte la hauteur de départ de
+	 * l'obstacle et l'image qui lui est assignée, de préférence de 32x32 pixels
+	 * 
+	 * @param position
+	 *            position en Y de départ de l'obstacle
+	 * @param image
+	 *            l'image assignée à l'obstacle (32x32)
+	 * @throws ConstructorException
+	 */
+	public Obstacle() throws ConstructorException {
 		Random r = new Random();
-		this.setTaille(TAILLE_OBSTACLE);   
-		this.setPositionY(r.nextInt(175)+64);
+		this.setTaille(TAILLE_OBSTACLE);
+		this.setPositionY(r.nextInt(175) + 64);
 		this.setPositionX(LONGUEUR_ECRAN + RAYON_OBSTACLE);
 		BufferedImage imageTemp = null;
-    	try {
-    	   imageTemp = ImageIO.read(new File("res/images/obstacle.png"));
-    	} catch (IOException e) {
-    		System.out.println("image des obstacles introuvable!");
-    	}
-    	image = SwingFXUtils.toFXImage(imageTemp, null);
+		try {
+			imageTemp = ImageIO.read(new File("res/images/obstacle.png"));
+		} catch (IOException e) {
+			System.out.println("image des obstacles introuvable!");
+		}
+		image = SwingFXUtils.toFXImage(imageTemp, null);
 		this.setImage(image);
 		apparence = new ImageView(image);
 		positionYProperty = new SimpleDoubleProperty();
@@ -50,8 +58,15 @@ public class Obstacle {
 		positionXProperty.set(this.positionX);
 		apparence.setX(positionXProperty.get());
 		apparence.setY(positionYProperty.get());
+
+		hitBox = new HitBox((short) TAILLE_OBSTACLE, (short) TAILLE_OBSTACLE, (float) apparence.getX(),
+				(float) apparence.getY());
+		hitBox.getCenterPoint().xProperty().bind(positionXProperty);
+		hitBox.getCenterPoint().yProperty().bind(positionYProperty);
+		
+		
 	}
-	
+
 	public Image getImage() {
 		return image;
 	}
@@ -59,7 +74,7 @@ public class Obstacle {
 	public void setImage(Image image) {
 		this.image = image;
 	}
-	
+
 	public double getPositionY() {
 		return positionY;
 	}
@@ -95,7 +110,7 @@ public class Obstacle {
 
 	public DoubleProperty getPositionXProperty() {
 		return positionXProperty;
-		
+
 	}
 
 	public void setPositionXProperty(DoubleProperty positionXProperty) {
@@ -111,7 +126,8 @@ public class Obstacle {
 		this.apparence = apparence;
 	}
 
-	
+	public HitBox getHitBox() {
+		return hitBox;
+	}
 
-	
 }

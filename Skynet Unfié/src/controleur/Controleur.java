@@ -24,6 +24,8 @@ import modele.Joueur;
 import modele.MouvementJoueur;
 import modele.Obstacle;
 import modele.ZoneDeJeu;
+import modele.exceptions.ConstructorException;
+import modele.graphique.GraphiqueIA;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -57,6 +59,15 @@ public class Controleur {
 
 	@FXML
 	private ImageView limitDown;
+	
+	@FXML
+	private Pane paneEntrées;
+
+	@FXML
+	private Pane paneNeurones;
+
+	@FXML
+	private Pane paneSortie;
 
 	Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
 	private Joueur j;
@@ -67,9 +78,10 @@ public class Controleur {
 	private ObservableList<Obstacle> obstacles;
 	public ZoneDeJeu zoneJeu;
 	private boolean dejaDemare = false;
+	public GraphiqueIA graph;
 
 	@FXML
-	public void initialize() {
+	public void initialize() throws ConstructorException {
 		displayJeu.getChildren().remove(zoneJeu);
 		zoneJeu = null;
 		obstacles = FXCollections.observableArrayList();
@@ -78,7 +90,8 @@ public class Controleur {
 		scoreLabel.textProperty().bind(scoreP.asString());
 		scoreP.set(0);
 		j = new Joueur(100, imgJoueur);
-		zoneJeu = new ZoneDeJeu(displayJeu, obstacles, scoreP, j);
+		graph = new GraphiqueIA(paneEntrées,paneNeurones,paneSortie);
+		zoneJeu = new ZoneDeJeu(displayJeu, obstacles, scoreP, j, graph);
 
 	}
 
@@ -193,13 +206,13 @@ public class Controleur {
 	void finMouvement(KeyEvent event) {
 		switch (event.getCode()) {
 		case UP: {
-			if(zoneJeu.getMouvementJoueur()==-1){
+			if (zoneJeu.getMouvementJoueur() == -1) {
 				zoneJeu.joueurBougePas();
 			}
 		}
 			break;
 		case DOWN: {
-			if(zoneJeu.getMouvementJoueur()==1){
+			if (zoneJeu.getMouvementJoueur() == 1) {
 				zoneJeu.joueurBougePas();
 			}
 			break;
