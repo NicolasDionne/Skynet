@@ -11,12 +11,12 @@ public class Lien implements Serializable {
 	private Importance importance;
 
 	/**
-	 * Crée le lien entre les deux neurones spécifiées
+	 * CrÃ©e le lien entre les deux neurones spÃ©cifiÃ©es
 	 * 
 	 * @param aPartirDeNeurone
-	 *            Neurone, la neurone à partir de laquelle le lien part
+	 *            Neurone, la neurone Ã  partir de laquelle le lien part
 	 * @param jusquANeurone
-	 *            Neurone, la neurone qui reçoit le lien
+	 *            Neurone, la neurone qui reÃ§oit le lien
 	 */
 	public Lien(Neurone aPartirDeNeurone, Neurone jusquANeurone) {
 		super();
@@ -25,15 +25,15 @@ public class Lien implements Serializable {
 	}
 
 	/**
-	 * Crée le lien entre les deux neurones spécifiées avec une importance
-	 * spécifiée
+	 * CrÃ©e le lien entre les deux neurones spÃ©cifiÃ©es avec une importance
+	 * spÃ©cifiÃ©e
 	 * 
 	 * @param aPartirDeNeurone
-	 *            Neurone, la neurone à partir de laquelle le lien part
+	 *            Neurone, la neurone Ã  partir de laquelle le lien part
 	 * @param jusquANeurone
-	 *            Neurone, la neurone qui reçoit le lien
+	 *            Neurone, la neurone qui reÃ§oit le lien
 	 * @param importance
-	 *            Importance, l'importance du lien créé
+	 *            Importance, l'importance du lien crÃ©Ã©
 	 */
 	public Lien(Neurone aPartirDeNeurone, Neurone jusquANeurone, Importance importance) {
 		this(aPartirDeNeurone, jusquANeurone);
@@ -41,13 +41,13 @@ public class Lien implements Serializable {
 	}
 
 	/**
-	 * Crée le lien entre les deux neurones spécifiées avec une importance
-	 * spécifiée par un double
+	 * CrÃ©e le lien entre les deux neurones spÃ©cifiÃ©es avec une importance
+	 * spÃ©cifiÃ©e par un double
 	 * 
 	 * @param aPartirDeNeurone
-	 *            Neurone, la neurone à partir de laquelle le lien part
+	 *            Neurone, la neurone Ã  partir de laquelle le lien part
 	 * @param jusquANeurone
-	 *            Neurone, la neurone qui reçoit le lien
+	 *            Neurone, la neurone qui reÃ§oit le lien
 	 * @param valImportance
 	 *            double, la valeur de l'improtance du lien
 	 */
@@ -102,22 +102,19 @@ public class Lien implements Serializable {
 		boolean so = true;
 		if (this == obj) {
 			so = true;
-		}
-		if (obj == null) {
+		} else if (obj == null) {
 			so = false;
-		}
-		if (getClass() != obj.getClass()) {
+		} else if (getClass() != obj.getClass()) {
 			so = false;
-		}
-		final Lien other = (Lien) obj;
-		if (!Objects.equals(this.aPartirDeNeurone, other.aPartirDeNeurone)) {
-			so = false;
-		}
-		if (!Objects.equals(this.jusquANeurone, other.jusquANeurone)) {
-			so = false;
-		}
-		if (!Objects.equals(this.importance, other.importance)) {
-			so = false;
+		} else {
+			final Lien other = (Lien) obj;
+			if (!Objects.equals(this.aPartirDeNeurone, other.aPartirDeNeurone)) {
+				so = false;
+			} else if (!Objects.equals(this.jusquANeurone, other.jusquANeurone)) {
+				so = false;
+			} else if (!this.importance.equals(other.getImportance())) {
+				so = false;
+			}
 		}
 		return so;
 	}

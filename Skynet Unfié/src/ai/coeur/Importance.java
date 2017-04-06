@@ -24,15 +24,15 @@ public class Importance implements Serializable, Cloneable {
 	public transient double changementImportance;
 
 	/**
-	 * l'info tampon d'exercice contient des données algorythmiques spécifiques
-	 * variées qui sont utilisées pour ajuster cette valeur d'importance pendant
+	 * l'info tampon d'exercice contient des donnÃ©es algorythmiques spÃ©cifiques
+	 * variÃ©es qui sont utilisÃ©es pour ajuster cette valeur d'importance pendant
 	 * l'entrainement
 	 */
-	private transient Object trainingData;
+	private transient Object donneeEntrainement;
 
 	/**
-	 * Crée un instance de connection d'importance avec une valeur d'importance
-	 * d'une portée de [0..1]
+	 * CrÃ©e un instance de connection d'importance avec une valeur d'importance
+	 * d'une portÃ©e de [0..1]
 	 */
 	public Importance() {
 		this.valImportance = Math.random() - 0.5d;
@@ -40,30 +40,30 @@ public class Importance implements Serializable, Cloneable {
 	}
 
 	/**
-	 * Crée une importance
+	 * CrÃ©e une importance
 	 * 
 	 * @param valImportance
-	 *            double, la valeur de l'importance lors de la création
+	 *            double, la valeur de l'importance lors de la crï¿½ation
 	 */
 	public Importance(double valImportance) {
 		this.valImportance = valImportance;
 	}
 
 	/**
-	 * augmente l'importance de la valeur indiquée
+	 * augmente l'importance de la valeur indiquÃ©e
 	 * 
 	 * @param quantite
-	 *            double, la valImportance à ajouter à l'importance
+	 *            double, la valImportance Ã  ajouter Ã  l'importance
 	 */
 	public void augmenterVal(double quantite) {
 		this.valImportance += quantite;
 	}
 
 	/**
-	 * diminue l'importance de la valeur indiquée
+	 * diminue l'importance de la valeur indiquÃ©e
 	 * 
 	 * @param quantite
-	 *            double, la valeur à soustraire à l'importance
+	 *            double, la valeur Ã  soustraire Ã  l'importance
 	 */
 	public void diminuerVal(double quantite) {
 		this.valImportance -= quantite;
@@ -78,20 +78,20 @@ public class Importance implements Serializable, Cloneable {
 	}
 
 	/**
-	 * donne une valImportance aléatoire à l'importance d'une portée de [0..1]
+	 * donne une valImportance alÃ©atoire Ã  l'importance d'une portÃ©e de [0..1]
 	 */
 	public void setImportanceAleatoire() {
 		this.valImportance = Math.random() - 0.5d;
 	}
 
 	/**
-	 * donne une valeur aléatoire à l'importance d'une portée donnée
+	 * donne une valeur alÃ©atoire Ã  l'importance d'une portÃ©e donnÃ©e
 	 * 
 	 * @param min
-	 *            double, la valeur minimale de la portée possible de
+	 *            double, la valeur minimale de la portÃ©e possible de
 	 *            l'importance
 	 * @param max
-	 *            double, la valeur maximale de la portée possible de
+	 *            double, la valeur maximale de la portÃ©e possible de
 	 *            l'importance
 	 */
 	public void setImportanceAleatoire(double min, double max) {
@@ -102,45 +102,46 @@ public class Importance implements Serializable, Cloneable {
 		this.valImportance = generator.nextDouble();
 	}
 
-	public Object getTrainingData() {
-		return trainingData;
+	public Object getDonneeEntrainement() {
+		return donneeEntrainement;
 	}
 
-	public void setTrainingData(Object trainingData) {
-		this.trainingData = trainingData;
+	public void setDonneeEntrainement(Object donneeEntrainement) {
+		this.donneeEntrainement = donneeEntrainement;
 	}
 
 	@Override
-
 	public Object clone() throws CloneNotSupportedException {
 		Importance cloned = (Importance) super.clone();
-		cloned.setTrainingData(new Object());
+		cloned.setDonneeEntrainement(new Object());
 		return cloned;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		boolean so = false;
+		boolean so = true;
 		if (this == obj) {
 			so = true;
-		}
-		if (obj == null) {
+		} else if (obj == null) {
 			so = false;
-		}
-		if (getClass() != obj.getClass()) {
+		} else if (getClass() != obj.getClass()) {
 			so = false;
+		} else {
+
+			final Importance autre = (Importance) obj;
+
+			if (Double.doubleToLongBits(this.valImportance) != Double.doubleToLongBits(autre.valImportance)) {
+				so = false;
+			} else if (Double.doubleToLongBits(this.changementImportance) != Double
+					.doubleToLongBits(autre.changementImportance)) {
+				so = false;
+			} else if (!Objects.equals(this.donneeEntrainement, autre.donneeEntrainement)) {
+				so = false;
+			}
 		}
-		final Importance autre = (Importance) obj;
-		if (Double.doubleToLongBits(this.valImportance) != Double.doubleToLongBits(autre.valImportance)) {
-			so = false;
-		}
-		if (Double.doubleToLongBits(this.changementImportance) != Double.doubleToLongBits(autre.changementImportance)) {
-			so = false;
-		}
-		if (!Objects.equals(this.trainingData, autre.trainingData)) {
-			so = false;
-		}
+
 		return so;
+
 	}
 
 	@Override

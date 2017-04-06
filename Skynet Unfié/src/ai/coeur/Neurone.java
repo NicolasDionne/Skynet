@@ -36,11 +36,11 @@ public class Neurone implements Serializable, Cloneable {
 
 	public Neurone(FonctionEntree fonctionEntree, FonctionTransfers fonctionTransfers) {
 		if (fonctionEntree == null) {
-			throw new IllegalArgumentException("Fonction d'entrée ne peut être nulle!");
+			throw new IllegalArgumentException("Fonction d'entrï¿½e ne peut ï¿½tre nulle!");
 		}
 
 		if (fonctionTransfers == null) {
-			throw new IllegalArgumentException("Fonction de transfers ne peut être nulle!");
+			throw new IllegalArgumentException("Fonction de transfers ne peut ï¿½tre nulle!");
 		}
 
 		this.fonctionEntree = fonctionEntree;
@@ -56,11 +56,16 @@ public class Neurone implements Serializable, Cloneable {
 
 	}
 
-	public void setInput(double entree) {
-		this.totalEntrees = entree;
+	public void reinitialiser() {
+		this.setTotalEntrees(0);
+		this.setSortie(0);
 	}
 
-	public double getEntreesNettes() {
+	public void setTotalEntrees(double totalEntrees) {
+		this.totalEntrees = totalEntrees;
+	}
+
+	public double getTotalEntrees() {
 		return this.totalEntrees;
 	}
 
@@ -90,7 +95,7 @@ public class Neurone implements Serializable, Cloneable {
 	public boolean aLienAPartirDe(Neurone neurone) {
 		boolean so = false;
 
-		for (Lien lien : liensSortie) {
+		for (Lien lien : liensEntree) {
 			if (lien.aPartirDeNeurone == neurone) {
 				so = true;
 				break;
@@ -102,15 +107,15 @@ public class Neurone implements Serializable, Cloneable {
 
 	public void ajouterLienEntree(Lien lien) {
 		if (lien == null) {
-			throw new IllegalArgumentException("Tentative d'ajouter un lien null à la neurone!");
+			throw new IllegalArgumentException("Tentative d'ajouter un lien null ï¿½ la neurone!");
 		}
 		if (lien.getJusquANeurone() != this) {
 
-			throw new IllegalArgumentException("Impossible d'ajouter le lien - mauvaise jusquANeurone spécifiée!");
+			throw new IllegalArgumentException("Impossible d'ajouter le lien - mauvaise jusquANeurone spï¿½cifiï¿½e!");
 		}
 
 		if (this.aLienAPartirDe(lien.getAPartirDeNeurone())) {
-			System.out.println("le lien existe déjà");
+			System.out.println("le lien existe dï¿½jï¿½");
 			return;
 		}
 		this.liensEntree.add(lien);
@@ -132,11 +137,11 @@ public class Neurone implements Serializable, Cloneable {
 
 	public void ajouterLienSortie(Lien lien) {
 		if (lien == null) {
-			throw new IllegalArgumentException("Tentative d'ajouter un lien null à la neurone!");
+			throw new IllegalArgumentException("Tentative d'ajouter un lien null ï¿½ la neurone!");
 		}
 
 		if (lien.getAPartirDeNeurone() != this) {
-			throw new IllegalArgumentException("Impossible d'ajouter le lien - mauvaise aPartirDeNeurone spécifiée!");
+			throw new IllegalArgumentException("Impossible d'ajouter le lien - mauvaise aPartirDeNeurone spï¿½cifiï¿½e!");
 		}
 
 		if (this.aLienVers(lien.getJusquANeurone())) {
@@ -159,13 +164,18 @@ public class Neurone implements Serializable, Cloneable {
 	}
 
 	public void retirerLienEntree(Neurone aPartirDeNeurone) {
+		ArrayList<Lien> lienARetirer = new ArrayList<>();
 		for (Lien lien : liensEntree) {
 			if (lien.getAPartirDeNeurone() == aPartirDeNeurone) {
 				aPartirDeNeurone.retirerLienSortie(lien);
-				this.retirerLienEntree(lien);
+				lienARetirer.add(lien);
 				// ne jamais assumer qu'un paire de neurones n'a pas
 				// malencontreusement plusieurs fois un lien entre elles
 			}
+		}
+
+		for (Lien lien : lienARetirer) {
+			retirerLienEntree(lien);
 		}
 	}
 
@@ -174,13 +184,18 @@ public class Neurone implements Serializable, Cloneable {
 	}
 
 	public void retirerLienSortie(Neurone neurone) {
+		ArrayList<Lien> lienARetirer = new ArrayList<>();
 		for (Lien lien : liensSortie) {
 			if (lien.getAPartirDeNeurone() == neurone) {
 				neurone.retirerLienSortie(lien);
-				this.retirerLienEntree(lien);
+				lienARetirer.add(lien);
 				// ne jamais assumer qu'un paire de neurones n'a pas
 				// malencontreusement plusieurs fois un lien entre elles
 			}
+		}
+
+		for (Lien lien : lienARetirer) {
+			retirerLienSortie(lien);
 		}
 	}
 
@@ -255,11 +270,11 @@ public class Neurone implements Serializable, Cloneable {
 	}
 
 	/**
-	 * Mets la valeur de tous les liens entrants à la même selon la valeur
-	 * spécifiée
+	 * Mets la valeur de tous les liens entrants ï¿½ la mï¿½me selon la valeur
+	 * spï¿½cifiï¿½e
 	 * 
 	 * @param valImportance
-	 *            double, la valeur spécifiée
+	 *            double, la valeur spï¿½cifiï¿½e
 	 */
 	public void initialiserImportanceLiensEntree(double valImportance) {
 		for (Lien lien : liensEntree) {
@@ -276,7 +291,46 @@ public class Neurone implements Serializable, Cloneable {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		boolean so = true;
+
+		if (this == obj) {
+			so = true;
+		} else if (obj == null) {
+			so = false;
+		} else if (this.getClass() != obj.getClass()) {
+			so = false;
+		} else {
+			if (!this.getLiensEntree().equals(((Neurone) obj).getLiensEntree())) {
+				so = false;
+			} else if (!this.getLiensSortie().equals(((Neurone) obj).getLiensSortie())) {
+				so = false;
+			} else if (this.getFonctionEntree().getClass() != ((Neurone) obj).getFonctionEntree().getClass()) {
+				so = false;
+			} else if (this.getFonctionTransfers().getClass() != ((Neurone) obj).getFonctionTransfers().getClass()) {
+				so = false;
+			}
+		}
+
+		return so;
+	}
+
+	@Override
 	public Object clone() throws CloneNotSupportedException {
-		return null;
+		Neurone obj = new Neurone();
+		obj.setErreur(this.getErreur());
+		obj.setFonctionEntree(this.getFonctionEntree());
+		obj.setFonctionTransfers(this.getFonctionTransfers());
+		obj.setNiveauParent(this.getNiveauParent());
+
+		for (Lien lien : liensEntree) {
+			obj.ajouterLienEntree(lien.getAPartirDeNeurone());
+		}
+
+		for (Lien lien : liensSortie) {
+			lien.getJusquANeurone().ajouterLienEntree(obj);
+		}
+
+		return obj;
 	}
 }

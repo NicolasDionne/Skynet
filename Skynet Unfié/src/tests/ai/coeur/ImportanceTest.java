@@ -147,19 +147,19 @@ public class ImportanceTest {
 	}
 
 	/**
-	 * Test method for {@link ai.coeur.Importance#getTrainingData()}.
+	 * Test method for {@link ai.coeur.Importance#getDonneeEntrainement()}.
 	 */
 	@Test
-	public void testGetTrainingData() {
+	public void testGetDonneeEntrainement() {
 		fail("Not yet implemented");
 	}
 
 	/**
 	 * Test method for
-	 * {@link ai.coeur.Importance#setTrainingData(java.lang.Object)}.
+	 * {@link ai.coeur.Importance#setDonneeEntrainement(java.lang.Object)}.
 	 */
 	@Test
-	public void testSetTrainingData() {
+	public void testSetDonneeEntrainement() {
 		fail("Not yet implemented");
 	}
 
@@ -168,7 +168,12 @@ public class ImportanceTest {
 	 */
 	@Test
 	public void testClone() {
-		fail("Not yet implemented");
+		try {
+			Importance clone = (Importance) i1.clone();
+			assertTrue(i1.getValImportance() == clone.getValImportance());
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -176,7 +181,17 @@ public class ImportanceTest {
 	 */
 	@Test
 	public void testEqualsObject() {
-		fail("Not yet implemented");
+		Importance iTest1 = new Importance(9001), iTest2 = new Importance(9), iTest3 = new Importance(9001),
+				iTest4 = new Importance(9001);
+
+		iTest3.changementImportance = 0.55;
+
+		assertTrue(i1.equals(i1));
+		assertFalse(i1.equals(null));
+		assertTrue(i1.equals(iTest1));
+		assertFalse(i1.equals(iTest2));
+		assertFalse(i1.equals(iTest3));
+
 	}
 
 	/**
@@ -184,7 +199,7 @@ public class ImportanceTest {
 	 */
 	@Test
 	public void testToString() {
-		fail("Not yet implemented");
+		assertEquals(i1.toString(), "9001.0");
 	}
 
 }
