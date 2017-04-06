@@ -1,9 +1,13 @@
 package ai.coeur;
 
 import java.util.ArrayList;
+import java.util.Random;
 
+import ai.coeur.apprentissage.ApprentissageIteratif;
 import ai.coeur.apprentissage.RegleApprentissage;
 import ai.coeur.donnee.EnsembleDonnees;
+import ai.utilitaire.random.RandomiserALimites;
+import ai.utilitaire.random.RandomizerImportance;
 
 public class Reseau<R extends RegleApprentissage> {
 
@@ -107,5 +111,75 @@ public class Reseau<R extends RegleApprentissage> {
 			regleApprentissage.apprendre(ensembleDonnees);
 		}
 	}
-	// TODO finir la classe
+
+	public void apprendre(EnsembleDonnees ensembleDonnees, R regleApprentissage) {
+		setRegleApprentissage(regleApprentissage);
+		regleApprentissage.apprendre(ensembleDonnees);
+	}
+
+	public void arreterApperentissage() {
+		if (regleApprentissage instanceof ApprentissageIteratif) {
+			((ApprentissageIteratif) regleApprentissage).pauser();
+		}
+	}
+
+	public void resumerApprentissage() {
+		if (regleApprentissage instanceof ApprentissageIteratif) {
+			((ApprentissageIteratif) regleApprentissage).resumer();
+		}
+	}
+
+	public void randomizerImportances() {
+		randomizerImportances(new RandomizerImportance());
+	}
+
+	public void randomizerImportances(double min, double max) {
+		randomizerImportances(new RandomiserALimites(min, max));
+	}
+
+	public void randomizerImportances(Random randomizer) {
+		randomizerImportances(new RandomizerImportance(randomizer));
+	}
+
+	public void randomizerImportances(RandomizerImportance randomizerImportance) {
+		randomizerImportance.randomize(this);
+	}
+
+	public ArrayList<Neurone> getNeuronesEntree() {
+		return neuronesEntree;
+	}
+
+	public int getNombreEntrees() {
+		return this.getNeuronesEntree().size();
+	}
+
+	public void setNeuronesEntree(ArrayList<Neurone> neuronesEntree) {
+		for (Neurone neurone : neuronesEntree) {
+			this.neuronesEntree.add(neurone);
+		}
+	}
+
+	public ArrayList<Neurone> getNeuronesSorties() {
+		return neuronesSorties;
+	}
+
+	public int getNombreSorties() {
+		return getNeuronesSorties().size();
+	}
+
+	public void setNeuronesSorties(ArrayList<Neurone> neuronesSorties) {
+		for (Neurone neurone : neuronesSorties) {
+			this.neuronesSorties.add(neurone);
+		}
+		this.tableauSorties = new double[this.neuronesSorties.size()];
+	}
+
+	public R getRegleApprentissage() {
+		return regleApprentissage;
+	}
+
+	public void setRegleApprentissage(R regleApprentissage) {
+		this.regleApprentissage = regleApprentissage;
+	}
+
 }

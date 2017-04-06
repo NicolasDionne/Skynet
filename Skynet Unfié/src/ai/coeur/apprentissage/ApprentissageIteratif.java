@@ -99,11 +99,20 @@ public abstract class ApprentissageIteratif extends RegleApprentissage {
 			} else if (!iterationsLimitees && (iterationCourante == Integer.MAX_VALUE)) {
 				this.iterationCourante = 1;
 			}
-			
-			if(this.apprentissageArrete){
-				
+
+			if (this.apprentissageArrete) {
+				synchronized (this) {
+					while (this.apprentissageArrete) {
+						try {
+							this.wait();
+						} catch (Exception e) {
+							System.out.println("y'a eu une erreur lors du wait, mais on s'en fout");
+						}
+					}
+				}
 			}
 		}
+		lorsArreter();
 	}
 
 	protected boolean aAtteindConditionArret() {
