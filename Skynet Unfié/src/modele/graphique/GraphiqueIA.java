@@ -85,8 +85,8 @@ public class GraphiqueIA {
 			}
 		} else {
 			// TODO affiche pour le test
-			int nbNiv = 4;
-			int neuronesParNiv = 4;
+			int nbNiv = 3;
+			int neuronesParNiv = 3;
 			Circle r;
 			for (int col = 0; col < nbNiv; col++) {
 				Label l = new Label(new Integer(col).toString());
@@ -139,7 +139,7 @@ public class GraphiqueIA {
 			}
 
 			for (Circle r2 : listeNiveaux) {
-				if (i % 2 == 0) {
+				if (i % 3 == 0) {
 					r2.setFill(c);
 				}
 			}
