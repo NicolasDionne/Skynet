@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import ai.coeur.apprentissage.ApprentissageIteratif;
+import ai.coeur.apprentissage.ApprentissageSupervise;
 import ai.coeur.apprentissage.RegleApprentissage;
 import ai.coeur.donnee.EnsembleDonnees;
 import ai.utilitaire.random.RandomiserALimites;
@@ -15,6 +16,8 @@ public class Reseau<R extends RegleApprentissage> {
 	private ArrayList<Neurone> neuronesEntree;
 	private ArrayList<Neurone> neuronesSorties;
 	private double[] tableauSorties;
+	private int score;
+	private ArrayList<Lien> listeLiens;
 
 	private R regleApprentissage;
 
@@ -22,6 +25,8 @@ public class Reseau<R extends RegleApprentissage> {
 		this.listeNiveaux = new ArrayList<>();
 		this.neuronesEntree = new ArrayList<>();
 		this.neuronesSorties = new ArrayList<>();
+		this.score = 0;
+		this.listeLiens = new ArrayList<>();
 	}
 
 	public void ajouterNiveau(Niveau niveau) {
@@ -30,8 +35,8 @@ public class Reseau<R extends RegleApprentissage> {
 		} else {
 			niveau.setReseauParent(this);
 			listeNiveaux.add(niveau);
-			genererLiens();
 		}
+		renommerComposantes();
 	}
 
 	public void ajouterNiveau(int index, Niveau niveau) {
@@ -42,20 +47,19 @@ public class Reseau<R extends RegleApprentissage> {
 		} else {
 			niveau.setReseauParent(this);
 			listeNiveaux.add(index, niveau);
-			genererLiens();
 		}
+		renommerComposantes();
 	}
 
 	public void retirerNiveau(Niveau niveau) {
 		if (!listeNiveaux.remove(niveau)) {
 			throw new RuntimeException("Le niveau n'était pas dans le réseau");
 		}
-		genererLiens();
+		renommerComposantes();
 	}
 
 	public void retirerNiveauA(int index) {
 		listeNiveaux.remove(index);
-		genererLiens();
 	}
 
 	public ArrayList<Niveau> getListeNiveaux() {
@@ -81,8 +85,8 @@ public class Reseau<R extends RegleApprentissage> {
 			for (int i = 0; i < this.neuronesEntree.size(); i++) {
 				neuronesEntree.get(i).setTotalEntrees(entrees[i]);
 			}
-			genererLiens();
 		}
+		renommerComposantes();
 	}
 
 	public double[] getSortie() {
@@ -118,6 +122,14 @@ public class Reseau<R extends RegleApprentissage> {
 	public void apprendre(EnsembleDonnees ensembleDonnees, R regleApprentissage) {
 		setRegleApprentissage(regleApprentissage);
 		regleApprentissage.apprendre(ensembleDonnees);
+	}
+
+	public void apprendreUneGeneration(EnsembleDonnees ensembleDonnees) {
+		if (ensembleDonnees == null) {
+			throw new IllegalArgumentException("ne peut égaler null");
+		} else if (regleApprentissage.getClass().isInstance(ApprentissageIteratif.class)) {
+			((ApprentissageIteratif) regleApprentissage).faireUneIterationApprentissage(ensembleDonnees);
+		}
 	}
 
 	public void arreterApperentissage() {
@@ -160,7 +172,7 @@ public class Reseau<R extends RegleApprentissage> {
 		for (Neurone neurone : neuronesEntree) {
 			this.neuronesEntree.add(neurone);
 		}
-		genererLiens();
+		renommerComposantes();
 	}
 
 	public ArrayList<Neurone> getNeuronesSorties() {
@@ -176,7 +188,7 @@ public class Reseau<R extends RegleApprentissage> {
 			this.neuronesSorties.add(neurone);
 		}
 		this.tableauSorties = new double[this.neuronesSorties.size()];
-		genererLiens();
+		renommerComposantes();
 	}
 
 	public R getRegleApprentissage() {
@@ -187,59 +199,116 @@ public class Reseau<R extends RegleApprentissage> {
 		this.regleApprentissage = regleApprentissage;
 	}
 
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
+	}
+
+	public void renommerComposantes() {
+		renommerNiveaux();
+		renommerNeuronesEntrees();
+		renommerNeuronesSortie();
+	}
+
+	public void renommerNiveaux() {
+		for (int i = 1; i <= listeNiveaux.size(); i++) {
+			Niveau niveau = listeNiveaux.get(i - 1);
+			niveau.setNom("Niv" + i);
+			niveau.renommerNeurones();
+		}
+	}
+
+	public void renommerNeuronesEntrees() {
+		for (int i = 1; i <= neuronesEntree.size(); i++) {
+			Neurone neurone = neuronesEntree.get(i - 1);
+			neurone.setNom("Entr" + i);
+		}
+	}
+
+	public void renommerNeuronesSortie() {
+		for (int i = 1; i <= neuronesSorties.size(); i++) {
+			Neurone neurone = neuronesSorties.get(i - 1);
+			neurone.setNom("Sort" + i);
+		}
+	}
+
 	public void genererLiens() {
-		retirerTousLiens();
+		supprimerTousLiens();
 		if (listeNiveaux.isEmpty()) {
-
-			for (int i = 0; i < neuronesEntree.size(); i++) {
-				Neurone neuroneEntree = neuronesEntree.get(i);
-				for (int j = 0; j < neuronesSorties.size(); j++) {
-					Neurone neuroneSortie = neuronesSorties.get(j);
-					neuroneSortie.ajouterLienEntree(neuroneEntree);
-				}
-			}
-
+			genererLiensSansNiveax();
 		} else {
+			genererLiensAvecNiveax();
+		}
+		genererListeLiens();
+	}
 
-			for (int i = 0; i < listeNiveaux.get(0).getNombreDeNeurones(); i++) {
-				Neurone neurone = listeNiveaux.get(0).getNeuroneA(i);
-				for (Neurone neuroneEntree : neuronesEntree) {
-					neurone.ajouterLienEntree(neuroneEntree);
-				}
-			}
+	public void supprimerTousLiens() {
+		for (int i = 0; i < neuronesEntree.size(); i++) {
+			Neurone neurone = neuronesEntree.get(i);
+			neurone.retirerTousLiens();
+		}
 
-			for (int i = 0; i < listeNiveaux.get(listeNiveaux.size() - 1).getNombreDeNeurones(); i++) {
-				Neurone neuroneEntree = listeNiveaux.get(listeNiveaux.size() - 1).getNeuroneA(i);
-				for (Neurone neurone : neuronesSorties) {
-					neurone.ajouterLienEntree(neuroneEntree);
-				}
-			}
+		for (int i = 0; i < neuronesSorties.size(); i++) {
+			Neurone neurone = neuronesSorties.get(i);
+			neurone.retirerTousLiens();
+		}
 
-			if (listeNiveaux.size() > 1) {
-				for (int i = 1; i < listeNiveaux.size() - 1; i++) {
-					for (Neurone neurone : listeNiveaux.get(i).getListeNeuronesNiveau()) {
-						for (Neurone neuroneEntree : listeNiveaux.get(i - 1).getListeNeuronesNiveau()) {
-							neurone.ajouterLienEntree(neuroneEntree);
-						}
-					}
-				}
+		for (int i = 0; i < listeNiveaux.size(); i++) {
+			Niveau niveau = listeNiveaux.get(i);
+			niveau.retirerTousLiens();
+		}
+	}
+
+	public void genererLiensSansNiveax() {
+		for (Neurone neuroneEntree : neuronesEntree) {
+			for (Neurone neurone : neuronesSorties) {
+				neurone.ajouterLienEntree(neuroneEntree);
 			}
 		}
 	}
 
-	public void retirerTousLiens() {
-		for (Niveau niveau : listeNiveaux) {
-			for (Neurone neurone : niveau.getListeNeuronesNiveau()) {
-				neurone.retirerTousLiens();
+	public void genererLiensAvecNiveax() {
+		for (Neurone neuroneEntree : neuronesEntree) {
+			for (Neurone neurone : listeNiveaux.get(0).listeNeuronesNiveau) {
+				neurone.ajouterLienEntree(neuroneEntree);
 			}
 		}
 
-		for (Neurone neurone : neuronesEntree) {
-			neurone.retirerTousLiens();
+		for (int i = 1; i < listeNiveaux.size(); i++) {
+			for (Neurone neuroneEntree : listeNiveaux.get(i - 1).listeNeuronesNiveau) {
+				for (Neurone neurone : listeNiveaux.get(i).listeNeuronesNiveau) {
+					neurone.ajouterLienEntree(neuroneEntree);
+				}
+			}
+		}
+
+		for (Neurone neuroneEntree : listeNiveaux.get(listeNiveaux.size() - 1).listeNeuronesNiveau) {
+			for (Neurone neurone : neuronesSorties) {
+				neurone.ajouterLienEntree(neuroneEntree);
+			}
+		}
+	}
+
+	public ArrayList<Lien> getListeLiens() {
+		genererListeLiens();
+		return listeLiens;
+	}
+
+	public void genererListeLiens() {
+		listeLiens.clear();
+		for (Niveau niveau : listeNiveaux) {
+			for (Lien lien : niveau.getListeLiens()) {
+				listeLiens.add(lien);
+			}
 		}
 
 		for (Neurone neurone : neuronesSorties) {
-			neurone.retirerTousLiens();
+			for (Lien lien : neurone.getLiensEntree()) {
+				listeLiens.add(lien);
+			}
 		}
 	}
 

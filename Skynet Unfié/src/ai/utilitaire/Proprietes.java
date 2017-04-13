@@ -2,6 +2,7 @@ package ai.utilitaire;
 
 import java.util.HashMap;
 
+@SuppressWarnings("all")
 public class Proprietes extends HashMap {
 	private static final long serialVersionUID = 6351772504551099195L;
 

@@ -24,10 +24,10 @@ public class VisionGrid {
         for (int i = 0; i < nbColumns; i++) {
             for (int j = 0; j < nbRows; j++) {
                 HitBox hb = new HitBox(CELL_WIDTH, CELL_HEIGHT);
-                hb.setHitsOthers(true);
+                hb.setCanHitOthers(true);
 
                 hb.getCenterPoint().xProperty().bind(c.xProperty().add(CELL_WIDTH * i).add(leftX));
-                hb.getCenterPoint().yProperty().bind(c.yProperty().subtract(topY).add(CELL_HEIGHT * i));
+                hb.getCenterPoint().yProperty().bind(c.yProperty().subtract(topY).add(CELL_HEIGHT * j));
 
                 hitBoxes.add(hb);
             }

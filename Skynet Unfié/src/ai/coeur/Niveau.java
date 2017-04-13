@@ -16,6 +16,9 @@ public class Niveau {
 
 	public Niveau(int nbrNeurones) {
 		listeNeuronesNiveau = new ArrayList<>(nbrNeurones);
+		for (int i = 0; i < nbrNeurones; i++) {
+			listeNeuronesNiveau.add(new Neurone());
+		}
 	}
 
 	// TODO constructeur avec (int nbrNeurones, ProprieteNeurones
@@ -123,6 +126,33 @@ public class Niveau {
 
 	public boolean isVide() {
 		return listeNeuronesNiveau.isEmpty();
+	}
+
+	public void renommerNeurones() {
+		for (int i = 1; i <= listeNeuronesNiveau.size(); i++) {
+			Neurone neurone = listeNeuronesNiveau.get(i - 1);
+			neurone.setNom(this.getNom() + "Neur" + 1);
+		}
+	}
+
+	public void retirerTousLiens() {
+		for (int i = 0; i < listeNeuronesNiveau.size(); i++) {
+			Neurone neurone = listeNeuronesNiveau.get(i);
+			neurone.retirerTousLiens();
+		}
+	}
+
+	public ArrayList<Lien> getListeLiens() {
+		ArrayList<Lien> listeLiens = new ArrayList<>();
+
+		for (Neurone neurone : listeNeuronesNiveau) {
+			ArrayList<Lien> listeLiensNeurone = neurone.getLiensEntree();
+			for (Lien lien : listeLiensNeurone) {
+				listeLiens.add(lien);
+			}
+		}
+
+		return listeLiens;
 	}
 
 }

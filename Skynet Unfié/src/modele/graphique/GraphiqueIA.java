@@ -73,7 +73,7 @@ public class GraphiqueIA {
 			for (int col = 0; col < nbNiv; col++) {
 				Label l = new Label(new Integer(col).toString());
 				l.setLayoutX(col * 100 + 107);
-				;
+				
 				zoneNiveaux.getChildren().add(l);
 				neuronesParNiv = reseau.getNiveauA(0).getNombreDeNeurones();
 				for (int li = 0; li < neuronesParNiv; li++) {
@@ -85,8 +85,8 @@ public class GraphiqueIA {
 			}
 		} else {
 			// TODO affiche pour le test
-			int nbNiv = 3;
-			int neuronesParNiv = 3;
+			int nbNiv = 4;
+			int neuronesParNiv = 4;
 			Circle r;
 			for (int col = 0; col < nbNiv; col++) {
 				Label l = new Label(new Integer(col).toString());
@@ -139,7 +139,7 @@ public class GraphiqueIA {
 			}
 
 			for (Circle r2 : listeNiveaux) {
-				if (i % 3 == 0) {
+				if (i % 2 == 0) {
 					r2.setFill(c);
 				}
 			}

@@ -1,5 +1,6 @@
 package ai.utilitaire.random;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import ai.coeur.Lien;

@@ -105,6 +105,7 @@ public class HitBoxGenerator implements Spawn<HitBox>, Bias {
 	}
 
 	private float randRange(float min, float max) {
-		return MathUtilitaires.getRandomInRange(min, max);
+		float rand=MathUtilitaires.getRandomInRange(min, max);
+		return rand;
 	}
 }

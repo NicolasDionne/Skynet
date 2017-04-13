@@ -22,6 +22,7 @@ public class Lien implements Serializable {
 		super();
 		this.aPartirDeNeurone = aPartirDeNeurone;
 		this.jusquANeurone = jusquANeurone;
+		this.importance = new Importance();
 	}
 
 	/**

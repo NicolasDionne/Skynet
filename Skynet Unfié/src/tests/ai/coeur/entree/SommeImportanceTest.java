@@ -8,16 +8,17 @@ import org.junit.Test;
 import ai.coeur.Neurone;
 import ai.coeur.entree.SommeImportance;
 
+@SuppressWarnings("all")
 public class SommeImportanceTest {
 
 	@Before
 	public void setUp() throws Exception {
-		SommeImportance sI1=new SommeImportance();
+		SommeImportance sI1 = new SommeImportance();
 	}
 
 	@Test
 	public void testGetSortieArrayListOfLien() {
-		Neurone jusquA=new Neurone();
+		Neurone jusquA = new Neurone();
 		fail("Not yet implemented");
 	}
 

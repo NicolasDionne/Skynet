@@ -10,7 +10,7 @@ public class MathUtilitaires {
 
     private static final double pi = Math.PI;
 
-    public static float getRandomInRange(int min, int max) {
+    public static float getRandomInRange(float min, float max) {
         return (float) Math.random() * (max - min) + min;
     }
 

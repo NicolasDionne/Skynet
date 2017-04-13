@@ -7,11 +7,18 @@ import modele.elements.HitBox;
 import modele.game.game_objects.Bias;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.Player;
+import modele.game.game_objects.PlayerAI;
 import modele.game.game_objects.PlayerType;
+import modele.graphique.GraphiqueIA;
+import modele.reseau.GenerateurReseau;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
+import ai.coeur.Reseau;
+import ai.coeur.apprentissage.RegleApprentissage;
 
 public class Game implements Bias {
 
@@ -23,16 +30,22 @@ public class Game implements Bias {
 	private LinkedList<Enemy> enemiesSet = new LinkedList<>();
 	private GameState gameState = GameState.STOPPED;
 	private HitBoxGenerator hbGen;
+	private CompetitionInterReseaux competitionInterReseaux;
 
-	public Game(short nbHumans, short nbAI) {
+	private ArrayList<Reseau<RegleApprentissage>> listeReseau;
+
+	public Game(short nbHumans, short nbAI, GraphiqueIA graph) {
 		hbGen = new HitBoxGenerator();
+		GenerateurReseau gR = new GenerateurReseau();
 		short trueNbHumans = filterNbHumans(nbHumans);
 
 		for (int i = 0; i < trueNbHumans; i++) {
-			createPlayer(PlayerType.HUMAN);
+			createPlayer();
 		}
-		for (int i = trueNbHumans; i < trueNbHumans + nbAI; i++) {
-			createPlayer(PlayerType.AI);
+		gR.genererReseauCIR(nbAI, 8, 1, 4, 5);
+		listeReseau = gR.getReseaux();
+		for (int i = 0; i < nbAI; i++) {
+			createPlayerAI(listeReseau.get(i));
 		}
 	}
 
@@ -45,6 +58,9 @@ public class Game implements Bias {
 
 			playersSet.forEach(p -> {
 				p.checkObjectBeyondEdges();
+				if (p.getClass() == PlayerAI.class) {
+					p.changeDirection(0);
+				}
 				handleMovement(p.getHitBox());
 			});
 			enemiesSet.forEach(e -> {
@@ -109,12 +125,18 @@ public class Game implements Bias {
 		hb.getCenterPoint().rotate(hb.getOrigin());
 	}
 
-	public void createPlayer(PlayerType pType) {
+	public void createPlayer() {
 		HitBox hb = new HitBox(Player.PLAYER_DIM, Player.PLAYER_DIM, 50, Controleur.MID_HEIGHT);
+		Player p = new Player(PlayerType.HUMAN, hb);
 
-		Player p = new Player(pType, hb);
 		playersSet.add(p);
+	}
 
+	public void createPlayerAI(Reseau<RegleApprentissage> reseau) {
+		HitBox hb = new HitBox(Player.PLAYER_DIM, Player.PLAYER_DIM, 50, Controleur.MID_HEIGHT);
+		PlayerAI pAI = new PlayerAI(hb, reseau);
+
+		playersSet.add(pAI);
 	}
 
 	public ArrayList<Player> getPlayersSet() {

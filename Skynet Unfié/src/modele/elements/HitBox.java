@@ -20,9 +20,14 @@ public class HitBox implements AddressString {
     private RotationParameters selfRotationParameters;
     private MotionPoint centerPoint;
     private MotionPoint origin;
-    private boolean hitsOthers = false;
+    private boolean canHitOthers = false;
+    private boolean isInCollision=false;
 
-    public HitBox(short widthP, short heightP, MotionPoint centerPointP, RotationParameters selfRotationParametersP) {
+    public boolean isInCollision() {
+		return isInCollision;
+	}
+
+	public HitBox(short widthP, short heightP, MotionPoint centerPointP, RotationParameters selfRotationParametersP) {
 
 
         setHeight(heightP);
@@ -71,7 +76,7 @@ public class HitBox implements AddressString {
         boolean intersects = false;
 
         //Si les deux Box ne peuvent "toucher" les autres, on ignore les collisions entièrement.
-        if (this.hitsOthers() || box.hitsOthers()) {
+        if (this.canHitOthers() || box.canHitOthers()) {
 
             Line2D[] thislines = this.getLinesOfPerimeter();
             Line2D[] boxlines = box.getLinesOfPerimeter();
@@ -87,6 +92,7 @@ public class HitBox implements AddressString {
                 }
             }
         }
+        isInCollision = intersects;
         return intersects;
     }
 
@@ -115,12 +121,12 @@ public class HitBox implements AddressString {
         this.height = filterHeight(height);
     }
 
-    public boolean hitsOthers() {
-        return hitsOthers;
+    public boolean canHitOthers() {
+        return canHitOthers;
     }
 
-    public void setHitsOthers(boolean hitsOthers) {
-        this.hitsOthers = hitsOthers;
+    public void setCanHitOthers(boolean canHitOthers) {
+        this.canHitOthers = canHitOthers;
     }
 
     public MotionPoint getCenterPoint() {

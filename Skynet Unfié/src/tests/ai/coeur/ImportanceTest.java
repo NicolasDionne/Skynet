@@ -16,6 +16,7 @@ import ai.coeur.Importance;
  * @author 1537391
  *
  */
+@SuppressWarnings("all")
 public class ImportanceTest {
 
 	Importance i1, i2, i3;

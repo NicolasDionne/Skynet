@@ -1,10 +1,17 @@
 package controleur;
 
-import javafx.animation.Animation;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,8 +31,7 @@ import modele.game.Game;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.Player;
 import modele.game.game_objects.PlayerType;
-
-import java.io.*;
+import modele.graphique.GraphiqueIA;
 
 public class Controleur {
 
@@ -50,11 +56,21 @@ public class Controleur {
 	@FXML
 	private ImageView limitDown;
 
+	@FXML
+	private Pane paneSortie;
+
+	@FXML
+	private Pane paneNeurones;
+
+	@FXML
+	private Pane paneEntrées;
+
 	public static final int PLAFOND = 64;
 	public static final int PLANCHER = 243;
 	public static final int EDGE = 1066;
 	public static final int MID_HEIGHT = (PLANCHER - PLAFOND) / 2;
 	public static final float DIFFICULTY_INCREMENT = 0.02f;
+	public static IntegerProperty scoreP;
 
 	Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
 
@@ -65,11 +81,16 @@ public class Controleur {
 	long lastUpdate = 0;
 	float timeBetweenEnemies = 0;
 	float timerScaleFactor;
+	GraphiqueIA graph;
 
 	@FXML
 	public void initialize() {
 		gameStop();
 		boxFactory = new BoxFactory();
+		scoreP = new SimpleIntegerProperty();
+		scoreLabel.textProperty().bind(scoreP.asString());
+		scoreP.set(0);
+		graph = new GraphiqueIA(paneEntrées, paneNeurones, paneSortie);
 	}
 
 	@FXML
@@ -118,6 +139,7 @@ public class Controleur {
 
 					if (tempsEcouleDepuisDerniereVerification.get() > 0) {
 						game.doActions();
+						System.out.println(game.getPlayersSet().size());
 						// System.out.println(now);
 					}
 					if (now - lastUpdate >= 20)
@@ -167,12 +189,12 @@ public class Controleur {
 
 		animStarted = false;
 		displayJeu.getChildren().clear();
-		game = new Game((short) 0, (short) 0);
+		game = new Game((short) 0, (short) 0, graph);
 
 	}
 
 	private void newGame() {
-		game = new Game((short) 1, (short) 1);
+		game = new Game((short) 1, (short) 2, graph);
 
 		// scoreLabel.textProperty().bind(game.scoreProperty().asString());
 
