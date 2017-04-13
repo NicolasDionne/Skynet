@@ -1,4 +1,4 @@
-package tests.visuels;
+package tests_visuels;
 
 import javafx.application.Application;
 import javafx.concurrent.Service;
@@ -11,117 +11,111 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import modele.elements.HitBox;
 import modele.elements.MotionPoint;
-import modele.exceptions.ConstructorException;
 
 import java.util.ArrayList;
 
-/**
- * Les crashs/problèmes sont tout à fait normaux. Ces tests sont des
- * expérimentations pour vérifier les comportements. Ils ne représentent en
- * aucun point l'application
- */
 public class rotateTest extends Application {
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		Pane root = new Pane();
-		Scene s = new Scene(root);
-		primaryStage.setScene(s);
-		primaryStage.show();
-		ArrayList<HitBox> hbList = new ArrayList<>();
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Pane root = new Pane();
+        Scene s = new Scene(root);
+        primaryStage.setScene(s);
+        primaryStage.show();
+        ArrayList<HitBox> hbList = new ArrayList<>();
 
-		s.setOnMouseClicked(event -> {
-			if (event.getButton() == MouseButton.PRIMARY) {
-				try {
-					float randSpeed = (float) (Math.random() * 0.2);
 
-					HitBox hb = new HitBox((short) 40, (short) 40, (float) event.getX(), (float) event.getY());
-					hb.getCenterPoint().getRotationParameters().setAngularVelocity(randSpeed);
-					hb.getSelfRotationParameters().setAngularVelocity(randSpeed);
-					hb.setOrigin(new MotionPoint(400, 400));
-					hb.getOrigin().setVelocity(2);
-					hb.getOrigin().setDirection(Math.PI / 4.0);
-					hb.getCenterPoint().setVelocity(2);
-					hb.getCenterPoint().setDirection(Math.PI / 4.0);
-					hbList.add(hb);
+        s.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                float randSpeed = (float) (Math.random() * 0.2);
+                float randAcc = (float) (Math.random() * 0.02);
 
-					Circle o = new Circle(hb.getOrigin().getX(), hb.getOrigin().getY(), 5, Paint.valueOf("Green"));
-					root.getChildren().add(o);
-					o.centerXProperty().bind(hb.getOrigin().xProperty());
-					o.centerYProperty().bind(hb.getOrigin().yProperty());
+                HitBox hb = new HitBox((short) 40, (short) 40, (float) event.getX(), (float) event.getY());
+                hb.getCenterPoint().getRotationParameters().setAngularVelocity(randSpeed);
+                hb.getSelfRotationParameters().setAngularVelocity(randSpeed);
+                hb.setOrigin(new MotionPoint(50, 50));
+                hb.getOrigin().setVelocity(2);
+                hb.getOrigin().setDirection(Math.PI / 4.0);
+                hb.getOrigin().setAcceleration(0.05f);
+                hb.getOrigin().setAccelerationAngle(Math.PI / 4.0);
+                hb.getCenterPoint().setAcceleration(0.05f);
+                hb.getCenterPoint().setAccelerationAngle(Math.PI / 4.0);
+                hb.getCenterPoint().setVelocity(2);
+                hb.getCenterPoint().setDirection(Math.PI / 4.0);
+                hbList.add(hb);
 
-					Rectangle r = new Rectangle(event.getX() - 20, event.getY() - 20, 40, 40);
-					root.getChildren().add(r);
+                Circle o = new Circle(hb.getOrigin().getX(), hb.getOrigin().getY(), 5, Paint.valueOf("Green"));
+                root.getChildren().add(o);
+                o.centerXProperty().bind(hb.getOrigin().xProperty());
+                o.centerYProperty().bind(hb.getOrigin().yProperty());
 
-					Circle cc = new Circle(2, Paint.valueOf("green"));
-					cc.centerYProperty().bind(hb.getCenterPoint().yProperty());
-					cc.centerXProperty().bind(hb.getCenterPoint().xProperty());
-					root.getChildren().add(cc);
+                Rectangle r = new Rectangle(event.getX() - 20, event.getY() - 20, 40, 40);
+                root.getChildren().add(r);
 
-					Rotate rot = new Rotate(0, 400, 400);
-					r.getTransforms().add(rot);
-					rot.angleProperty().bind(hb.getCenterPoint().getRotationParameters().angleProperty().multiply(360)
-							.divide(Math.PI).divide(2));
-					rot.pivotXProperty().bind(hb.getOrigin().xProperty());
-					rot.pivotYProperty().bind(hb.getOrigin().yProperty());
+                Circle cc = new Circle(2, Paint.valueOf("green"));
+                cc.centerYProperty().bind(hb.getCenterPoint().yProperty());
+                cc.centerXProperty().bind(hb.getCenterPoint().xProperty());
+                root.getChildren().add(cc);
 
-					hb.setHitsOthers(true);
+                Rotate rot = new Rotate(0, 400, 400);
+                r.getTransforms().add(rot);
+                rot.angleProperty().bind(hb.getCenterPoint().getRotationParameters().angleProperty().multiply(360).divide(Math.PI).divide(2));
+                rot.pivotXProperty().bind(hb.getOrigin().xProperty());
+                rot.pivotYProperty().bind(hb.getOrigin().yProperty());
 
-					Service serv = new Service() {
-						@Override
-						protected Task createTask() {
-							return new Task() {
-								@Override
-								protected Object call() throws Exception {
-									while (true) {
-										r.setX(r.getX() + hb.getCenterPoint().velocityX());
-										r.setY(r.getY() + hb.getCenterPoint().velocityY());
-										hb.getCenterPoint().move();
-										hb.getOrigin().move();
-										hb.getCenterPoint().rotate(hb.getOrigin());
-										hb.rotateSelf();
+                hb.setHitsOthers(true);
 
-										for (int i = 0; i < hbList.size(); i++) {
-											for (int j = i + 1; j < hbList.size(); j++) {
-												if (hbList.get(i).checkCollision(hbList.get(j)) == true)
-													System.out.println("collision");
-											}
-										}
-										Thread.sleep(50);
-									}
-								}
-							};
-						}
-					};
-					serv.start();
+                Service serv = new Service() {
+                    @Override
+                    protected Task createTask() {
+                        return new Task() {
+                            @Override
+                            protected Object call() throws Exception {
+                                while (true) {
+                                    r.setX(r.getX() + hb.getCenterPoint().velocityX());
+                                    r.setY(r.getY() + hb.getCenterPoint().velocityY());
+                                    hb.getCenterPoint().move();
+                                    hb.getOrigin().move();
+                                    hb.getCenterPoint().rotate(hb.getOrigin());
+                                    hb.rotateSelf();
 
-				} catch (ConstructorException e) {
-					e.printStackTrace();
-				}
-			}
-			if (event.getButton() == MouseButton.SECONDARY) {
-				Circle c = new Circle(event.getX(), event.getY(), 5, Paint.valueOf("Red"));
-				root.getChildren().add(c);
-				System.out.println(c.getCenterX() + ", " + c.getCenterY());
-			}
+                                    for (int i = 0; i < hbList.size(); i++) {
+                                        for (int j = i + 1; j < hbList.size(); j++) {
+                                            if (hbList.get(i).checkCollision(hbList.get(j)) == true)
+                                                System.out.println("collision");
+                                        }
+                                    }
+                                    Thread.sleep(50);
+                                }
+                            }
+                        };
+                    }
+                };
+                serv.start();
 
-		});
-		s.setOnKeyPressed(event -> {
-			if (event.getCode() == KeyCode.R) {
-				hbList.clear();
-				root.getChildren().clear();
-			}
-			if (event.getCode() == KeyCode.Q) {
-				primaryStage.close();
-			}
-		});
+            }
+            if (event.getButton() == MouseButton.SECONDARY) {
+                Circle c = new Circle(event.getX(), event.getY(), 5, Paint.valueOf("Red"));
+                root.getChildren().add(c);
+                System.out.println(c.getCenterX() + ", " + c.getCenterY());
+            }
 
-	}
 
-	public static void main(String[] args) {
-		launch();
+        });
+        s.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.R) {
+                hbList.clear();
+                root.getChildren().clear();
+            }
+            if (event.getCode() == KeyCode.Q) {
+                primaryStage.close();
+            }
+        });
+
+    }
+    public static void main(String[] args) {
+		launch(args);
 	}
 }
