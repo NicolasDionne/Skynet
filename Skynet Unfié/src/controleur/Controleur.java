@@ -174,7 +174,7 @@ public class Controleur {
     private void newGame() {
         game = new Game((short) 1, (short) 1);
 
-       // scoreLabel.textProperty().bind(game.scoreProperty().asString());
+        // scoreLabel.textProperty().bind(game.scoreProperty().asString());
 
         game.getPlayersSet().forEach(p -> {
             Rectangle r = boxFactory.getInstance(p.getHitBox());
@@ -186,7 +186,7 @@ public class Controleur {
 
     @FXML
     void debutMouvement(KeyEvent event) {
-        if (game.getPlayersSet().size() > 0)
+        if (game.getPlayersSet().size() > 0 && game.getPlayersSet().get(0).getPlayerType() == PlayerType.HUMAN)
             switch (event.getCode()) {
                 case UP: {
                     game.getPlayersSet().get(0).changeDirection(1);
