@@ -1,242 +1,261 @@
 package controleur;
 
-import javafx.application.Platform;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
-import javafx.embed.swing.SwingFXUtils;
+import javafx.animation.Animation;
+import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
-import modele.Joueur;
-import modele.MouvementJoueur;
-import modele.Obstacle;
-import modele.ZoneDeJeu;
-import modele.exceptions.ConstructorException;
-import modele.graphique.GraphiqueIA;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
+import modele.elements.BoxFactory;
+import modele.elements.HitBox;
+import modele.game.Game;
+import modele.game.game_objects.Enemy;
+import modele.game.game_objects.PlayerType;
 
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.LinkedList;
-import java.util.Random;
-
-import javax.imageio.ImageIO;
 
 public class Controleur {
 
-	@FXML
-	private Label scoreLabel;
+    @FXML
+    private Label scoreLabel;
 
-	@FXML
-	private Pane displayJeu;
+    @FXML
+    private Pane displayJeu;
 
-	@FXML
-	private Button btnReinit;
+    @FXML
+    private Button btnReinit;
 
-	@FXML
-	private Button btnJouer;
+    @FXML
+    private Button btnJouer;
 
-	@FXML
-	private Button btnQuit;
+    @FXML
+    private Button btnQuit;
 
-	@FXML
-	private ImageView imgJoueur;
+    @FXML
+    private ImageView limitUp;
 
-	@FXML
-	private ImageView limitUp;
+    @FXML
+    private ImageView limitDown;
 
-	@FXML
-	private ImageView limitDown;
-	
-	@FXML
-	private Pane paneEntrées;
+    public static final int PLAFOND = 64;
+    public static final int PLANCHER = 243;
+    public static final int EDGE = 1066;
+    public static final int MID_HEIGHT = (PLANCHER - PLAFOND) / 2;
+    public static final float DIFFICULTY_INCREMENT = 0.02f;
 
-	@FXML
-	private Pane paneNeurones;
+    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
 
-	@FXML
-	private Pane paneSortie;
+    AnimationTimer timer;
+    Game game;
+    BoxFactory boxFactory;
+    boolean animStarted = false;
+    long lastUpdate = 0;
+    float timeBetweenEnemies = 0;
+    float timerScaleFactor;
 
-	Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-	private Joueur j;
-	private int gen;
-	public static IntegerProperty scoreP;
-	private TypeJoueur tj;
-	private Image imageObst;
-	private ObservableList<Obstacle> obstacles;
-	public ZoneDeJeu zoneJeu;
-	private boolean dejaDemare = false;
-	public GraphiqueIA graph;
+    @FXML
+    public void initialize() {
+        gameStop();
+        boxFactory = new BoxFactory();
+    }
 
-	@FXML
-	public void initialize() throws ConstructorException {
-		displayJeu.getChildren().remove(zoneJeu);
-		zoneJeu = null;
-		obstacles = FXCollections.observableArrayList();
-		obstacles.clear();
-		scoreP = new SimpleIntegerProperty();
-		scoreLabel.textProperty().bind(scoreP.asString());
-		scoreP.set(0);
-		j = new Joueur(100, imgJoueur);
-		graph = new GraphiqueIA(paneEntrées,paneNeurones,paneSortie);
-		zoneJeu = new ZoneDeJeu(displayJeu, obstacles, scoreP, j, graph);
+    @FXML
+    void play() {
+        if (game.isStopped()) {
+            newGame();
+            demarerAnimation();
+        }
+        if (game.isPaused()) {
+            game.run();
+        }
+    }
 
-	}
+    @FXML
+    private void pause() {
+        game.pause();
+    }
 
-	@FXML
-	void play(ActionEvent event) {
-		if (!dejaDemare) {
-			ImageView obs = new ImageView();
-			obs.setImage(imageObst);
-			zoneJeu.demarerAnimation();
-			dejaDemare = true;
-		} else {
-			zoneJeu.redemarer();
-		}
-		// TODO Implémenter la méthode play lorsque le jeu est construit.
-	}
+    /**
+     * le point de lancement du thread, il calcule à répétition le nombre de
+     * temps passé depuis le dernier check et, si il n'est pas de zéro, update
+     * les positions des objets De plus, a intervalle regulier il ajoute un
+     * obstacle dans lecran
+     */
+    public void demarerAnimation() {
+        if (!animStarted) {
+            game.run();
+            LongProperty tempsEcouleDepuisDerniereVerification = new SimpleLongProperty(0);
 
-	@FXML
-	private void pause() {
-		zoneJeu.pause();
-	}
+            Timeline spawnEnemyTimeLine = new Timeline(new KeyFrame(Duration.millis(1000), e -> {
 
-	@FXML
-	void quit(ActionEvent event) {
-		confirm.setTitle("Quitter");
-		confirm.setContentText("Voulez-vous vraiment quitter l'application?");
+                if (game.isRunning()) {
+                    HitBox hb = game.spawnEnemy().getHitBox();
+                    Rectangle r = boxFactory.getInstance(hb);
+                    displayJeu.getChildren().add(r);
+                }
 
-		if (confirm.showAndWait().get() == ButtonType.OK) {
-			System.exit(0);
-		}
-	}
+            }));
+            //spawnEnemyTimeLine.setCycleCount(Animation.INDEFINITE);
+            spawnEnemyTimeLine.play();
+            spawnEnemyTimeLine.setOnFinished(e -> spawnEnemyTimeLine.play());
 
-	@FXML
-	void reinit(ActionEvent event) {
-		confirm.setTitle("Réinitialiser");
-		confirm.setContentText("Voulez-vous vraiment réinitialiser la progression et le score?");
+            timer = new AnimationTimer() {
+                @Override
+                public void handle(long now) {
 
-		// if (confirm.showAndWait().get() == ButtonType.OK) {
-		zoneJeu.reinitialiser();
-		// }
-	}
+                    if (tempsEcouleDepuisDerniereVerification.get() > 0) {
+                        game.doActions();
+                        System.out.println(game.getPlayersSet().size());
+                        //System.out.println(now);
+                    }
+                    if (now - lastUpdate >= 20)
+                        tempsEcouleDepuisDerniereVerification.set(now);
+                    if (game.isStopped()) {
+                        gameStop();
+                        timer.stop();
+                        spawnEnemyTimeLine.stop();
+                    }
+                    for (int i = displayJeu.getChildren().size() - 1; i >= 0; i--) {
+                        Rectangle r = (Rectangle) displayJeu.getChildren().get(i);
+                        if (r.getX() < -Enemy.ENEMY_DIM)
+                            displayJeu.getChildren().remove(i);
+                    }
+                }
+            };
+            timer.start();
+        }
+        animStarted = true;
 
-	/**
-	 * Méthode qui permet de sauvegarder une partie. Pour l'instant, elle n'est
-	 * que dans un état basique, puisqu'il n'y a aucun paramètres à sauvegarder.
-	 */
-	@FXML
-	private boolean save() {
-		// TODO Implémenter la méthode save dans son entièreté lorsque le jeu
-		// est construit.
-		String content = "content";
-		try {
-			/* f.createNewFile(); */
-			PrintWriter sortie = new PrintWriter(new FileWriter("save"));
+    }
 
-			sortie.println(content);
+    @FXML
+    void quit(ActionEvent event) {
+        confirm.setTitle("Quitter");
+        confirm.setContentText("Voulez-vous vraiment quitter l'application?");
 
-			sortie.close();
-		} catch (IOException e) {
-			System.out.println(e);
-		}
+        if (confirm.showAndWait().get() == ButtonType.OK) {
+            System.exit(0);
+        }
+    }
 
-		return true;
-	}
+    @FXML
+    void reinit(ActionEvent event) {
+        confirm.setTitle("Réinitialiser");
+        confirm.setContentText("Voulez-vous vraiment réinitialiser la progression et le score?");
 
-	/**
-	 * Méthode qui permet de charger une partie. Pour l'instant, elle n'est que
-	 * dans un état basique, puisqu'il n'y a aucun paramètres à charger.
-	 */
-	@FXML
-	private void load() {
-		// TODO Implémenter la méthode load dans son entièreté lorsque le jeu
-		// est construit.
-		String ligneRetour = null;
+        pause();
 
-		try {
-			BufferedReader entree = new BufferedReader(new FileReader("save"));
-			ligneRetour = entree.readLine();
+        if (confirm.showAndWait().get() == ButtonType.OK) {
+            gameStop();
+        } else
+            play();
+    }
 
-			entree.close();
-		} catch (IOException e) {
-			System.out.println(e);
-		}
+    private void gameStop() {
 
-		confirm.setTitle("Load Test View");
-		confirm.setContentText(ligneRetour.equals("content") ? "true" : "false");
+        animStarted = false;
+        displayJeu.getChildren().clear();
+        game = new Game((short) 0, (short) 0);
 
-		if (confirm.showAndWait().get() == ButtonType.OK) {
-			confirm.close();
-		}
-	}
+    }
 
-	@FXML
-	void debutMouvement(KeyEvent event) {
+    private void newGame() {
+        game = new Game((short) 1, (short) 1);
 
-		switch (event.getCode()) {
-		case UP: {
-			zoneJeu.joueurBouge(-1);
-		}
-			break;
-		case DOWN: {
-			zoneJeu.joueurBouge(1);
-			break;
-		}
-		default: {
-			break;
-		}
+       // scoreLabel.textProperty().bind(game.scoreProperty().asString());
 
-		}
-	}
+        game.getPlayersSet().forEach(p -> {
+            Rectangle r = boxFactory.getInstance(p.getHitBox());
+            displayJeu.getChildren().add(r);
+            r.setFill(Paint.valueOf("red"));
+        });
 
-	@FXML
-	void finMouvement(KeyEvent event) {
-		switch (event.getCode()) {
-		case UP: {
-			if (zoneJeu.getMouvementJoueur() == -1) {
-				zoneJeu.joueurBougePas();
-			}
-		}
-			break;
-		case DOWN: {
-			if (zoneJeu.getMouvementJoueur() == 1) {
-				zoneJeu.joueurBougePas();
-			}
-			break;
-		}
-		default: {
-			break;
-		}
+    }
 
-		}
-	}
+    @FXML
+    void debutMouvement(KeyEvent event) {
+        if (game.getPlayersSet().size() > 0)
+            switch (event.getCode()) {
+                case UP: {
+                    game.getPlayersSet().get(0).changeDirection(1);
+                    break;
+                }
+                case DOWN: {
+                    game.getPlayersSet().get(0).changeDirection(-1);
+                    break;
+                }
+                default: {
+                    game.getPlayersSet().get(0).changeDirection(0);
+                    break;
+                }
+            }
 
-	enum TypeJoueur {
-		HUMAIN("Humain"), AI("AI");
+    }
 
-		String name;
+    @FXML
+    void finMouvement() {
+        if (game.getPlayersSet().size() > 0)
+            game.getPlayersSet().get(0).changeDirection(0);
+    }
 
-		private TypeJoueur(String name) {
-			this.name = name;
-		}
+    /**
+     * Méthode qui permet de sauvegarder une partie. Pour l'instant, elle n'est
+     * que dans un état basique, puisqu'il n'y a aucun paramètres à sauvegarder.
+     */
+    @FXML
+    private boolean save() {
+        // TODO Implémenter la méthode save dans son entièreté lorsque le jeu
+        // est construit.
+        String content = "content";
+        try {
+            /* f.createNewFile(); */
+            PrintWriter sortie = new PrintWriter(new FileWriter("save"));
 
-		public String toString() {
-			return name;
-		}
+            sortie.println(content);
 
-	}
+            sortie.close();
+        } catch (IOException e) {
+        }
+
+        return true;
+    }
+
+    /**
+     * Méthode qui permet de charger une partie. Pour l'instant, elle n'est que
+     * dans un état basique, puisqu'il n'y a aucun paramètres à charger.
+     */
+    @FXML
+    private void load() {
+        // TODO Implémenter la méthode load dans son entièreté lorsque le jeu
+        // est construit.
+        String ligneRetour = null;
+
+        try {
+            BufferedReader entree = new BufferedReader(new FileReader("save"));
+            ligneRetour = entree.readLine();
+
+            entree.close();
+        } catch (IOException e) {
+        }
+
+        confirm.setTitle("Load Test View");
+        confirm.setContentText(ligneRetour.equals("content") ? "true" : "false");
+
+        if (confirm.showAndWait().get() == ButtonType.OK) {
+            confirm.close();
+        }
+    }
 
 }
