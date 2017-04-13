@@ -1,13 +1,12 @@
 package modele.elements;
 
-import modele.exceptions.ConstructorException;
 import modele.math.Vector2D;
-import utilitaires.MathUtilitaires;
 import utilitaires.AddressString;
+import utilitaires.MathUtilitaires;
 
 import java.awt.geom.Line2D;
 
-public class HitBox implements Comparable<HitBox>, AddressString {
+public class HitBox implements AddressString {
 
     //TODO Tester rigoureusement la combinaison de mouvement linéaire et rotationnel.
 
@@ -23,11 +22,8 @@ public class HitBox implements Comparable<HitBox>, AddressString {
     private MotionPoint origin;
     private boolean hitsOthers = false;
 
-    public HitBox(short widthP, short heightP, MotionPoint centerPointP, RotationParameters selfRotationParametersP) throws ConstructorException {
+    public HitBox(short widthP, short heightP, MotionPoint centerPointP, RotationParameters selfRotationParametersP) {
 
-        if (!validerDimensions(widthP, heightP))
-            throw new ConstructorException("Les dimensions sont invalides. " +
-                    "La largeur doit être entre " + MIN_WIDTH + " et " + MAX_WIDTH + " ; la hauteur, entre " + MIN_HEIGHT + " et " + MAX_HEIGHT + ".");
 
         setHeight(heightP);
         setWidth(widthP);
@@ -37,11 +33,11 @@ public class HitBox implements Comparable<HitBox>, AddressString {
 
     }
 
-    public HitBox(short width, short height) throws ConstructorException {
+    public HitBox(short width, short height) {
         this(width, height, new MotionPoint(0, 0, new Vector2D(0, 0), new Vector2D(0, 0), new RotationParameters()), new RotationParameters());
     }
 
-    public HitBox(short width, short height, float x, float y) throws ConstructorException {
+    public HitBox(short width, short height, float x, float y) {
         this(width, height, new MotionPoint(x, y, new Vector2D(0, 0), new Vector2D(0, 0), new RotationParameters()), new RotationParameters());
     }
 
@@ -103,48 +99,12 @@ public class HitBox implements Comparable<HitBox>, AddressString {
             origin.move();
     }
 
-    /**
-     * Méthode equals de la Hitbox
-     *
-     * @param o l'objet (une HitBox) avec lequel on souhaite comparer
-     * @return vrai si les deux HitBox ont les mêmes largeur et hauteur.
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        HitBox hitBox = (HitBox) o;
-
-        return width == hitBox.width && height == hitBox.height;
-    }
-
-    /**
-     * Méthode compareTo de la HitBox, compare les aires des deux HitBox.
-     *
-     * @param o la HitBox qu'on souhaite comparer
-     * @return un nombre < 0 si la HitBox en paramètre a une aire plus petite;
-     * à l'inverse, un nombre > 0;
-     * si les faires sont égales, 0;
-     */
-    @Override
-    public int compareTo(HitBox o) {
-        int thisArea = this.width * this.height;
-        int otherArea = o.getWidth() * o.getHeight();
-        return thisArea - otherArea;
-    }
-
-    @Override
-    public int hashCode() {
-        return (31 * width) + (23 * height) + (17 * width * height);
-    }
-
     public short getWidth() {
-        return width;
+        return filterWidth(width);
     }
 
     public void setWidth(short width) {
-        this.width = width;
+        this.width = filterWidth(width);
     }
 
     public short getHeight() {
@@ -152,7 +112,7 @@ public class HitBox implements Comparable<HitBox>, AddressString {
     }
 
     public void setHeight(short height) {
-        this.height = height;
+        this.height = filterHeight(height);
     }
 
     public boolean hitsOthers() {
@@ -185,6 +145,28 @@ public class HitBox implements Comparable<HitBox>, AddressString {
 
     private boolean validerDimensions(int w, int h) {
         return w <= MAX_WIDTH && w >= MIN_WIDTH && h <= MAX_HEIGHT && h >= MIN_HEIGHT;
+    }
+
+    private short filterHeight(short height) {
+        short heightBuffer = height;
+
+        if (height < MIN_HEIGHT)
+            heightBuffer = MIN_HEIGHT;
+        if (height > MAX_HEIGHT)
+            heightBuffer = MAX_HEIGHT;
+
+        return heightBuffer;
+    }
+
+    private short filterWidth(short width) {
+        short widthBuffer = width;
+
+        if (width < MIN_WIDTH)
+            widthBuffer = MIN_WIDTH;
+        if (width > MAX_WIDTH)
+            widthBuffer = MAX_WIDTH;
+
+        return widthBuffer;
     }
 
     public String toString() {

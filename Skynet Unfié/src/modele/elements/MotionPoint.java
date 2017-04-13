@@ -1,66 +1,61 @@
 package modele.elements;
 
 
-import modele.exceptions.ConstructorException;
 import modele.math.Vector2D;
 import utilitaires.MathUtilitaires;
 
 public class MotionPoint extends Point {
 
-    public static final short MAX_VELOCITY = 10;
-    public static final short MIN_VELOCITY = -10;
-    public static final short MAX_ACCELERATION = 1;
-    public static final short MIN_ACCELERATION = -1;
+    public static final short MAX_VELOCITY = 15;
+    public static final short MIN_VELOCITY = -15;
+    public static final short MAX_ACCELERATION = 2;
+    public static final short MIN_ACCELERATION = -2;
 
     private Vector2D velocityVector;
     private Vector2D accelerationVector;
     private RotationParameters rotationParameters;
 
-    public MotionPoint(float x, float y, Vector2D velocityVectorP, Vector2D accelerationVectorP, RotationParameters rotationParametersP) throws ConstructorException {
+    public MotionPoint(float x, float y, Vector2D velocityVectorP, Vector2D accelerationVectorP, RotationParameters rotationParametersP) {
         super(x, y);
 
         accelerationVector = filterAccelerationVector(accelerationVectorP);
         rotationParameters = filterRotationParameters(rotationParametersP);
         velocityVector = filterVelocityVector(velocityVectorP);
 
-
         float velocity = velocityVectorP.norm();
         float acceleration = accelerationVectorP.norm();
 
-        if (!validerAcceleration(acceleration))
-            throw new ConstructorException("L'accélération est soit trop petite, soit trop grande. Elle doit se situer entre " + MIN_ACCELERATION + " et " + MAX_ACCELERATION + ".");
-        if (!validerVelocite(velocity))
-            throw new ConstructorException("La vélocité est soit trop petite, soit trop grande. Elle doit se situer entre 0 et " + MAX_VELOCITY + ".");
     }
 
-    public MotionPoint(float x, float y) throws ConstructorException {
+    /**
+     * Constructeur avec coordonnées en paramètres
+     *
+     * @param x la coordonnée x
+     * @param y la coordonnée y
+     */
+    public MotionPoint(float x, float y) {
         this(x, y, new Vector2D(), new Vector2D(), new RotationParameters());
     }
 
-    private void adjustVelocity() {
-        float newVX = velocityVector.xParam() + accelerationVector.xParam();
-        float newVY = velocityVector.yParam() + accelerationVector.yParam();
-
-        float newVel = (float) Math.hypot(newVX, newVY);
-
-        if (validerVelocite(newVel)) {
-            velocityVector.setxParam(newVX);
-            velocityVector.setyParam(newVY);
-        }
-    }
-
+    /**
+     * Déplace linéairement le point après avoir ajusté sa vélocité.
+     */
     public void move() {
         adjustVelocity();
 
         this.setX(this.getX() + velocityX());
         this.setY(this.getY() + velocityY());
 
-        // System.out.println(velocityVector);
     }
 
+    /**
+     * Fait la rotation de ce point autour d'un point d'origine. L'angle de rotation est donné par les paramètres de rotation.
+     *
+     * @param origin l'origine de rotation.
+     */
     public void rotate(Point origin) {
         rotationParameters.updateAngle();
-        //System.out.println(rotationParameters.getAngle());
+
         Point rotatedCenter = MathUtilitaires.rotatePoint(this, origin, rotationParameters.getAngularVelocity());
 
         this.setX(rotatedCenter.getX());
@@ -76,6 +71,11 @@ public class MotionPoint extends Point {
             velocityVector.setMagnitude(velocityP);
     }
 
+    /**
+     * Méthode toString(), retourne tous les paramètres du point.
+     *
+     * @return l'adresse mémoire, le vecteur de vélocité, le vecteur d'accélération et les paramètres de rotation.
+     */
     public String toString() {
         return super.toString() + "\n   " + velocityVector.toString() +
                 "\n " + accelerationVector.toString() + "\n " + rotationParameters.toString();
@@ -183,8 +183,22 @@ public class MotionPoint extends Point {
         return accelerationVectorP == null ? new Vector2D(0, 0) : accelerationVectorP;
     }
 
-    private RotationParameters filterRotationParameters(RotationParameters rotationParametersP) throws ConstructorException {
+    private RotationParameters filterRotationParameters(RotationParameters rotationParametersP) {
         return rotationParametersP == null ? new RotationParameters() : rotationParametersP;
     }
 
+    /**
+     * Ajuste la vélocité x et y selon l'accélération x et y.
+     */
+    private void adjustVelocity() {
+        float newVX = velocityVector.xParam() + accelerationVector.xParam();
+        float newVY = velocityVector.yParam() + accelerationVector.yParam();
+
+        float newVel = (float) Math.hypot(newVX, newVY);
+
+        if (validerVelocite(newVel)) {
+            velocityVector.setxParam(newVX);
+            velocityVector.setyParam(newVY);
+        }
+    }
 }

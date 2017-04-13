@@ -1,7 +1,7 @@
 package modele.math;
 
-import utilitaires.MathUtilitaires;
 import utilitaires.AddressString;
+import utilitaires.MathUtilitaires;
 
 import java.util.ArrayList;
 import java.util.List;
