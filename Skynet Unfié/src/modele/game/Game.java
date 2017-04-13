@@ -7,144 +7,151 @@ import modele.elements.HitBox;
 import modele.game.game_objects.Bias;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.Player;
+import modele.game.game_objects.PlayerAI;
 import modele.game.game_objects.PlayerType;
+import modele.graphique.GraphiqueIA;
+import modele.reseau.GenerateurReseau;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
+import ai.coeur.Reseau;
+import ai.coeur.apprentissage.RegleApprentissage;
+
 public class Game implements Bias {
 
-    public static final short MAX_NB_PLAYERS = 20;
-    public static final float SPAWN_ENEMY_BIAS = 0.1f;
+	public static final short MAX_NB_PLAYERS = 20;
 
-    private ArrayList<Player> playersSet = new ArrayList<>();
-    private LinkedList<Enemy> enemiesSet = new LinkedList<>();
-    private GameState gameState = GameState.STOPPED;
-    private EnemySpawner hbGen;
-    private IntegerProperty score;
+	public static final float SPAWN_ENEMY_BIAS = 0.1f;
 
-    public Game(short nbHumans, short nbAI) {
-        hbGen = new EnemySpawner();
-        short trueNbHumans = filterNbHumans(nbHumans);
+	private ArrayList<Player> playersSet = new ArrayList<>();
+	private LinkedList<Enemy> enemiesSet = new LinkedList<>();
+	private GameState gameState = GameState.STOPPED;
+	private HitBoxGenerator hbGen;
+	private CompetitionInterReseaux competitionInterReseaux;
 
-        for (int i = 0; i < trueNbHumans; i++) {
-            createPlayer(PlayerType.HUMAN);
-        }
-        for (int j = 0; j < nbAI; j++) {
-            createPlayer(PlayerType.AI);
-        }
-        score = new SimpleIntegerProperty();
-    }
+	private ArrayList<Reseau<RegleApprentissage>> listeReseau;
 
-    public int getScore() {
-        return score.get();
-    }
+	public Game(short nbHumans, short nbAI, GraphiqueIA graph) {
+		hbGen = new HitBoxGenerator();
+		GenerateurReseau gR = new GenerateurReseau();
+		short trueNbHumans = filterNbHumans(nbHumans);
 
-    public IntegerProperty scoreProperty() {
-        return score;
-    }
+		for (int i = 0; i < trueNbHumans; i++) {
+			createPlayer();
+		}
+		gR.genererReseauCIR(nbAI, 8, 1, 4, 5);
+		listeReseau = gR.getReseaux();
+		for (int i = 0; i < nbAI; i++) {
+			createPlayerAI(listeReseau.get(i));
+		}
+	}
 
-    public void setScore(int score) {
-        this.score.set(score);
-    }
+	public void doActions() {
 
-    public void doActions() {
+		if (isRunning()) {
 
-        if (isRunning()) {
+			List<Player> playerBufferList = new ArrayList<>();
+			List<Enemy> enemyBufferList = new ArrayList<>();
 
-            List<Player> playerBufferList = new ArrayList<>();
-            List<Enemy> enemyBufferList = new ArrayList<>();
+			playersSet.forEach(p -> {
+				p.checkObjectBeyondEdges();
+				if (p.getClass() == PlayerAI.class) {
+					p.changeDirection(0);
+				}
+				handleMovement(p.getHitBox());
+			});
+			enemiesSet.forEach(e -> {
+				handleMovement(e.getHitBox());
+				if (e.checkObjectBeyondEdges())
+					enemyBufferList.add(e);
+			});
+			playersSet.forEach(p -> enemiesSet.forEach(e -> {
+				if (p.getHitBox().checkCollision(e.getHitBox())) {
+					// System.out.println("collision");
+					playerBufferList.add(p);
+				}
+			}));
 
-            playersSet.forEach(p -> {
-                p.checkObjectBeyondEdges();
-                handleMovement(p.getHitBox());
-            });
-            enemiesSet.forEach(e -> {
-                handleMovement(e.getHitBox());
-                if (e.checkObjectBeyondEdges())
-                    enemyBufferList.add(e);
-            });
-            score.set(score.get() + 1);
-            playersSet.forEach(p -> enemiesSet.forEach(e -> {
-                if (p.getHitBox().checkCollision(e.getHitBox())) {
-                    System.out.println("collision");
-                    playerBufferList.add(p);
-                }
-            }));
-            //	playersSet.forEach(p -> {p.getvGrid()});
+			playerBufferList.forEach(pB -> playersSet.remove(pB));
+			enemyBufferList.forEach(eB -> enemiesSet.remove(eB));
 
-            playerBufferList.forEach(pB -> playersSet.remove(pB));
-            enemyBufferList.forEach(eB -> enemiesSet.remove(eB));
+			playerBufferList.clear();
+			enemyBufferList.clear();
 
-            playerBufferList.clear();
-            enemyBufferList.clear();
+			if (playersSet.size() == 0)
+				stop();
+		}
+	}
 
-            if (playersSet.size() == 0)
-                stop();
-        }
-    }
+	public boolean isRunning() {
+		return gameState == GameState.RUNNING;
+	}
 
-    public boolean isRunning() {
-        return gameState == GameState.RUNNING;
-    }
+	public boolean isPaused() {
+		return gameState == GameState.PAUSED;
+	}
 
-    public boolean isPaused() {
-        return gameState == GameState.PAUSED;
-    }
+	public boolean isStopped() {
+		return gameState == GameState.STOPPED;
+	}
 
-    public boolean isStopped() {
-        return gameState == GameState.STOPPED;
-    }
+	public void run() {
+		gameState = GameState.RUNNING;
+	}
 
-    public void run() {
-        gameState = GameState.RUNNING;
-    }
+	public void pause() {
+		gameState = GameState.PAUSED;
+	}
 
-    public void pause() {
-        gameState = GameState.PAUSED;
-    }
+	public void stop() {
+		gameState = GameState.STOPPED;
+	}
 
-    public void stop() {
-        gameState = GameState.STOPPED;
-    }
+	public Enemy spawnEnemy() {
+		HitBox hb = hbGen.spawn(Enemy.ENEMY_DIM);
+		Enemy toSpawn = new Enemy(hb);
+		enemiesSet.add(toSpawn);
 
-    public Enemy spawnEnemy() {
-        HitBox hb = hbGen.spawn(Enemy.ENEMY_DIM);
-        Enemy toSpawn = new Enemy(hb);
-        enemiesSet.add(toSpawn);
+		return toSpawn;
+	}
 
-        return toSpawn;
-    }
+	private void handleMovement(HitBox hb) {
+		hb.getCenterPoint().move();
+		hb.moveOrigin();
+		hb.rotateSelf();
+		hb.getCenterPoint().rotate(hb.getOrigin());
+	}
 
-    private void handleMovement(HitBox hb) {
-        hb.getCenterPoint().move();
-        hb.moveOrigin();
-        hb.rotateSelf();
-        hb.getCenterPoint().rotate(hb.getOrigin());
-    }
+	public void createPlayer() {
+		HitBox hb = new HitBox(Player.PLAYER_DIM, Player.PLAYER_DIM, 50, Controleur.MID_HEIGHT);
+		Player p = new Player(PlayerType.HUMAN, hb);
 
-    public void createPlayer(PlayerType pType) {
-        HitBox hb = new HitBox(Player.PLAYER_DIM, Player.PLAYER_DIM, 50, Controleur.MID_HEIGHT);
-        Player p = new Player(pType, hb);
+		playersSet.add(p);
+	}
 
-        playersSet.add(p);
+	public void createPlayerAI(Reseau<RegleApprentissage> reseau) {
+		HitBox hb = new HitBox(Player.PLAYER_DIM, Player.PLAYER_DIM, 50, Controleur.MID_HEIGHT);
+		PlayerAI pAI = new PlayerAI(hb, reseau);
 
-    }
+		playersSet.add(pAI);
+	}
 
-    public ArrayList<Player> getPlayersSet() {
-        return playersSet;
-    }
+	public ArrayList<Player> getPlayersSet() {
+		return playersSet;
+	}
 
-    public LinkedList<Enemy> getEnemiesSet() {
-        return enemiesSet;
-    }
+	public LinkedList<Enemy> getEnemiesSet() {
+		return enemiesSet;
+	}
 
-    enum GameState {
-        RUNNING, PAUSED, STOPPED;
-    }
+	enum GameState {
+		RUNNING, PAUSED, STOPPED;
+	}
 
-    private short filterNbHumans(short nbHumans) {
-        return (short) (nbHumans == 0 ? 0 : 1);
-    }
+	private short filterNbHumans(short nbHumans) {
+		return (short) (nbHumans == 0 ? 0 : 1);
+	}
 }
