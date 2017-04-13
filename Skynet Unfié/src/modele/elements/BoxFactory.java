@@ -2,6 +2,7 @@ package modele.elements;
 
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Rotate;
 
 
 public class BoxFactory {

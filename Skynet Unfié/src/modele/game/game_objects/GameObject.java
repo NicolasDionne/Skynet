@@ -12,20 +12,14 @@ public abstract class GameObject {
     public static final short MAX_DIM = 40;
     public static final short MIN_DIM = 10;
 
-    private short dimension;
     private HitBox hitBox;
 
-    public GameObject(HitBox hb)  {
+    public GameObject(HitBox hb) {
         if (hb != null) {
             hitBox = hb;
+            hitBox.setWidth(filterWidth(hb.getWidth()));
+            hitBox.setHeight(filterHeigth(hb.getHeight()));
         }
-    }
-
-    public GameObject(short dim) {
-        dimension = filtrerDim(dim);
-        hitBox = new HitBox(dimension, dimension);
-        MotionPoint origin = new MotionPoint(0, 0);
-        hitBox.setOrigin(origin);
     }
 
     public abstract boolean checkObjectBeyondEdges();
@@ -34,26 +28,25 @@ public abstract class GameObject {
         return hitBox;
     }
 
-    public void setHitBox(HitBox hitBox) {
-        this.hitBox = hitBox;
+    private short filterWidth(short width) {
+        short newWidth = width;
+
+        if (newWidth > MAX_DIM)
+            newWidth = MAX_DIM;
+        if (newWidth < MIN_DIM)
+            newWidth = MIN_DIM;
+
+        return newWidth;
     }
 
-    public short getDimension() {
-        return dimension;
-    }
+    private short filterHeigth(short height) {
+        short newHeigth = height;
 
-    public void setDimension(short dimension) {
-        this.dimension = dimension;
-    }
+        if (newHeigth > MAX_DIM)
+            newHeigth = MAX_DIM;
+        if (newHeigth < MIN_DIM)
+            newHeigth = MIN_DIM;
 
-    private short filtrerDim(short dim) {
-        short newDim = dim;
-
-        if (dim > MAX_DIM)
-            newDim = MAX_DIM;
-        if (dim < MIN_DIM)
-            newDim = MIN_DIM;
-        return newDim;
-
+        return newHeigth;
     }
 }
