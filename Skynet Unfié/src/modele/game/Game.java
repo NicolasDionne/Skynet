@@ -32,7 +32,7 @@ public class Game implements Bias {
 	private HitBoxGenerator hbGen;
 	private CompetitionInterReseaux competitionInterReseaux;
 
-	private ArrayList<Reseau<RegleApprentissage>> listeReseau;
+	private ArrayList<Reseau<CompetitionInterReseaux>> listeReseau;
 
 	public Game(short nbHumans, short nbAI, GraphiqueIA graph) {
 		hbGen = new HitBoxGenerator();
@@ -42,8 +42,8 @@ public class Game implements Bias {
 		for (int i = 0; i < trueNbHumans; i++) {
 			createPlayer();
 		}
-		gR.genererReseauCIR(nbAI, 8, 1, 4, 5);
-		listeReseau = gR.getReseaux();
+		gR.genererReseauCIR(nbAI, 8, 1, 4, 5, -50, 50);
+		listeReseau = gR.getReseauxCIR();
 		for (int i = 0; i < nbAI; i++) {
 			createPlayerAI(listeReseau.get(i));
 		}
@@ -132,7 +132,7 @@ public class Game implements Bias {
 		playersSet.add(p);
 	}
 
-	public void createPlayerAI(Reseau<RegleApprentissage> reseau) {
+	public void createPlayerAI(Reseau<CompetitionInterReseaux> reseau) {
 		HitBox hb = new HitBox(Player.PLAYER_DIM, Player.PLAYER_DIM, 50, Controleur.MID_HEIGHT);
 		PlayerAI pAI = new PlayerAI(hb, reseau);
 
