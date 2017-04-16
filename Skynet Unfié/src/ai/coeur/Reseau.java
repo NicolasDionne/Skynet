@@ -208,9 +208,9 @@ public class Reseau<R extends RegleApprentissage> {
 	}
 
 	public void renommerComposantes() {
-		renommerNiveaux();
 		renommerNeuronesEntrees();
 		renommerNeuronesSortie();
+		renommerNiveaux();
 	}
 
 	public void renommerNiveaux() {
@@ -293,7 +293,6 @@ public class Reseau<R extends RegleApprentissage> {
 	}
 
 	public ArrayList<Lien> getListeLiens() {
-		genererListeLiens();
 		return listeLiens;
 	}
 

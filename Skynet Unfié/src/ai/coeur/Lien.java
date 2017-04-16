@@ -9,6 +9,7 @@ public class Lien implements Serializable {
 	protected Neurone aPartirDeNeurone;
 	protected Neurone jusquANeurone;
 	private Importance importance;
+	private String nom;
 
 	/**
 	 * Crée le lien entre les deux neurones spécifiées
@@ -23,6 +24,7 @@ public class Lien implements Serializable {
 		this.aPartirDeNeurone = aPartirDeNeurone;
 		this.jusquANeurone = jusquANeurone;
 		this.importance = new Importance();
+		this.setNom();
 	}
 
 	/**
@@ -125,4 +127,13 @@ public class Lien implements Serializable {
 		return "Lien{" + "aPartirDeNeurone=" + aPartirDeNeurone + ", jusquANeurone=" + jusquANeurone + ", importance="
 				+ importance + '}';
 	}
+
+	public void setNom() {
+		this.nom = "Lien{" + "aPartirDeNeurone=" + aPartirDeNeurone + ", jusquANeurone=" + jusquANeurone + '}';
+	}
+
+	public String getNom() {
+		return nom;
+	}
+
 }

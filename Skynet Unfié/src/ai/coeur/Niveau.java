@@ -131,7 +131,7 @@ public class Niveau {
 	public void renommerNeurones() {
 		for (int i = 1; i <= listeNeuronesNiveau.size(); i++) {
 			Neurone neurone = listeNeuronesNiveau.get(i - 1);
-			neurone.setNom(this.getNom() + "Neur" + 1);
+			neurone.setNom(this.getNom() + "Neur" + i);
 		}
 	}
 

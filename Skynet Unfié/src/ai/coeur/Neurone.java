@@ -270,11 +270,11 @@ public class Neurone implements Serializable, Cloneable {
 	}
 
 	/**
-	 * Mets la valeur de tous les liens entrants � la m�me selon la valeur
-	 * sp�cifi�e
+	 * Mets la valeur de tous les liens entrants à la même selon la valeur
+	 * spécifiée
 	 * 
 	 * @param valImportance
-	 *            double, la valeur sp�cifi�e
+	 *            double, la valeur spécifiée
 	 */
 	public void initialiserImportanceLiensEntree(double valImportance) {
 		for (Lien lien : liensEntree) {
@@ -332,5 +332,9 @@ public class Neurone implements Serializable, Cloneable {
 		}
 
 		return obj;
+	}
+
+	public String toString() {
+		return this.nom;
 	}
 }
