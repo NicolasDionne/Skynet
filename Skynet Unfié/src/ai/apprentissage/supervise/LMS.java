@@ -8,7 +8,7 @@ import ai.coeur.Neurone;
 import ai.coeur.apprentissage.ApprentissageSupervise;
 
 public class LMS extends ApprentissageSupervise {
-
+	// TODO Javadoc
 	public LMS() {
 	}
 

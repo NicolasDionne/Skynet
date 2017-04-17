@@ -12,7 +12,7 @@ import modele.exceptions.ConstructorException;
 import utilitaires.QuickSort;
 
 public class CompetitionInterReseaux extends ApprentissageNonSupervise {
-
+	// TODO Javadoc
 	private ArrayList<Reseau<CompetitionInterReseaux>> listeReseauxEnCompetitions;
 
 	private ArrayList<Reseau<CompetitionInterReseaux>> listeMeilleursReseaux;

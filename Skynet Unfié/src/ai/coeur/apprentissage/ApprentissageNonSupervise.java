@@ -6,7 +6,7 @@ import ai.coeur.donnee.EnsembleDonnees;
 import ai.coeur.donnee.LigneEnsembleDonnees;
 
 public abstract class ApprentissageNonSupervise extends ApprentissageIteratif {
-
+	// TODO Javadoc
 	public ApprentissageNonSupervise() {
 		super();
 	}

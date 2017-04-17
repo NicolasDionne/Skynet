@@ -14,7 +14,7 @@ import ai.coeur.donnee.EnsembleDonnees;
 import ai.coeur.donnee.LigneEnsembleDonnees;
 
 public abstract class ApprentissageSupervise extends ApprentissageIteratif {
-
+	// TODO Javadoc
 	private double erreurEpochPrecedente;
 	private double erreurMax = 0.01;
 	private double erreurIterationChangementMin = Double.POSITIVE_INFINITY;

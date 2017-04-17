@@ -4,7 +4,7 @@ import ai.utilitaire.Proprietes;
 
 public class Etape extends FonctionTransfers {
 
-	// TODO la classe
+	// TODO Javadoc
 	private double yHaut = 1;
 	private double yBas = 0;
 
@@ -20,7 +20,7 @@ public class Etape extends FonctionTransfers {
 
 		} catch (NumberFormatException e) {
 			System.err
-					.println("Propriété(s) de fonction de transfers invalide(s)! Utilisation des valeur par défault.");
+					.println("Propriï¿½tï¿½(s) de fonction de transfers invalide(s)! Utilisation des valeur par dï¿½fault.");
 		}
 	}
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class EnsembleDonnees {
-
+	// TODO Javadoc
 	private ArrayList<LigneEnsembleDonnees> lignes;
 
 	private int tailleEntree = 0;

@@ -9,7 +9,7 @@ import ai.coeur.Niveau;
 import ai.coeur.Reseau;
 
 public class RandomizerImportance {
-
+	// TODO Javadoc
 	protected Random randomizer;
 
 	public RandomizerImportance() {

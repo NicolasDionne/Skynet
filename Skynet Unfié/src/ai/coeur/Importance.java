@@ -5,34 +5,37 @@ import java.util.Objects;
 import java.util.Random;
 
 /**
- * 
- * @author 1537391
- *
+ * Détermine l'importance des liens.
  */
 public class Importance implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 6067923657536531357L;
 
 	/**
-	 * ValImportance de l'importance
+	 * La valeur de l'importance.
 	 */
 	public double valImportance;
 
 	/**
-	 * Changement d'importance
+	 * La valeur du changement d'importance.
+	 * </p>
+	 * N'est pas utilisée par certaines règles d'apprentissage.
 	 */
 	public transient double changementImportance;
 
 	/**
-	 * l'info tampon d'exercice contient des données algorythmiques spécifiques
+	 * L'info tampon d'exercice contient des données algorythmiques spécifiques
 	 * variées qui sont utilisées pour ajuster cette valeur d'importance pendant
-	 * l'entrainement
+	 * l'entrainement.
+	 * </p>
+	 * Ce paramêtre n'est presque jamais utilisé. Il ne l'est qu'avec certaines
+	 * règles d'apprentissage.
 	 */
 	private transient Object donneeEntrainement;
 
 	/**
 	 * Crée un instance de connection d'importance avec une valeur d'importance
-	 * d'une portée de [0..1]
+	 * d'une portée de [0..1].
 	 */
 	public Importance() {
 		this.valImportance = Math.random() - 0.5d;
@@ -40,7 +43,7 @@ public class Importance implements Serializable, Cloneable {
 	}
 
 	/**
-	 * Crée une importance
+	 * Crée une importance selon la valeur spécifiée.
 	 * 
 	 * @param valImportance
 	 *            double, la valeur de l'importance lors de la cr�ation
@@ -50,29 +53,40 @@ public class Importance implements Serializable, Cloneable {
 	}
 
 	/**
-	 * augmente l'importance de la valeur indiquée
+	 * Augmente l'importance de la valeur indiquée.
 	 * 
 	 * @param quantite
-	 *            double, la valImportance à ajouter à l'importance
+	 *            double, la valImportance à ajouter à l'importance.
 	 */
 	public void augmenterVal(double quantite) {
 		this.valImportance += quantite;
 	}
 
 	/**
-	 * diminue l'importance de la valeur indiquée
+	 * Diminue l'importance de la valeur indiquée.
 	 * 
 	 * @param quantite
-	 *            double, la valeur à soustraire à l'importance
+	 *            double, la valeur à soustraire à l'importance.
 	 */
 	public void diminuerVal(double quantite) {
 		this.valImportance -= quantite;
 	}
 
+	/**
+	 * Définit la valeur de l'importance.
+	 * 
+	 * @param valImportance
+	 *            double, la valeur spécifiée.
+	 */
 	public void setValImportance(double valImportance) {
 		this.valImportance = valImportance;
 	}
 
+	/**
+	 * Retourne la valeur de l'importance.
+	 * 
+	 * @return double, la valeur de l'importance.
+	 */
 	public double getValImportance() {
 		return this.valImportance;
 	}
@@ -98,14 +112,31 @@ public class Importance implements Serializable, Cloneable {
 		this.valImportance = min + Math.random() * (max - min);
 	}
 
-	public void setImportanceAleatoire(Random generator) {
-		this.valImportance = generator.nextDouble();
+	/**
+	 * Définit une importance aléatoire avec l'aide d'un Random spécifié.
+	 * 
+	 * @param randomizator
+	 *            Random, le Random spécifié.
+	 */
+	public void setImportanceAleatoire(Random randomizator) {
+		this.valImportance = randomizator.nextDouble();
 	}
 
+	/**
+	 * Retourne la donnée d'entrainement de l'importance.
+	 * 
+	 * @return Object, la donnée d'entrainement.
+	 */
 	public Object getDonneeEntrainement() {
 		return donneeEntrainement;
 	}
 
+	/**
+	 * Définit la donnée d'entrainement de l'importance.
+	 * 
+	 * @param donneeEntrainement
+	 *            Object, la donnée d'entrainement.
+	 */
 	public void setDonneeEntrainement(Object donneeEntrainement) {
 		this.donneeEntrainement = donneeEntrainement;
 	}

@@ -3,7 +3,7 @@ package ai.coeur.apprentissage.arret;
 import ai.coeur.apprentissage.ApprentissageSupervise;
 
 public class ArretMaxErreur implements ConditionArret {
-
+	// TODO Javadoc
 	private final ApprentissageSupervise regleApprentissage;
 
 	public ArretMaxErreur(ApprentissageSupervise regleApprentissage) {

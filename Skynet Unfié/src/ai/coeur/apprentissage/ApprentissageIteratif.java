@@ -7,7 +7,7 @@ import ai.coeur.apprentissage.arret.ConditionArret;
 import ai.coeur.donnee.EnsembleDonnees;
 
 public abstract class ApprentissageIteratif extends RegleApprentissage {
-	// TODO la classe
+	// TODO Javadoc
 	protected double tauxApprentissage = 0.1;
 
 	protected int iterationCourante = 0;

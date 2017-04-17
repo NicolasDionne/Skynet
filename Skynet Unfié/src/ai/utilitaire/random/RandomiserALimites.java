@@ -1,7 +1,7 @@
 package ai.utilitaire.random;
 
 public class RandomiserALimites extends RandomizerImportance {
-
+	// TODO Javadoc
 	protected double min;
 
 	protected double max;

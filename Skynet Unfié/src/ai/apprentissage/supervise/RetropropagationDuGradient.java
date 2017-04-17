@@ -8,7 +8,7 @@ import ai.coeur.Niveau;
 import ai.coeur.transfers.FonctionTransfers;
 
 public class RetropropagationDuGradient extends LMS {
-
+	// TODO Javadoc
 	public RetropropagationDuGradient() {
 		super();
 	}

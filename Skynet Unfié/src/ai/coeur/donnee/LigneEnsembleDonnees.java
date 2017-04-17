@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import ai.utilitaire.SeparateurEnTableau;
 
 public class LigneEnsembleDonnees {
-
+	// TODO Javadoc
 	protected double[] entrees;
 
 	protected double[] sortieDesiree;

@@ -1,7 +1,7 @@
 package ai.coeur.apprentissage.erreur;
 
 public class ErreurQuadratiqueMoyenne implements FonctionErreur {
-
+	// TODO Javadoc
 	private double erreurTotale;
 
 	private double comptePattern;

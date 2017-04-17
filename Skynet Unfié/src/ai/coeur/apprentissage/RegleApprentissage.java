@@ -4,7 +4,7 @@ import ai.coeur.Reseau;
 import ai.coeur.donnee.EnsembleDonnees;
 
 public abstract class RegleApprentissage {
-
+	// TODO Javadoc
 	protected Reseau<?> reseau;
 
 	private EnsembleDonnees ensembleEntrainement;

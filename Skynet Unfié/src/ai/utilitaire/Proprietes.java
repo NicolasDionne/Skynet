@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 @SuppressWarnings("all")
 public class Proprietes extends HashMap {
+	// TODO Javadoc
 	private static final long serialVersionUID = 6351772504551099195L;
 
 	protected void creerClees(String... clees) {
