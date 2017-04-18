@@ -2,31 +2,31 @@ package modele.reseau;
 
 import java.util.ArrayList;
 
+import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
 import ai.coeur.Neurone;
 import ai.coeur.Niveau;
 import ai.coeur.Reseau;
-import ai.coeur.apprentissage.RegleApprentissage;
 
 public class GenerateurReseau {
-
-	private ArrayList<Reseau<RegleApprentissage>> listeReseau;
+	// TODO Javadoc
+	private ArrayList<Reseau<CompetitionInterReseaux>> listeReseau;
 
 	public void genererReseauCIR(int nbrReseaux, int nbrEntrees, int nbrSorties, int nbrNiveaux,
-			int nbrNeuronesParNiveau) {
+			int nbrNeuronesParNiveau, double importanceMin, double importanceMax) {
 		listeReseau = new ArrayList<>();
 		for (int i = 0; i < nbrReseaux; i++) {
 
-			Reseau<RegleApprentissage> reseau = new Reseau<>();
+			Reseau<CompetitionInterReseaux> reseau = new Reseau<>();
 			genererEntrees(reseau, nbrEntrees);
 			genererSorties(reseau, nbrSorties);
 			genererNiveaux(reseau, nbrNiveaux, nbrNeuronesParNiveau);
 			reseau.genererLiens();
-			reseau.randomizerImportances(-20, 20);
+			reseau.randomizerImportances(importanceMin, importanceMax);
 			listeReseau.add(reseau);
 		}
 	}
 
-	public void genererEntrees(Reseau<RegleApprentissage> reseau, int nbrEntrees) {
+	public void genererEntrees(Reseau<CompetitionInterReseaux> reseau, int nbrEntrees) {
 		ArrayList<Neurone> neuronesEntrees = new ArrayList<>();
 
 		for (int i = 0; i < nbrEntrees; i++) {
@@ -36,7 +36,7 @@ public class GenerateurReseau {
 		reseau.setNeuronesEntree(neuronesEntrees);
 	}
 
-	public void genererSorties(Reseau<RegleApprentissage> reseau, int nbrSorties) {
+	public void genererSorties(Reseau<CompetitionInterReseaux> reseau, int nbrSorties) {
 		ArrayList<Neurone> neuronesSorties = new ArrayList<>();
 
 		for (int i = 0; i < nbrSorties; i++) {
@@ -46,14 +46,14 @@ public class GenerateurReseau {
 		reseau.setNeuronesSorties(neuronesSorties);
 	}
 
-	public void genererNiveaux(Reseau<RegleApprentissage> reseau, int nbrNiveaux, int nbrNeuronesParNiveau) {
+	public void genererNiveaux(Reseau<CompetitionInterReseaux> reseau, int nbrNiveaux, int nbrNeuronesParNiveau) {
 		for (int i = 0; i < nbrNiveaux; i++) {
 			Niveau niveau = new Niveau(nbrNeuronesParNiveau);
 			reseau.ajouterNiveau(niveau);
 		}
 	}
 
-	public ArrayList<Reseau<RegleApprentissage>> getReseaux() {
+	public ArrayList<Reseau<CompetitionInterReseaux>> getReseauxCIR() {
 		return listeReseau;
 	}
 
