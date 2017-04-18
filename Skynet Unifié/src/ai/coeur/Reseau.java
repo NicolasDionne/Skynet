@@ -13,15 +13,15 @@ import ai.utilitaire.random.RandomizerImportance;
 /**
  * La classe Reseau est celle qui contient, évidement, le réseau lui-même. C'est
  * la deuxième la plus importante après la classe Neurone.
- * </p>
+ * <P>
  * Elle est utilisé pour démarrer l'apprentissage, l'arrêter, bref, tout faire.
- * </p>
+ * <P>
  * Pour fonctionner, un réseau doit obligatoirement avoir au moins une neurone
  * d'entrée et au moins une de sortie. Il est conseillé d'avoir plusieurs
  * neurones d'entrée, mais pas trop, et moins de neurones de sortie que de
  * neurones d'entrée. Il est aussi conseillé d'avoir plusieurs niveaux et plus
  * de neurones par niveaux que de neurones d'entrées.
- * </p>
+ * <P>
  * Lors du jeu, il faut constament lancer la méthode calculer(), mais il faut
  * avoir fini cette dernière avant de la relancer.
  * 
@@ -143,7 +143,8 @@ public class Reseau<R extends RegleApprentissage> {
 	/**
 	 * Retourne la liste des niveaux que contient le réseau.
 	 * 
-	 * @return ArrayList&ltNiveau>, la liste des niveaux que contient le réseau.
+	 * @return ArrayList&ltNiveau&gt, la liste des niveaux que contient le
+	 *         réseau.
 	 */
 	public ArrayList<Niveau> getListeNiveaux() {
 		return this.listeNiveaux;
@@ -189,7 +190,7 @@ public class Reseau<R extends RegleApprentissage> {
 	/**
 	 * Définit les entrées spécifiées comme étant la valeur de sortie des
 	 * neurones d'entrée.
-	 * </p>
+	 * <P>
 	 * Le nombre d'entrées en paramètre doit être le même que le nombre de
 	 * neurones d'entrée.
 	 * 
@@ -353,7 +354,7 @@ public class Reseau<R extends RegleApprentissage> {
 	/**
 	 * Retourne la liste des neurones d'entrée du réseau.
 	 * 
-	 * @return ArrayList&ltNeurone>, la liste des neurones d'entrée du réseau.
+	 * @return ArrayList&ltNeurone&gt, la liste des neurones d'entrée du réseau.
 	 */
 	public ArrayList<Neurone> getNeuronesEntree() {
 		return neuronesEntree;
@@ -373,7 +374,7 @@ public class Reseau<R extends RegleApprentissage> {
 	 * d'entrée du réseau.
 	 * 
 	 * @param neuronesEntree
-	 *            ArrayList&Neurones>, la liste de neurones spécifiée.
+	 *            ArrayList&Neurones&gt, la liste de neurones spécifiée.
 	 */
 	public void setNeuronesEntree(ArrayList<Neurone> neuronesEntree) {
 		for (Neurone neurone : neuronesEntree) {
@@ -385,7 +386,8 @@ public class Reseau<R extends RegleApprentissage> {
 	/**
 	 * Retourne la liste des neurones de sortie du réseau.
 	 * 
-	 * @return ArrayList&ltNeurone>, la liste des neurones de sortie du réseau.
+	 * @return ArrayList&ltNeurone&gt, la liste des neurones de sortie du
+	 *         réseau.
 	 */
 	public ArrayList<Neurone> getNeuronesSorties() {
 		return neuronesSorties;
@@ -405,7 +407,7 @@ public class Reseau<R extends RegleApprentissage> {
 	 * sortie du réseau.
 	 * 
 	 * @param neuronesSorties
-	 *            ArrayList&Neurones>, la liste de neurones spécifiée.
+	 *            ArrayList&ltNeurones&gt, la liste de neurones spécifiée.
 	 */
 	public void setNeuronesSorties(ArrayList<Neurone> neuronesSorties) {
 		for (Neurone neurone : neuronesSorties) {
@@ -569,7 +571,7 @@ public class Reseau<R extends RegleApprentissage> {
 	/**
 	 * Retourne la liste de liens du réseau.
 	 * 
-	 * @return ArrayList&ltLien> la liste de tous les liens du réseau.
+	 * @return ArrayList&ltLien&gt, la liste de tous les liens du réseau.
 	 */
 	public ArrayList<Lien> getListeLiens() {
 		return listeLiens;
