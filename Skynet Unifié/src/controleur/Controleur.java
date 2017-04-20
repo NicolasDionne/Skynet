@@ -77,11 +77,11 @@ public class Controleur {
     @FXML
     public void initialize() {
         gameStop();
-        System.out.println(MID_HEIGHT);
     }
 
     @FXML
     void play() {
+    	
         if (game.isStopped()) {
             newGame();
             demarerAnimation();
@@ -166,6 +166,7 @@ public class Controleur {
         pause();
 
         if (confirm.showAndWait().get() == ButtonType.OK) {
+        	
             gameStop();
         } else
             play();
@@ -173,14 +174,18 @@ public class Controleur {
 
     private void gameStop() {
 
+    	graph=null;
+    	affichageReseau.getChildren().clear();
         animStarted = false;
         displayJeu.getChildren().clear();
-        game = new Game((short) 0, (short) 0);
+        game = new Game((short) 0, (short) 0,graph);
 
     }
 
     private void newGame() {
-        game = new Game((short) 1, (short) 0);
+    	
+    	graph = new GraphiqueIA(affichageReseau);
+        game = new Game((short) 1, (short) 0,graph);
 
         game.getPlayersSet().forEach(p -> {
             ExtendedImageView r = new ExtendedImageView(p,p.getObjectType().getURL());
