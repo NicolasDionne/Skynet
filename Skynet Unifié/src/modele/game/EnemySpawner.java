@@ -1,9 +1,9 @@
 package modele.game;
 
 import controleur.Controleur;
-import modele.elements.HitBox;
-import modele.elements.MotionPoint;
-import modele.elements.RotationParameters;
+import modele.elements.hitbox.HitBox;
+import modele.elements.hitbox.MotionPoint;
+import modele.elements.hitbox.RotationParameters;
 import modele.game.game_objects.Bias;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.Spawn;

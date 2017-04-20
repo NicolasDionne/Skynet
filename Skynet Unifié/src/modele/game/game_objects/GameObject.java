@@ -1,8 +1,8 @@
 package modele.game.game_objects;
 
 
-import modele.elements.HitBox;
-import modele.elements.MotionPoint;
+import javafx.scene.paint.Color;
+import modele.elements.hitbox.HitBox;
 
 public abstract class GameObject {
 
@@ -13,6 +13,7 @@ public abstract class GameObject {
     public static final short MIN_DIM = 10;
 
     private HitBox hitBox;
+    protected GameObjectType gameObType = GameObjectType.VOID;
 
     public GameObject(HitBox hb) {
         if (hb != null) {
@@ -20,6 +21,18 @@ public abstract class GameObject {
             hitBox.setWidth(filterWidth(hb.getWidth()));
             hitBox.setHeight(filterHeigth(hb.getHeight()));
         }
+    }
+
+    protected void setObjectType(GameObjectType gameObType) {
+        this.gameObType = gameObType;
+    }
+
+    public GameObjectType getObjectType() {
+        return gameObType;
+    }
+
+    public Color getColor() {
+        return gameObType.getColor();
     }
 
     public abstract boolean checkObjectBeyondEdges();

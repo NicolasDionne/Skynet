@@ -1,31 +1,25 @@
 package modele.game.game_objects;
 
 import controleur.Controleur;
-import modele.elements.HitBox;
-import modele.elements.MotionPoint;
-import modele.elements.VisionGrid;
+import modele.elements.hitbox.HitBox;
+import modele.elements.hitbox.MotionPoint;
+import modele.elements.ai_related.VisionGrid;
 
 public class Player extends GameObject {
 
     public static final short PLAYER_DIM = 20;
     public static final short VELOCITY_PLAYER = 4;
     private VisionGrid vGrid;
-    private PlayerType pType;
 
-    public Player(PlayerType pType, HitBox hb) {
+    public Player(GameObjectType pType, HitBox hb) {
         super(hb);
         MotionPoint origin = new MotionPoint(0, 0);
         getHitBox().setOrigin(origin);
         getHitBox().setCanHitOthers(true);
+        setObjectType(pType);
 
-       // if (pType == PlayerType.AI)
-            vGrid = new VisionGrid(getHitBox());
-        this.pType = pType;
-    }
-
-
-    public PlayerType getPlayerType() {
-        return pType;
+        // if (pType == GameObjectType.AI)
+        // vGrid = new VisionGrid(getHitBox());
     }
 
     public VisionGrid getvGrid() {

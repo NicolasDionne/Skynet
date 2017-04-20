@@ -1,7 +1,7 @@
 package modele.game.game_objects;
 
-import modele.elements.HitBox;
-import modele.elements.MotionPoint;
+import modele.elements.hitbox.HitBox;
+import modele.elements.hitbox.MotionPoint;
 
 public class Enemy extends GameObject {
 
@@ -9,6 +9,7 @@ public class Enemy extends GameObject {
 
 	public Enemy(HitBox hb) {
 		super(hb);
+		setObjectType(GameObjectType.ENEMY);
 	}
 
 	public boolean checkObjectBeyondEdges() {
