@@ -4,15 +4,16 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import ai.coeur.apprentissage.ApprentissageIteratif;
-import ai.coeur.apprentissage.ApprentissageSupervise;
 import ai.coeur.apprentissage.RegleApprentissage;
 import ai.coeur.donnee.EnsembleDonnees;
 import ai.utilitaire.random.RandomiserALimites;
 import ai.utilitaire.random.RandomizerImportance;
+import utilitaires.Sortable;
 
 /**
- * La classe Reseau est celle qui contient, évidement, le réseau lui-même. C'est
- * la deuxième la plus importante après la classe Neurone.
+ * La classe <code>Reseau</code> est celle qui contient, évidement, le réseau
+ * lui-même. C'est la deuxième la plus importante après la classe
+ * <code>Neurone</code>.
  * <P>
  * Elle est utilisé pour démarrer l'apprentissage, l'arrêter, bref, tout faire.
  * <P>
@@ -22,14 +23,17 @@ import ai.utilitaire.random.RandomizerImportance;
  * neurones d'entrée. Il est aussi conseillé d'avoir plusieurs niveaux et plus
  * de neurones par niveaux que de neurones d'entrées.
  * <P>
- * Lors du jeu, il faut constament lancer la méthode calculer(), mais il faut
- * avoir fini cette dernière avant de la relancer.
+ * Lors du jeu, il faut constament lancer la méthode <code>calculer()</code>,
+ * mais il faut avoir fini cette dernière avant de la relancer.
  * 
  * @param <R>
  *            La règle d'apprentissage du réseau.
+ * @see Neurone
+ * @see Niveau
+ * @see RegleApprentissage
  */
-public class Reseau<R extends RegleApprentissage> {
-	// TODO Javadoc
+public class Reseau<R extends RegleApprentissage> implements Sortable {
+
 	/**
 	 * La liste des niveaux que contient le réseau.
 	 */
@@ -81,7 +85,7 @@ public class Reseau<R extends RegleApprentissage> {
 	 * la liste de niveaux que contient le réseau.
 	 * 
 	 * @param niveau
-	 *            Niveau, le niveau à ajouter.
+	 *            <code>Niveau</code>, le niveau à ajouter.
 	 */
 	public void ajouterNiveau(Niveau niveau) {
 		if (niveau == null) {
@@ -98,10 +102,10 @@ public class Reseau<R extends RegleApprentissage> {
 	 * la liste des niveaux que contient le réseau.
 	 * 
 	 * @param position
-	 *            int, la position à laquelle le niveau est ajouté par rapport à
-	 *            celles centrales.
+	 *            <code>int</code>, la position à laquelle le niveau est ajouté
+	 *            par rapport à celles centrales.
 	 * @param niveau
-	 *            Niveau, le niveau à ajouter.
+	 *            <code>Niveau</code>, le niveau à ajouter.
 	 */
 	public void ajouterNiveau(int position, Niveau niveau) {
 		if (niveau == null) {
@@ -119,7 +123,7 @@ public class Reseau<R extends RegleApprentissage> {
 	 * Retire le niveau spécifié.
 	 * 
 	 * @param niveau
-	 *            Niveau, le niveau à retirer.
+	 *            <code>Niveau</code>, le niveau à retirer.
 	 */
 	public void retirerNiveau(Niveau niveau) {
 		if (!listeNiveaux.remove(niveau)) {
@@ -133,8 +137,8 @@ public class Reseau<R extends RegleApprentissage> {
 	 * liste de niveaux que contient le réseau.
 	 * 
 	 * @param position
-	 *            int, la position à laquelle se trouve le niveau qui sera
-	 *            retiré.
+	 *            <code>int</code>, la position à laquelle se trouve le niveau
+	 *            qui sera retiré.
 	 */
 	public void retirerNiveauA(int position) {
 		listeNiveaux.remove(position);
@@ -143,8 +147,8 @@ public class Reseau<R extends RegleApprentissage> {
 	/**
 	 * Retourne la liste des niveaux que contient le réseau.
 	 * 
-	 * @return ArrayList&ltNiveau&gt, la liste des niveaux que contient le
-	 *         réseau.
+	 * @return <code>ArrayList&ltNiveau&gt</code>, la liste des niveaux que
+	 *         contient le réseau.
 	 */
 	public ArrayList<Niveau> getListeNiveaux() {
 		return this.listeNiveaux;
@@ -155,10 +159,11 @@ public class Reseau<R extends RegleApprentissage> {
 	 * liste des niveaux que contient le réseau.
 	 * 
 	 * @param position
-	 *            int, la position spécifiée à laquelle se trouve le niveau
-	 *            désiré par rapport à la liste de niveaux que contient le
-	 *            réseau.
-	 * @return Niveau, le niveau se trouvant à la position spécifiée.
+	 *            <code>int</code>, la position spécifiée à laquelle se trouve
+	 *            le niveau désiré par rapport à la liste de niveaux que
+	 *            contient le réseau.
+	 * @return <code>Niveau</code>, le niveau se trouvant à la position
+	 *         spécifiée.
 	 */
 	public Niveau getNiveauA(int position) {
 		return this.listeNiveaux.get(position);
@@ -169,10 +174,11 @@ public class Reseau<R extends RegleApprentissage> {
 	 * à la liste de niveaux que contient le réseau.
 	 * 
 	 * @param niveau
-	 *            Niveau, le niveau se trouvant à la position désirée par
-	 *            rapport à la liste de niveaux que contient le réseau.
-	 * @return int, la position du niveau par rapport à la liste de niveaux que
-	 *         contient le réseau.
+	 *            <code>Niveau</code>, le niveau se trouvant à la position
+	 *            désirée par rapport à la liste de niveaux que contient le
+	 *            réseau.
+	 * @return <code>int</code>, la position du niveau par rapport à la liste de
+	 *         niveaux que contient le réseau.
 	 */
 	public int positionDe(Niveau niveau) {
 		return this.listeNiveaux.indexOf(niveau);
@@ -181,7 +187,7 @@ public class Reseau<R extends RegleApprentissage> {
 	/**
 	 * Retourne le nombre de niveaux que contient le réseau.
 	 * 
-	 * @return int, le nombre de niveaux que contient le réseau.
+	 * @return <code>int</code>, le nombre de niveaux que contient le réseau.
 	 */
 	public int getNombreNiveaux() {
 		return this.listeNiveaux.size();
@@ -195,7 +201,7 @@ public class Reseau<R extends RegleApprentissage> {
 	 * neurones d'entrée.
 	 * 
 	 * @param entrees
-	 *            double..., les valeurs désirées.
+	 *            <code>double...</code>, les valeurs désirées.
 	 */
 	public void setEntree(double... entrees) {
 		if (entrees.length != neuronesEntree.size()) {
@@ -212,8 +218,8 @@ public class Reseau<R extends RegleApprentissage> {
 	 * Retourne le tableau contenant les valeurs de sortie des neurones de
 	 * sortie du réseau.
 	 * 
-	 * @return double[], le tableau contenant les valeurs de sortie des neurones
-	 *         de sortie du réseau.
+	 * @return <code>double[]</code>, le tableau contenant les valeurs de sortie
+	 *         des neurones de sortie du réseau.
 	 */
 	public double[] getSortie() {
 		this.tableauSorties = new double[this.neuronesSorties.size()];
@@ -226,8 +232,8 @@ public class Reseau<R extends RegleApprentissage> {
 	}
 
 	/**
-	 * Lance la méthode calculer() de toutes les neurones du réseau, excepté
-	 * celles d'entrée.
+	 * Lance la méthode <code>calculer()</code> de toutes les neurones du
+	 * réseau, excepté celles d'entrée.
 	 */
 	public void calculer() {
 		for (int i = 0; i < listeNiveaux.size(); i++) {
@@ -239,7 +245,8 @@ public class Reseau<R extends RegleApprentissage> {
 	}
 
 	/**
-	 * Lance la méthode reinitialiser() de toutes les neurones du réseau.
+	 * Lance la méthode <code>reinitialiser()</code> de toutes les neurones du
+	 * réseau.
 	 */
 	public void reinitialiser() {
 		for (Neurone neurone : neuronesEntree) {
@@ -257,6 +264,7 @@ public class Reseau<R extends RegleApprentissage> {
 	 * Commence l'apprentissage du réseau.
 	 * 
 	 * @param ensembleDonnees
+	 *            <code>EnsembleDonnees</code>, la liste des entrées possibles.
 	 */
 	public void apprendre(EnsembleDonnees ensembleDonnees) {
 		if (ensembleDonnees == null) {
@@ -271,7 +279,12 @@ public class Reseau<R extends RegleApprentissage> {
 	 * spécifiée.
 	 * 
 	 * @param ensembleDonnees
+	 *            <code>EnsembleDonees</code>, la liste d'entrées possible du
+	 *            <code>Reseau</code>. Peut aussi contenir les sorties
+	 *            attendues.
 	 * @param regleApprentissage
+	 *            <code>RegleApprentissage</code>, la règle d'apprentissage du
+	 *            <code>Reseau</code>.
 	 */
 	public void apprendre(EnsembleDonnees ensembleDonnees, R regleApprentissage) {
 		setRegleApprentissage(regleApprentissage);
@@ -282,6 +295,9 @@ public class Reseau<R extends RegleApprentissage> {
 	 * Fait avancer l'apprentissage du réseau d'une génération.
 	 * 
 	 * @param ensembleDonnees
+	 *            <code>EnsembleDonnees</code>, la liste d'entrées possibles du
+	 *            <code>Reseau</code>. Peut aussi contenir les sorties
+	 *            attendues.
 	 */
 	public void apprendreUneGeneration(EnsembleDonnees ensembleDonnees) {
 		if (ensembleDonnees == null) {
@@ -292,7 +308,12 @@ public class Reseau<R extends RegleApprentissage> {
 	}
 
 	/**
-	 * Arrête l'apprentissage du réseau.
+	 * Arrête l'apprentissage du réseau si la <code>RegleApprentissage</code> du
+	 * <code>Reseau</code> est une sous-classe de
+	 * <code>ApprentissageIteratif</code>.
+	 * 
+	 * Si c'est le cas, cette méthode lancera
+	 * {@link ApprentissageIteratif#pauser()}.
 	 */
 	public void arreterApperentissage() {
 		if (regleApprentissage instanceof ApprentissageIteratif) {
@@ -301,7 +322,9 @@ public class Reseau<R extends RegleApprentissage> {
 	}
 
 	/**
-	 * Résume l'apprentissage du réseau.
+	 * Résume l'apprentissage du réseau si la <code>RegleApprentissage</code>
+	 * est une sous-classe de <code>ApprentissageIteratif</code>. Si c'est le
+	 * cas, cette méthode lancera {@link ApprentissageIteratif#resumer()}.
 	 */
 	public void resumerApprentissage() {
 		if (regleApprentissage instanceof ApprentissageIteratif) {
@@ -321,9 +344,9 @@ public class Reseau<R extends RegleApprentissage> {
 	 * résultats.
 	 * 
 	 * @param min
-	 *            double, la plus petite valeur possible.
+	 *            <code>double</code>, la plus petite valeur possible.
 	 * @param max
-	 *            double, la plus grande valeur possible.
+	 *            <code>double</code>, la plus grande valeur possible.
 	 */
 	public void randomizerImportances(double min, double max) {
 		randomizerImportances(new RandomiserALimites(min, max));
@@ -331,10 +354,10 @@ public class Reseau<R extends RegleApprentissage> {
 
 	/**
 	 * Randomize l'impostance la valeur d'importance de tous les liens du réseau
-	 * selon un Random spécifique.
+	 * selon un <code>Random</code> spécifique.
 	 * 
 	 * @param randomizer
-	 *            Random, le Random spécifique.
+	 *            <code>Random</code>, le Random spécifique.
 	 */
 	public void randomizerImportances(Random randomizer) {
 		randomizerImportances(new RandomizerImportance(randomizer));
@@ -342,10 +365,11 @@ public class Reseau<R extends RegleApprentissage> {
 
 	/**
 	 * Randomize la valeur d'importance de tous les liens du réseau selon un
-	 * Randomizer d'importance spécifique.
+	 * <code>RandomizerImportance</code> spécifique.
 	 * 
 	 * @param randomizerImportance
-	 *            RandomizerImportance, le Randomizer d'importance spécifié.
+	 *            ¨<code>RandomizerImportance</code>, le randomizer d'importance
+	 *            spécifié.
 	 */
 	public void randomizerImportances(RandomizerImportance randomizerImportance) {
 		randomizerImportance.randomize(this);
@@ -354,7 +378,8 @@ public class Reseau<R extends RegleApprentissage> {
 	/**
 	 * Retourne la liste des neurones d'entrée du réseau.
 	 * 
-	 * @return ArrayList&ltNeurone&gt, la liste des neurones d'entrée du réseau.
+	 * @return <code><code>ArrayList&ltNeurone&gt</code></code>, la liste des
+	 *         neurones d'entrée du réseau.
 	 */
 	public ArrayList<Neurone> getNeuronesEntree() {
 		return neuronesEntree;
@@ -363,7 +388,7 @@ public class Reseau<R extends RegleApprentissage> {
 	/**
 	 * Retourne le nombre de neurones d'entrée du réseau.
 	 * 
-	 * @return int, le nombre de neurones d'entrée du réseau.
+	 * @return <code>int</code>, le nombre de neurones d'entrée du réseau.
 	 */
 	public int getNombreEntrees() {
 		return this.getNeuronesEntree().size();
@@ -386,8 +411,8 @@ public class Reseau<R extends RegleApprentissage> {
 	/**
 	 * Retourne la liste des neurones de sortie du réseau.
 	 * 
-	 * @return ArrayList&ltNeurone&gt, la liste des neurones de sortie du
-	 *         réseau.
+	 * @return <code><code>ArrayList&ltNeurone&gt</code></code>, la liste des
+	 *         neurones de sortie du réseau.
 	 */
 	public ArrayList<Neurone> getNeuronesSorties() {
 		return neuronesSorties;
@@ -396,7 +421,7 @@ public class Reseau<R extends RegleApprentissage> {
 	/**
 	 * Retourne le nombre de neurones de sortie du réseau.
 	 * 
-	 * @return int, le nombre de neurones de sortie du réseau.
+	 * @return <code>int</code>, le nombre de neurones de sortie du réseau.
 	 */
 	public int getNombreSorties() {
 		return getNeuronesSorties().size();
@@ -407,7 +432,8 @@ public class Reseau<R extends RegleApprentissage> {
 	 * sortie du réseau.
 	 * 
 	 * @param neuronesSorties
-	 *            ArrayList&ltNeurones&gt, la liste de neurones spécifiée.
+	 *            <code>ArrayList&ltNeurone&gt</code>, la liste de neurones
+	 *            spécifiée.
 	 */
 	public void setNeuronesSorties(ArrayList<Neurone> neuronesSorties) {
 		for (Neurone neurone : neuronesSorties) {
@@ -420,7 +446,7 @@ public class Reseau<R extends RegleApprentissage> {
 	/**
 	 * Retourne la règle d'apprentissage du réseau.
 	 * 
-	 * @return R, la règle d'apprentissage du réseau.
+	 * @return <code>R</code>, la règle d'apprentissage du réseau.
 	 */
 	public R getRegleApprentissage() {
 		return regleApprentissage;
@@ -430,7 +456,7 @@ public class Reseau<R extends RegleApprentissage> {
 	 * Définit la règle d'apprentissage du réseau.
 	 * 
 	 * @param regleApprentissage
-	 *            R, la règle d'apprentissage du réseau.
+	 *            <code>R</code>, la règle d'apprentissage du réseau.
 	 */
 	public void setRegleApprentissage(R regleApprentissage) {
 		this.regleApprentissage = regleApprentissage;
@@ -439,7 +465,7 @@ public class Reseau<R extends RegleApprentissage> {
 	/**
 	 * Retourne le score du réseau.
 	 * 
-	 * @return int, le score du réseau.
+	 * @return <code>int</code>, le score du réseau.
 	 */
 	public int getScore() {
 		return score;
@@ -449,7 +475,7 @@ public class Reseau<R extends RegleApprentissage> {
 	 * Définit le score du réseau.
 	 * 
 	 * @param score
-	 *            int, le score du réseau.
+	 *            <code>int</code>, le score du réseau.
 	 */
 	public void setScore(int score) {
 		this.score = score;
@@ -571,7 +597,8 @@ public class Reseau<R extends RegleApprentissage> {
 	/**
 	 * Retourne la liste de liens du réseau.
 	 * 
-	 * @return ArrayList&ltLien&gt, la liste de tous les liens du réseau.
+	 * @return <code>ArrayList&ltLien&gt</code>, la liste de tous les liens du
+	 *         réseau.
 	 */
 	public ArrayList<Lien> getListeLiens() {
 		return listeLiens;
@@ -593,6 +620,11 @@ public class Reseau<R extends RegleApprentissage> {
 				listeLiens.add(lien);
 			}
 		}
+	}
+
+	@Override
+	public int getValeurLorsSort() {
+		return Integer.MAX_VALUE - this.score;
 	}
 
 }

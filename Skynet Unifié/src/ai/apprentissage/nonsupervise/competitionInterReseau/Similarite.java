@@ -1,8 +1,12 @@
 package ai.apprentissage.nonsupervise.competitionInterReseau;
 
+import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
+
 /**
- * La classe Similarite sert à garder en mémoire quel lien fonctionne bien selon
- * quelle valeur d'importance.
+ * La classe <code>Similarite</code> sert à garder en mémoire quel
+ * <code>Lien</code> fonctionne bien selon quelle valeur d'importance.
+ * 
+ * @see CompetitionInterReseaux
  *
  */
 public class Similarite {
@@ -18,13 +22,15 @@ public class Similarite {
 	private double valAAppliquer;
 
 	/**
-	 * Crée la similarité trouvée selon le nom des liens et la valeur qui sera
-	 * appliquée aux descendants de ces liens.
+	 * Crée la <code>Similarite</code> trouvée selon le nom des liens et la
+	 * valeur qui sera appliquée aux descendants de ces liens.
 	 * 
 	 * @param nomLien
-	 *            String, le nom des liens ayant une similarité.
+	 *            <code>String</code>, le nom du <code>Lien</code> ayant une
+	 *            similarité dans un autre réseau.
 	 * @param valAAppliquer
-	 *            double, la valeur qui sera appliquée aux descendants.
+	 *            <code>double</code>, la valeur qui sera appliquée aux
+	 *            descendants.
 	 */
 	public Similarite(String nomLien, double valAAppliquer) {
 		this.nomLien = nomLien;
@@ -34,16 +40,25 @@ public class Similarite {
 	/**
 	 * Retourne le nom des liens sur lesquels la valeur sera appliquée.
 	 * 
-	 * @return
+	 * @return <code>String</code>, le nom du <code>Lien</code> ayant une
+	 *         similarité dans un autre <code>Reseau</code>.
 	 */
 	public String getNomLien() {
 		return nomLien;
 	}
 
+	/**
+	 * Retourne la valeur <code>double</code> de l'<code>Importance</code> à
+	 * appliquer aux <code>Liens</code> des <code>Reseau</code> ayant le moins
+	 * bien performé ayant le même nom.
+	 * 
+	 * @return <code>double</code>, la valeur à appliquer.
+	 */
 	public double getValAAppliquer() {
 		return valAAppliquer;
 	}
 
+	@Override
 	public String toString() {
 		return "Similarite{nomLien: " + nomLien + ", valAAppliquer: " + valAAppliquer + "}";
 	}

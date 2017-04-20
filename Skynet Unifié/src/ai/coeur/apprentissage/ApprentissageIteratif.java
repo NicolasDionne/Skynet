@@ -140,6 +140,9 @@ public abstract class ApprentissageIteratif extends RegleApprentissage {
 		apresEpoch();
 	}
 
+	public void faireUneIterationApprentissage() {
+	}
+
 	abstract public void faireEpochApprentissage(EnsembleDonnees ensembleEntrainement);
 
 }

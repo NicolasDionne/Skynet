@@ -5,7 +5,9 @@ import java.util.Objects;
 import java.util.Random;
 
 /**
- * Détermine l'importance des liens.
+ * Détermine l'importance des éléments <code>Lien</code>.
+ * 
+ * @see Lien
  */
 public class Importance implements Serializable, Cloneable {
 
@@ -46,7 +48,8 @@ public class Importance implements Serializable, Cloneable {
 	 * Crée une importance selon la valeur spécifiée.
 	 * 
 	 * @param valImportance
-	 *            double, la valeur de l'importance lors de la cr�ation
+	 *            <code>double</code>, la valeur de l'importance lors de la
+	 *            création
 	 */
 	public Importance(double valImportance) {
 		this.valImportance = valImportance;
@@ -56,7 +59,8 @@ public class Importance implements Serializable, Cloneable {
 	 * Augmente l'importance de la valeur indiquée.
 	 * 
 	 * @param quantite
-	 *            double, la valImportance à ajouter à l'importance.
+	 *            <code>double</code>, la valImportance à ajouter à
+	 *            l'importance.
 	 */
 	public void augmenterVal(double quantite) {
 		this.valImportance += quantite;
@@ -66,7 +70,7 @@ public class Importance implements Serializable, Cloneable {
 	 * Diminue l'importance de la valeur indiquée.
 	 * 
 	 * @param quantite
-	 *            double, la valeur à soustraire à l'importance.
+	 *            <code>double</code>, la valeur à soustraire à l'importance.
 	 */
 	public void diminuerVal(double quantite) {
 		this.valImportance -= quantite;
@@ -76,7 +80,7 @@ public class Importance implements Serializable, Cloneable {
 	 * Définit la valeur de l'importance.
 	 * 
 	 * @param valImportance
-	 *            double, la valeur spécifiée.
+	 *            <code>double</code>, la valeur spécifiée.
 	 */
 	public void setValImportance(double valImportance) {
 		this.valImportance = valImportance;
@@ -85,28 +89,28 @@ public class Importance implements Serializable, Cloneable {
 	/**
 	 * Retourne la valeur de l'importance.
 	 * 
-	 * @return double, la valeur de l'importance.
+	 * @return <code>double</code>, la valeur de l'importance.
 	 */
 	public double getValImportance() {
 		return this.valImportance;
 	}
 
 	/**
-	 * donne une valImportance aléatoire à l'importance d'une portée de [0..1]
+	 * Donne une valImportance aléatoire à l'importance d'une portée de [0..1]
 	 */
 	public void setImportanceAleatoire() {
 		this.valImportance = Math.random() - 0.5d;
 	}
 
 	/**
-	 * donne une valeur aléatoire à l'importance d'une portée donnée
+	 * Donne une valeur aléatoire à l'importance d'une portée donnée
 	 * 
 	 * @param min
-	 *            double, la valeur minimale de la portée possible de
-	 *            l'importance
+	 *            <code>double</code>, la valeur minimale de la portée possible
+	 *            de l'importance
 	 * @param max
-	 *            double, la valeur maximale de la portée possible de
-	 *            l'importance
+	 *            <code>double</code>, la valeur maximale de la portée possible
+	 *            de l'importance
 	 */
 	public void setImportanceAleatoire(double min, double max) {
 		this.valImportance = min + Math.random() * (max - min);
@@ -116,7 +120,7 @@ public class Importance implements Serializable, Cloneable {
 	 * Définit une importance aléatoire avec l'aide d'un Random spécifié.
 	 * 
 	 * @param randomizator
-	 *            Random, le Random spécifié.
+	 *            <code>Random</code>, le Random spécifié.
 	 */
 	public void setImportanceAleatoire(Random randomizator) {
 		this.valImportance = randomizator.nextDouble();
@@ -125,7 +129,7 @@ public class Importance implements Serializable, Cloneable {
 	/**
 	 * Retourne la donnée d'entrainement de l'importance.
 	 * 
-	 * @return Object, la donnée d'entrainement.
+	 * @return <code>Object</code>, la donnée d'entrainement.
 	 */
 	public Object getDonneeEntrainement() {
 		return donneeEntrainement;
@@ -135,7 +139,7 @@ public class Importance implements Serializable, Cloneable {
 	 * Définit la donnée d'entrainement de l'importance.
 	 * 
 	 * @param donneeEntrainement
-	 *            Object, la donnée d'entrainement.
+	 *            <code>Object</code>, la donnée d'entrainement.
 	 */
 	public void setDonneeEntrainement(Object donneeEntrainement) {
 		this.donneeEntrainement = donneeEntrainement;

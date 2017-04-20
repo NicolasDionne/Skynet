@@ -12,7 +12,7 @@ import modele.exceptions.ConstructorException;
 import utilitaires.QuickSort;
 
 public class CompetitionInterReseaux extends ApprentissageNonSupervise {
-	// TODO Javadoc
+
 	private ArrayList<Reseau<CompetitionInterReseaux>> listeReseauxEnCompetitions;
 
 	private ArrayList<Reseau<CompetitionInterReseaux>> listeMeilleursReseaux;
@@ -49,14 +49,14 @@ public class CompetitionInterReseaux extends ApprentissageNonSupervise {
 	}
 
 	@Override
-	protected void mettreAJourImportancesReseau() {
-		mAJIR();
+	public void faireUneIterationApprentissage() {
+		avantEpoch();
+		mettreAJourImportancesReseau();
+		apresEpoch();
 	}
 
-	public void mAJIR() {
-		listeMeilleursReseaux.clear();
-		listeSimilaritesMeilleursReseaux.clear();
-		classerReseaux();
+	@Override
+	protected void mettreAJourImportancesReseau() {
 		trouverMeilleurs();
 		for (int i = 0; i < listeMeilleursReseaux.size() - 1; i++) {
 			for (int j = i + 1; j < listeMeilleursReseaux.size(); j++) {
@@ -64,12 +64,24 @@ public class CompetitionInterReseaux extends ApprentissageNonSupervise {
 			}
 		}
 		validerSimilarites();
+	}
+
+	@Override
+	protected void avantEpoch() {
+		listeMeilleursReseaux.clear();
+		listeSimilaritesMeilleursReseaux.clear();
+		classerReseaux();
+	}
+
+	@Override
+	protected void apresEpoch() {
 		randomizerImportanceReseaux();
 		appliquerSimilarites();
 	}
 
 	private void classerReseaux() {
-		listeReseauxEnCompetitions = QuickSort.sort(listeReseauxEnCompetitions);
+		listeReseauxEnCompetitions = (ArrayList<Reseau<CompetitionInterReseaux>>) QuickSort
+				.sort(listeReseauxEnCompetitions);
 	}
 
 	private void trouverMeilleurs() {

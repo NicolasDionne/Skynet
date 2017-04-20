@@ -4,14 +4,17 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * La classe Lien permet de lier entre elles les neurones. Un lien possède une
- * neurone à partir de laquelle il provient, une neurone jusqu'à laquelle il se
- * rend et une importance.
+ * La classe <code>Lien</code> permet de lier entre elles les neurones. Un lien
+ * possède une neurone à partir de laquelle il provient, une neurone jusqu'à
+ * laquelle il se rend et une importance.
  * </p>
  * Le lien sert à faire passer la valeur de sortie de la neurone à partir de
- * laquelle il provient jusqu'à celle où il se rend. L'importance du lien sert à
- * rendre se dernier plus ou moins fort.
- *
+ * laquelle il provient jusqu'à celle où il se rend. L'importance, qui est un
+ * instance de la classe <code>Importance</code>, du lien sert à rendre se
+ * dernier plus ou moins fort.
+ * 
+ * @see Importance
+ * @see Neurone
  */
 public class Lien implements Serializable {
 
@@ -41,9 +44,10 @@ public class Lien implements Serializable {
 	 * Crée le lien entre les deux neurones spécifiées.
 	 * 
 	 * @param aPartirDeNeurone
-	 *            Neurone, la neurone à partir de laquelle le lien part.
+	 *            <code>Neurone</code>, la neurone à partir de laquelle le lien
+	 *            part.
 	 * @param jusquANeurone
-	 *            Neurone, la neurone qui reçoit le lien.
+	 *            <code>Neurone</code>, la neurone qui reçoit le lien.
 	 */
 	public Lien(Neurone aPartirDeNeurone, Neurone jusquANeurone) {
 		super();
@@ -58,11 +62,12 @@ public class Lien implements Serializable {
 	 * spécifiée.
 	 * 
 	 * @param aPartirDeNeurone
-	 *            Neurone, la neurone à partir de laquelle le lien part.
+	 *            <code>Neurone</code>, la neurone à partir de laquelle le lien
+	 *            part.
 	 * @param jusquANeurone
-	 *            Neurone, la neurone qui reçoit le lien.
+	 *            <code>Neurone</code>, la neurone qui reçoit le lien.
 	 * @param importance
-	 *            Importance, l'importance du lien créé.
+	 *            <code>Importance</code>, l'importance du lien créé.
 	 */
 	public Lien(Neurone aPartirDeNeurone, Neurone jusquANeurone, Importance importance) {
 		this(aPartirDeNeurone, jusquANeurone);
@@ -74,11 +79,12 @@ public class Lien implements Serializable {
 	 * spécifiée par un double.
 	 * 
 	 * @param aPartirDeNeurone
-	 *            Neurone, la neurone à partir de laquelle le lien part.
+	 *            <code>Neurone</code>, la neurone à partir de laquelle le lien
+	 *            part.
 	 * @param jusquANeurone
-	 *            Neurone, la neurone qui reçoit le lien.
+	 *            <code>Neurone</code>, la neurone qui reçoit le lien.
 	 * @param valImportance
-	 *            double, la valeur de l'improtance du lien.
+	 *            <code>double</code>, la valeur de l'improtance du lien.
 	 */
 	public Lien(Neurone aPartirDeNeurone, Neurone jusquANeurone, double valImportance) {
 		this(aPartirDeNeurone, jusquANeurone, new Importance(valImportance));
@@ -87,7 +93,7 @@ public class Lien implements Serializable {
 	/**
 	 * Retourne l'importance du lien.
 	 * 
-	 * @return Importance, l'importance du lien.
+	 * @return <code>Importance</code>, l'importance du lien.
 	 */
 	public Importance getImportance() {
 		return importance;
@@ -97,7 +103,7 @@ public class Lien implements Serializable {
 	 * Définit l'importance du lien.
 	 * 
 	 * @param importance
-	 *            Importance, l'importance voulue.
+	 *            <code>Importance</code>, l'importance voulue.
 	 */
 	public void setImportance(Importance importance) {
 		this.importance = importance;
@@ -108,7 +114,7 @@ public class Lien implements Serializable {
 	 * provient, et donc la valeur que reçoit la neuronne jusqu'à laquelle le
 	 * lien se rend.
 	 * 
-	 * @return double, la valeur entrant dans le lien.
+	 * @return <code>double</code>, la valeur entrant dans le lien.
 	 */
 	public double getEntree() {
 		return this.aPartirDeNeurone.getSortie();
@@ -118,7 +124,8 @@ public class Lien implements Serializable {
 	 * Retourne la valeur passant par le lien multipliée par l'importance du
 	 * lien.
 	 * 
-	 * @return double, la valeur passant par le lien selon son importance.
+	 * @return <code>double</code>, la valeur passant par le lien selon son
+	 *         importance.
 	 */
 	public double getEntreeSelonImportance() {
 		return this.aPartirDeNeurone.getSortie() * importance.getValImportance();
@@ -127,7 +134,8 @@ public class Lien implements Serializable {
 	/**
 	 * Retourne la neurone à partir de laquelle le lien provient.
 	 * 
-	 * @return Neurone, la neurone à partir de laquelle le lien provient.
+	 * @return <code>Neurone</code>, la neurone à partir de laquelle le lien
+	 *         provient.
 	 */
 	public Neurone getAPartirDeNeurone() {
 		return aPartirDeNeurone;
@@ -136,7 +144,8 @@ public class Lien implements Serializable {
 	/**
 	 * Retourne la neurone jusqu'à laquelle le lien se rend.
 	 * 
-	 * @return Neurone, la neurone jusqu'à laquelle le lien se rend.
+	 * @return <code>Neurone</code>, la neurone jusqu'à laquelle le lien se
+	 *         rend.
 	 */
 	public Neurone getJusquANeurone() {
 		return jusquANeurone;
@@ -199,7 +208,7 @@ public class Lien implements Serializable {
 	/**
 	 * Retourne le nom du lien.
 	 * 
-	 * @return String, le nom du lien.
+	 * @return <code>String</code>, le nom du lien.
 	 */
 	public String getNom() {
 		return nom;

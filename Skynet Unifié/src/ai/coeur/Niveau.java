@@ -5,13 +5,17 @@ import java.util.ArrayList;
 /**
  * La classe Niveau sert de couche intermédiaire entre les entrées et les
  * sorties d'un réseau.
- * </p>
+ * <P>
  * La classe Niveau n'est pas nécessaire dans un réseau, puisqu'un réseau peut
  * avoir ses entrées connectées directement à ses sorties. Par contre, il est
  * très conseillé qu'un réseau ait des niveaux. Plus un réseau à de niveaux et
  * plus les niveaux ont des neurones, plus le réseau contient de liens, et donc
  * plus il peut avoir de versions différentes créées par les changements
  * d'importance possible.
+ * 
+ * @see Neurone
+ * @see Reseau
+ * @see Lien
  */
 public class Niveau {
 
@@ -41,7 +45,7 @@ public class Niveau {
 	 * Crée un niveau contenant un nombre spécifique de neurones.
 	 * 
 	 * @param nbrNeurones
-	 *            int, le nombre de neurones que contient le niveau.
+	 *            le nombre de neurones que contient le niveau.
 	 */
 	public Niveau(int nbrNeurones) {
 		listeNeuronesNiveau = new ArrayList<>(nbrNeurones);
@@ -72,8 +76,8 @@ public class Niveau {
 	/**
 	 * Retourne la liste de neurones que contient le niveau.
 	 * 
-	 * @return ArrayList&ltNeurone>, la liste de neurones que contient le
-	 *         niveau.
+	 * @return <code>ArrayList&ltNeurone&gt</code>, la liste de neurones que
+	 *         contient le niveau.
 	 */
 	public ArrayList<Neurone> getListeNeuronesNiveau() {
 		return listeNeuronesNiveau;
@@ -84,7 +88,7 @@ public class Niveau {
 	 * spécifie à la neurone qu'elle est contenue dans ce niveau.
 	 * 
 	 * @param neurone
-	 *            Neurone, la neurone à aujouter au niveau.
+	 *            <code>Neurone</code>, la neurone à aujouter au niveau.
 	 */
 	public void ajouterNeurone(Neurone neurone) {
 		if (neurone != null) {
@@ -104,9 +108,10 @@ public class Niveau {
 	 * neurones.
 	 * 
 	 * @param position
-	 *            int, la position à laquelle la neurone est ajoutée.
+	 *            <code>int</code>, la position à laquelle la neurone est
+	 *            ajoutée.
 	 * @param neurone
-	 *            Neurone, la neurone à ajouter.
+	 *            <code>Neurone</code>, la neurone à ajouter.
 	 */
 	public void ajouterNeurone(int position, Neurone neurone) {
 		if (neurone == null) {
@@ -124,9 +129,9 @@ public class Niveau {
 	 * spécifiée.
 	 * 
 	 * @param position
-	 *            int, la position de la neurone.
+	 *            <code>int</code>, la position de la neurone.
 	 * @param neurone
-	 *            Neurone, la nouvelle identité de la neurone.
+	 *            <code>Neurone</code>, la nouvelle identité de la neurone.
 	 */
 	public void setNeurone(int position, Neurone neurone) {
 		if (neurone == null) {
@@ -143,7 +148,7 @@ public class Niveau {
 	 * Retire la neurone spécifiée du niveau.
 	 * 
 	 * @param neurone
-	 *            Neurone, la neurone à retirer.
+	 *            <code>Neurone</code>, la neurone à retirer.
 	 */
 	public void retirerNeurone(Neurone neurone) {
 		listeNeuronesNiveau.remove(positionDe(neurone));
@@ -153,7 +158,7 @@ public class Niveau {
 	 * Retire la neurone se trouvant à la position spécifiée.
 	 * 
 	 * @param position
-	 *            int, la position de la neurone à retirer.
+	 *            <code>int</code>, la position de la neurone à retirer.
 	 */
 	public void retirerNeuroneA(int position) {
 		listeNeuronesNiveau.remove(position);
@@ -170,8 +175,8 @@ public class Niveau {
 	 * Retourne la neurone se trouvant à la position spécifiée.
 	 * 
 	 * @param position
-	 *            int, la position spécifiée.
-	 * @return Neurone, la neurone se trouvant à cette position.
+	 *            <code>int</code>, la position spécifiée.
+	 * @return <code>Neurone</code>, la neurone se trouvant à cette position.
 	 */
 	public Neurone getNeuroneA(int position) {
 		return listeNeuronesNiveau.get(position);
@@ -181,8 +186,9 @@ public class Niveau {
 	 * Retourne la position à laquelle se trouve la neurone spécifiée.
 	 * 
 	 * @param neurone
-	 *            Neurone, la neurone dont on veut connaitre la position.
-	 * @return int, la position à laquelle se trouve la neurone.
+	 *            <code>Neurone</code>, la neurone dont on veut connaitre la
+	 *            position.
+	 * @return <code>int</code>, la position à laquelle se trouve la neurone.
 	 */
 	public int positionDe(Neurone neurone) {
 		return listeNeuronesNiveau.indexOf(neurone);
@@ -191,14 +197,15 @@ public class Niveau {
 	/**
 	 * Retourne le nombre de neurones se trouvant dans ce niveau.
 	 * 
-	 * @return int, le nombre de neurones se trouvant dans ce niveau.
+	 * @return <code>int</code>, le nombre de neurones se trouvant dans ce
+	 *         niveau.
 	 */
 	public int getNombreDeNeurones() {
 		return listeNeuronesNiveau.size();
 	}
 
 	/**
-	 * Lance la méthode calculer() de toutes les neurones du réseau
+	 * Lance la méthode <code>calculer()</code> de toutes les neurones du réseau
 	 */
 	public void calculer() {
 		for (Neurone neurone : listeNeuronesNiveau) {
@@ -207,7 +214,8 @@ public class Niveau {
 	}
 
 	/**
-	 * Réinitialise toutes les neurones du niveau.
+	 * Réinitialise toutes les neurones du niveau en lançant leur méthode
+	 * <code>reinitialiser()</code>.
 	 */
 	public void reinitialiser() {
 		for (Neurone neurone : listeNeuronesNiveau) {
@@ -220,8 +228,8 @@ public class Niveau {
 	 * niveau à une valeur spécifiée.
 	 * 
 	 * @param valImportance
-	 *            double, la valeur de l'importance de tous les liens d'entrée
-	 *            de toutes les neurones du niveau.
+	 *            <code>double</code>, la valeur de l'importance de tous les
+	 *            liens d'entrée de toutes les neurones du niveau.
 	 */
 	public void initialiserImportanceLiensEntree(double valImportance) {
 		for (Neurone neurone : listeNeuronesNiveau) {
@@ -232,7 +240,7 @@ public class Niveau {
 	/**
 	 * Retourne le nom du niveau.
 	 * 
-	 * @return String, le nom du niveau.
+	 * @return <code>String</code>, le nom du niveau.
 	 */
 	public String getNom() {
 		return this.nom;
@@ -242,7 +250,7 @@ public class Niveau {
 	 * Définit le nom du niveau.
 	 * 
 	 * @param nom
-	 *            String, le nom du niveau.
+	 *            <code>String</code>, le nom du niveau.
 	 */
 	public void setNom(String nom) {
 		this.nom = nom;
@@ -251,8 +259,8 @@ public class Niveau {
 	/**
 	 * Vérifie si le niveau ne contient aucune neurone.
 	 * 
-	 * @return boolean, true si le niveau ne contient pas de neurones, sinon
-	 *         false.
+	 * @return <code>boolean</code>, true si le niveau ne contient pas de
+	 *         neurones, sinon false.
 	 */
 	public boolean isVide() {
 		return listeNeuronesNiveau.isEmpty();
@@ -282,8 +290,8 @@ public class Niveau {
 	/**
 	 * Retourne la liste de tous les liens de toutes les neurones du niveau.
 	 * 
-	 * @return ArrayList&ltLien>, la liste de tous les liens de toutes les
-	 *         neurones du niveau.
+	 * @return <code>ArrayList&ltLien&gt</code>, la liste de tous les liens de
+	 *         toutes les neurones du niveau.
 	 */
 	public ArrayList<Lien> getListeLiens() {
 		ArrayList<Lien> listeLiens = new ArrayList<>();

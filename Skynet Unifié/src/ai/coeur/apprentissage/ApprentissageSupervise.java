@@ -82,7 +82,7 @@ public abstract class ApprentissageSupervise extends ApprentissageIteratif {
 		this.reseau.setEntree(entrees);
 		this.reseau.calculer();
 		double[] sorties = this.reseau.getSortie();
-		double[] sortiesDesirees = elementEntrainement.getSortieDesiree();
+		double[] sortiesDesirees = elementEntrainement.getSortiesDesirees();
 		double[] erreurPattern = fonctionErreur.calculerPatternErreur(sorties, sortiesDesirees);
 		this.calculerChangementImportance(erreurPattern);
 
