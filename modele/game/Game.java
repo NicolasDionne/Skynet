@@ -14,7 +14,6 @@ import modele.game.game_objects.Bias;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.GameObjectType;
 import modele.game.game_objects.Player;
-import modele.game.game_objects.PlayerAI;
 import modele.graphique.GraphiqueIA;
 
 public class Game implements Bias, Update, Render {
@@ -101,6 +100,7 @@ public class Game implements Bias, Update, Render {
 
 	public void stop() {
 		gameState = GameState.STOPPED;
+		score.set(0);
 	}
 
 	public Enemy spawnEnemy() {
@@ -178,6 +178,7 @@ public class Game implements Bias, Update, Render {
 					playerImagesSet.add(eR);
 				}
 			});
+			
 
 		}
 	}
@@ -206,35 +207,31 @@ public class Game implements Bias, Update, Render {
 					playerBufferList.add(p);
 				}
 			}));
-
+			
+			collisionIndexList.clear();
+			
 			playersSet.forEach(p -> {
-				if (p.getObjectType() == GameObjectType.AI) {
-					ArrayList<Double> indexListBuffer = new ArrayList<>();
+				if (p.getObjectType() == GameObjectType.HUMAN) {
+					ArrayList<Integer> indexListBuffer = new ArrayList<>();
 
 					p.getvGrid().getHitBoxes().forEach(hb -> enemiesSet.forEach(e -> {
 						if (hb.checkCollision(e.getHitBox())) {
-							indexListBuffer.add((double) p.getvGrid().getHitBoxes().indexOf(hb));
+							indexListBuffer.add(p.getvGrid().getHitBoxes().indexOf(hb));
 						}
-
-//						List<Double> listeEntreesNumeriquesDeP = ((PlayerAI) p).getListeEntreesNumeriques();
-//
-//						for (int i = 0; i < listeEntreesNumeriquesDeP.size(); i++) {
-//
-//						}
-
 					}));
 
-					p.setListeIndexEntrees(indexListBuffer);
-					p.appliquerIndex();
+					collisionIndexList.add(indexListBuffer);
 				}
 			});
 
+			graph.refreshGraph(playersSet.get(0).getHitBox().getCenterPoint().velocityY(),getCollisionIndexList().get(0));
+			
 			playersSet.removeAll(playerBufferList);
 			enemiesSet.removeAll(enemyBufferList);
 
 			playerBufferList.clear();
 			enemyBufferList.clear();
-
+			
 			if (playersSet.size() == 0)
 				stop();
 		}
