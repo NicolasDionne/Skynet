@@ -19,11 +19,11 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import modele.elements.BoxFactory;
-import modele.elements.HitBox;
+import modele.elements.hitbox.HitBox;
 import modele.game.Game;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.Player;
-import modele.game.game_objects.PlayerType;
+import modele.game.game_objects.GameObjectType;
 import modele.graphique.GraphiqueIA;
 
 import java.io.*;
@@ -124,7 +124,7 @@ public class Controleur {
 				public void handle(long now) {
 
 					if (tempsEcouleDepuisDerniereVerification.get() > 0) {
-						game.doActions();
+						game.update();
 						// System.out.println(now);
 					}
 					if (now - lastUpdate >= 20)
@@ -173,7 +173,8 @@ public class Controleur {
 	private void gameStop() {
 
 		animStarted = false;
-		displayJeu.getChildren().clear();
+		
+		clearObstacles();
 		if (graph != null) {
 			graph.resetLiens();
 		}
@@ -200,7 +201,7 @@ public class Controleur {
 		if (game.getPlayersSet().size() > 0) {
 			Player p = game.getPlayersSet().get(0);
 
-			if (p.getPlayerType() == PlayerType.HUMAN) {
+			if (p.getObjectType() == GameObjectType.HUMAN) {
 				switch (event.getCode()) {
 				case UP: {
 					p.changeDirection(1);
@@ -225,7 +226,7 @@ public class Controleur {
 
 		if (game.getPlayersSet().size() > 0) {
 			Player p = game.getPlayersSet().get(0);
-			if (p.getPlayerType() == PlayerType.HUMAN)
+			if (p.getObjectType() == GameObjectType.HUMAN)
 				p.changeDirection(0);
 		}
 	}
@@ -276,6 +277,10 @@ public class Controleur {
 		if (confirm.showAndWait().get() == ButtonType.OK) {
 			confirm.close();
 		}
+	}
+	
+	private void clearObstacles(){
+		
 	}
 
 }

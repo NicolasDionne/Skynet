@@ -1,255 +1,252 @@
 package modele.game;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Consumer;
+
 import controleur.Controleur;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.shape.Rectangle;
 import modele.elements.hitbox.HitBox;
 import modele.elements.visuals.ExtendedRectangle;
 import modele.game.game_objects.Bias;
 import modele.game.game_objects.Enemy;
-import modele.game.game_objects.Player;
 import modele.game.game_objects.GameObjectType;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Observable;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.function.Consumer;
+import modele.game.game_objects.Player;
+import modele.graphique.GraphiqueIA;
 
 public class Game implements Bias, Update, Render {
 
-    public static final short MAX_NB_PLAYERS = 20;
-    public static final float SPAWN_ENEMY_BIAS = 0.1f;
+	public static final short MAX_NB_PLAYERS = 20;
+	public static final float SPAWN_ENEMY_BIAS = 0.1f;
 
-    private List<Player> playersSet = new LinkedList<>();
-    private List<Enemy> enemiesSet = new LinkedList<>();
-    private List<ExtendedRectangle> playerImagesSet = new LinkedList<>();
-    private List<ExtendedRectangle> enemyImagesSet = new LinkedList<>();
+	private List<Player> playersSet = new LinkedList<>();
+	private List<Enemy> enemiesSet = new LinkedList<>();
+	private List<ExtendedRectangle> playerImagesSet = new LinkedList<>();
+	private List<ExtendedRectangle> enemyImagesSet = new LinkedList<>();
 
-    private ArrayList<ArrayList<Integer>> collisionIndexList = new ArrayList<>();
+	private ArrayList<ArrayList<Integer>> collisionIndexList = new ArrayList<>();
 
-    private GameState gameState = GameState.STOPPED;
-    private EnemySpawner hbGen;
-    private IntegerProperty score;
+	private GameState gameState = GameState.STOPPED;
+	private EnemySpawner hbGen;
+	private IntegerProperty score;
+	private GraphiqueIA graph;
 
-    public final Consumer<Void> updater = (v) -> update();
-    public final Consumer<Void> renderer = (v) -> render();
+	public final Consumer<Void> updater = (v) -> update();
+	public final Consumer<Void> renderer = (v) -> render();
 
+	public Game(short nbHumans, short nbAI, GraphiqueIA graph) {
+		hbGen = new EnemySpawner();
+		short trueNbHumans = filterNbHumans(nbHumans);
 
-    public Game(short nbHumans, short nbAI) {
-        hbGen = new EnemySpawner();
-        short trueNbHumans = filterNbHumans(nbHumans);
+		for (int i = 0; i < trueNbHumans; i++) {
+			createPlayer(GameObjectType.HUMAN);
+		}
+		for (int j = 0; j < nbAI; j++) {
+			createPlayer(GameObjectType.AI);
+		}
+		score = new SimpleIntegerProperty();
+		this.graph = graph;
+	}
 
-        for (int i = 0; i < trueNbHumans; i++) {
-            createPlayer(GameObjectType.HUMAN);
-        }
-        for (int j = 0; j < nbAI; j++) {
-            createPlayer(GameObjectType.AI);
-        }
-        score = new SimpleIntegerProperty();
-    }
+	public ArrayList<ArrayList<Integer>> getCollisionIndexList() {
+		return collisionIndexList;
+	}
 
-    public ArrayList<ArrayList<Integer>> getCollisionIndexList() {
-        return collisionIndexList;
-    }
+	public List<ExtendedRectangle> getPlayerImagesSet() {
+		return playerImagesSet;
+	}
 
-    public List<ExtendedRectangle> getPlayerImagesSet() {
-        return playerImagesSet;
-    }
+	public List<ExtendedRectangle> getEnemyImagesSet() {
+		return enemyImagesSet;
+	}
 
-    public List<ExtendedRectangle> getEnemyImagesSet() {
-        return enemyImagesSet;
-    }
+	public int getScore() {
+		return score.get();
+	}
 
-    public int getScore() {
-        return score.get();
-    }
+	public IntegerProperty scoreProperty() {
+		return score;
+	}
 
-    public IntegerProperty scoreProperty() {
-        return score;
-    }
+	public void setScore(int score) {
+		this.score.set(score);
+	}
 
-    public void setScore(int score) {
-        this.score.set(score);
-    }
+	public void printGameState() {
+		System.out.println(gameState);
+	}
 
+	public boolean isRunning() {
+		return gameState == GameState.RUNNING;
+	}
 
-    public void printGameState() {
-        System.out.println(gameState);
-    }
+	public boolean isPaused() {
+		return gameState == GameState.PAUSED;
+	}
 
-    public boolean isRunning() {
-        return gameState == GameState.RUNNING;
-    }
+	public boolean isStopped() {
+		return gameState == GameState.STOPPED;
+	}
 
-    public boolean isPaused() {
-        return gameState == GameState.PAUSED;
-    }
+	public void run() {
+		gameState = GameState.RUNNING;
+	}
 
-    public boolean isStopped() {
-        return gameState == GameState.STOPPED;
-    }
+	public void pause() {
+		gameState = GameState.PAUSED;
+	}
 
-    public void run() {
-        gameState = GameState.RUNNING;
-    }
+	public void stop() {
+		gameState = GameState.STOPPED;
+	}
 
-    public void pause() {
-        gameState = GameState.PAUSED;
-    }
+	public Enemy spawnEnemy() {
+		HitBox hb = hbGen.spawn(Enemy.ENEMY_DIM);
 
-    public void stop() {
-        gameState = GameState.STOPPED;
-    }
+		Enemy toSpawn = new Enemy(hb);
+		enemiesSet.add(toSpawn);
 
-    public Enemy spawnEnemy() {
-        HitBox hb = hbGen.spawn(Enemy.ENEMY_DIM);
+		return toSpawn;
+	}
 
-        Enemy toSpawn = new Enemy(hb);
-        enemiesSet.add(toSpawn);
+	private void handleMovement(HitBox hb) {
+		hb.getCenterPoint().move();
+		hb.moveOrigin();
+		hb.rotateSelf();
+		hb.getCenterPoint().rotate(hb.getOrigin());
+	}
 
-        return toSpawn;
-    }
+	public void createPlayer(GameObjectType pType) {
+		HitBox hb = new HitBox(Player.PLAYER_DIM, Player.PLAYER_DIM, 50, Controleur.MID_HEIGHT);
+		Player p = new Player(pType, hb);
 
-    private void handleMovement(HitBox hb) {
-        hb.getCenterPoint().move();
-        hb.moveOrigin();
-        hb.rotateSelf();
-        hb.getCenterPoint().rotate(hb.getOrigin());
-    }
+		playersSet.add(p);
 
-    public void createPlayer(GameObjectType pType) {
-        HitBox hb = new HitBox(Player.PLAYER_DIM, Player.PLAYER_DIM, 50, Controleur.MID_HEIGHT);
-        Player p = new Player(pType, hb);
+	}
 
-        playersSet.add(p);
+	public List<Player> getPlayersSet() {
+		return playersSet;
+	}
 
-    }
+	public List<Enemy> getEnemiesSet() {
+		return enemiesSet;
+	}
 
-    public List<Player> getPlayersSet() {
-        return playersSet;
-    }
+	public void render() {
+		if (isRunning()) {
 
-    public List<Enemy> getEnemiesSet() {
-        return enemiesSet;
-    }
+			List<ExtendedRectangle> playerImagesBufferList = new LinkedList<>();
+			List<ExtendedRectangle> enemyImagesBufferList = new LinkedList<>();
 
-    public void render() {
-        if (isRunning()) {
+			List<Player> playerBufferList = new LinkedList<>();
+			List<Enemy> enemyBufferList = new LinkedList<>();
 
-            List<ExtendedRectangle> playerImagesBufferList = new LinkedList<>();
-            List<ExtendedRectangle> enemyImagesBufferList = new LinkedList<>();
+			// On remplit les buffers avec tous les GameObject qui ont une image
+			playerImagesSet.forEach(pI -> playerBufferList.add((Player) pI.getGameObject()));
+			enemyImagesSet.forEach(eI -> enemyBufferList.add((Enemy) eI.getGameObject()));
 
-            List<Player> playerBufferList = new LinkedList<>();
-            List<Enemy> enemyBufferList = new LinkedList<>();
+			// On collecte toutes les images qui n'ont plus de GameObject dans
+			// le jeu, puis on les retire de la liste
+			playerImagesSet.forEach(pI -> {
+				if (!playersSet.contains(pI.getGameObject())) {
+					playerImagesBufferList.add(pI);
+				}
+			});
+			enemyImagesSet.forEach(pI -> {
+				if (!enemiesSet.contains(pI.getGameObject())) {
+					enemyImagesBufferList.add(pI);
+				}
+			});
 
-            //On remplit les buffers avec tous les GameObject qui ont une image
-            playerImagesSet.forEach(pI -> playerBufferList.add((Player) pI.getGameObject()));
-            enemyImagesSet.forEach(eI -> enemyBufferList.add((Enemy) eI.getGameObject()));
+			playerImagesSet.removeAll(playerImagesBufferList);
+			enemiesSet.removeAll(enemyImagesBufferList);
 
-            //On collecte toutes les images qui n'ont plus de GameObject dans le jeu, puis on les retire de la liste
-            playerImagesSet.forEach(pI -> {
-                if (!playersSet.contains(pI.getGameObject())) {
-                    playerImagesBufferList.add(pI);
-                }
-            });
-            enemyImagesSet.forEach(pI -> {
-                if (!enemiesSet.contains(pI.getGameObject())) {
-                    enemyImagesBufferList.add(pI);
-                }
-            });
+			// On ajoute une image à tous les GameObject qui n'ont pas
+			// présentement d'image
+			playersSet.forEach(p -> {
+				if (!playerBufferList.contains(p)) {
+					ExtendedRectangle eR = new ExtendedRectangle(p);
+					playerImagesSet.add(eR);
+				}
+			});
+			enemiesSet.forEach(p -> {
+				if (!enemyBufferList.contains(p)) {
+					ExtendedRectangle eR = new ExtendedRectangle(p);
+					playerImagesSet.add(eR);
+				}
+			});
 
-            playerImagesSet.removeAll(playerImagesBufferList);
-            enemiesSet.removeAll(enemyImagesBufferList);
+		}
+	}
 
-            //On ajoute une image à tous les GameObject qui n'ont pas présentement d'image
-            playersSet.forEach(p -> {
-                if (!playerBufferList.contains(p)) {
-                    ExtendedRectangle eR = new ExtendedRectangle(p);
-                    playerImagesSet.add(eR);
-                }
-            });
-            enemiesSet.forEach(p -> {
-                if (!enemyBufferList.contains(p)) {
-                    ExtendedRectangle eR = new ExtendedRectangle(p);
-                    playerImagesSet.add(eR);
-                }
-            });
+	public void update() {
+		if (isRunning()) {
 
-        }
-    }
+			List<Player> playerBufferList = new LinkedList<>();
+			List<Enemy> enemyBufferList = new LinkedList<>();
 
-    public void update() {
-        if (isRunning()) {
+			playersSet.forEach(p -> {
+				p.checkObjectBeyondEdges();
+				handleMovement(p.getHitBox());
+			});
+			enemiesSet.forEach(e -> {
+				handleMovement(e.getHitBox());
+				if (e.checkObjectBeyondEdges())
+					enemyBufferList.add(e);
+			});
 
-            List<Player> playerBufferList = new LinkedList<>();
-            List<Enemy> enemyBufferList = new LinkedList<>();
+			score.set(score.get() + 1);
 
-            playersSet.forEach(p -> {
-                p.checkObjectBeyondEdges();
-                handleMovement(p.getHitBox());
-            });
-            enemiesSet.forEach(e -> {
-                handleMovement(e.getHitBox());
-                if (e.checkObjectBeyondEdges())
-                    enemyBufferList.add(e);
-            });
+			playersSet.forEach(p -> enemiesSet.forEach(e -> {
+				if (p.getHitBox().checkCollision(e.getHitBox())) {
+					System.out.println("collision");
+					playerBufferList.add(p);
+				}
+			}));
 
-            score.set(score.get() + 1);
+			playersSet.forEach(p -> {
+				if (p.getObjectType() == GameObjectType.AI) {
+					ArrayList<Integer> indexListBuffer = new ArrayList<>();
 
-            playersSet.forEach(p -> enemiesSet.forEach(e -> {
-                if (p.getHitBox().checkCollision(e.getHitBox())) {
-                    System.out.println("collision");
-                    playerBufferList.add(p);
-                }
-            }));
+					p.getvGrid().getHitBoxes().forEach(hb -> enemiesSet.forEach(e -> {
+						if (hb.checkCollision(e.getHitBox())) {
+							indexListBuffer.add(p.getvGrid().getHitBoxes().indexOf(hb));
+						}
+					}));
 
-            playersSet.forEach(p -> {
-                if (p.getObjectType() == GameObjectType.AI) {
-                    ArrayList<Integer> indexListBuffer = new ArrayList<>();
+					collisionIndexList.add(indexListBuffer);
+				}
+			});
 
-                    p.getvGrid().getHitBoxes().forEach(hb -> enemiesSet.forEach(e -> {
-                        if (hb.checkCollision(e.getHitBox())) {
-                            indexListBuffer.add(p.getvGrid().getHitBoxes().indexOf(hb));
-                        }
-                    }));
+			playersSet.removeAll(playerBufferList);
+			enemiesSet.removeAll(enemyBufferList);
 
-                    collisionIndexList.add(indexListBuffer);
-                }
-            });
+			playerBufferList.clear();
+			enemyBufferList.clear();
 
-            playersSet.removeAll(playerBufferList);
-            enemiesSet.removeAll(enemyBufferList);
+			if (playersSet.size() == 0)
+				stop();
+		}
+	}
 
-            playerBufferList.clear();
-            enemyBufferList.clear();
+	private short filterNbHumans(short nbHumans) {
+		return (short) (nbHumans == 0 ? 0 : 1);
+	}
 
-            if (playersSet.size() == 0)
-                stop();
-        }
-    }
+	enum GameState {
+		RUNNING("En Cours"), PAUSED("En Pause"), STOPPED("Arrêtée");
 
-    private short filterNbHumans(short nbHumans) {
-        return (short) (nbHumans == 0 ? 0 : 1);
-    }
+		String state = "";
 
-    enum GameState {
-        RUNNING("En Cours"), PAUSED("En Pause"), STOPPED("Arrêtée");
+		GameState(String state) {
+			this.state = state;
+		}
 
-        String state = "";
-
-        GameState(String state) {
-            this.state = state;
-        }
-
-        public String toString() {
-            return state;
-        }
-    }
+		public String toString() {
+			return state;
+		}
+	}
 
 }

@@ -1,6 +1,6 @@
 package tests.utilitaires;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 
@@ -11,6 +11,7 @@ import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
 import ai.coeur.Reseau;
 import modele.reseau.GenerateurReseau;
 import utilitaires.QuickSort;
+import utilitaires.Sortable;
 
 public class QuickSortTest {
 	Reseau<CompetitionInterReseaux> r1, r2, r3, r4;
@@ -39,8 +40,6 @@ public class QuickSortTest {
 		listeReseauxCIR.add(r4);
 
 		QuickSort.sort(listeReseauxCIR);
-
-		System.out.println(listeReseauxCIR);
 
 		assertEquals(r3, listeReseauxCIR.get(0));
 		assertEquals(r1, listeReseauxCIR.get(1));

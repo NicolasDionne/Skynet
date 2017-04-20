@@ -1,6 +1,12 @@
 package tests.ai.coeur;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +18,6 @@ import ai.coeur.Niveau;
 import ai.coeur.entree.Et;
 import ai.coeur.entree.SommeImportance;
 import ai.coeur.transfers.Etape;
-import ai.coeur.transfers.Rampe;
 
 public class NeuroneTest {
 
@@ -39,10 +44,9 @@ public class NeuroneTest {
 
 	@Test
 	public void testNeuroneFonctionEntreeFonctionTransfers() {
-		Neurone n = new Neurone(new Et(), new Rampe());
+		Neurone n = new Neurone(new Et(), new Etape());
 		assertNotNull(n);
 		assertTrue(n.getFonctionEntree().getClass() == Et.class);
-		assertTrue(n.getFonctionTransfers().getClass() == Rampe.class);
 		assertNotNull(n.getLiensEntree());
 		assertTrue(n.getLiensEntree().size() == 0);
 		assertNotNull(n.getLiensSortie());
@@ -228,9 +232,6 @@ public class NeuroneTest {
 	public void testSetFonctionTransfers() {
 		assertTrue(n1.getFonctionTransfers().getClass() == Etape.class);
 
-		Rampe r = new Rampe();
-		n1.setFonctionTransfers(r);
-		assertEquals(r, n1.getFonctionTransfers());
 	}
 
 	@Test

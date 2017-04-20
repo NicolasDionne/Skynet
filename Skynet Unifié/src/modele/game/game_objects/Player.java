@@ -9,7 +9,7 @@ public class Player extends GameObject {
 
     public static final short PLAYER_DIM = 20;
     public static final short VELOCITY_PLAYER = 4;
-    private VisionGrid vGrid;
+    protected VisionGrid vGrid;
 
     public Player(GameObjectType pType, HitBox hb) {
         super(hb);

@@ -45,7 +45,7 @@ public class CompetitionInterReseauxTest {
 		r7.setScore(8472);
 		r8.setScore(1);
 
-		c.mAJIR();
+		c.faireUneIterationApprentissage();
 
 		ArrayList<Reseau<CompetitionInterReseaux>> listeMoinsBonsReseaux = c.getListeMoinsBonsReseaux();
 		LinkedList<Similarite> listeSimilarites = c.getListeSimilaritesMeilleursReseaux();
