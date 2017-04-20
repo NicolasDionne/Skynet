@@ -173,12 +173,18 @@ public class GraphiqueIA {
 			}
 		}
 	}
-
-	public void refreshGraph(int mouvement) {
-		sortie.setFill(couleurParInt(mouvement));
+/**
+ * Rafraichit le graphique: ses liens, ses entrées et sa sortie
+ * @param mouvement
+ */
+	public void refreshGraph(float mouvement, ArrayList<Integer> arrayList) {
+		sortie.setFill(couleurParFloat(mouvement));
 		for (Rectangle r : listeEntrants) {
-			//TODO mettre la valeur de la case testee dans le spot boolean
-			r.setFill(couleurParInt(booleanToInt(false)));
+			if(arrayList.indexOf(listeEntrants.indexOf(r))!=-1){
+				r.setFill(couleurParFloat(booleanToInt(true)));
+			}else{
+				r.setFill(couleurParFloat(booleanToInt(false)));
+			}
 		}
 
 	}
@@ -191,26 +197,12 @@ public class GraphiqueIA {
 	 *            la valeur numérique de la couleur
 	 * @return la couleur assignée au chiffre en paramètre
 	 */
-	private Color couleurParInt(int i) {
-		Color c;
-		switch (i) {
-		case 1: {
+	private Color couleurParFloat(float i) {
+		Color c=couleurNeutre;
+		if(i>0){
 			c = couleurOff;
-			break;
-		}
-		case 0: {
-			c = couleurNeutre;
-			break;
-		}
-		case -1: {
+		}else if(i<0){
 			c = couleurOn;
-			break;
-		}
-		default: {
-			c = couleurErreur;
-			break;
-		}
-
 		}
 
 		return c;
