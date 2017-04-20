@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="package" author="true" classpath="C:\Users\Vincent\.p2\pool\plugins\org.eclipse.fx.ide.css.jfx8_2.4.0.201605112122.jar;C:\Users\Vincent\.p2\pool\plugins\org.hamcrest.core_1.3.0.v201303031735.jar;C:\Users\Vincent\.p2\pool\plugins\org.junit_4.12.0.v201504281640\junit.jar" destdir="doc" doctitle="Skynet" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="ai.coeur.apprentissage.arret,ai.utilitaire.random,ai.coeur.apprentissage,ai.apprentissage.nonsupervise,modele,ai.coeur.transfers,modele.game.game_objects,modele.reseau,ai.utilitaire,modele.math,modele.elements,ai.coeur.donnee,application,controleur,ai.apprentissage.supervise,ai.coeur.apprentissage.erreur,modele.game,utilitaires,ai.apprentissage.nonsupervise.competitionInterReseau,modele.graphique,ai.coeur.entree,ai.coeur,modele.exceptions" source="1.8" sourcepath="src;res" splitindex="true" use="true" version="true">
+            <link href="file:/E:/java/Hi17/wksp/Skynet%20Unfié/doc/"/>
+        </javadoc>
+    </target>
+</project>
