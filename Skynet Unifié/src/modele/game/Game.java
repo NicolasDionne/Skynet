@@ -36,21 +36,26 @@ public class Game implements Bias, Update, Render {
 	private EnemySpawner hbGen;
 	private IntegerProperty score;
 	private GraphiqueIA graph;
+	private int nbHumans;
 
 	private ArrayList<Reseau<CompetitionInterReseaux>> listeReseauxCIR;
 
 	public final Consumer<Void> updater = (v) -> update();
 	public final Consumer<Void> renderer = (v) -> render();
 
-	public Game(short nbHumans, short nbAI, GraphiqueIA graph) {
+	public Game(short nbHumans, short nbAI, GraphiqueIA graph,
+			ArrayList<Reseau<CompetitionInterReseaux>> listeReseauxCIR) {
+		this.listeReseauxCIR = listeReseauxCIR;
 		if (listeReseauxCIR == null && nbAI != 0) {
 			GenerateurReseau g = new GenerateurReseau();
 			g.genererReseauCIR(nbAI, 40, 1, 7, 10, -100, 100);
 			listeReseauxCIR = g.getReseauxCIR();
+			this.listeReseauxCIR=listeReseauxCIR;
+			Controleur.setListeReseauxCIR(this.listeReseauxCIR);
 		}
 		hbGen = new EnemySpawner();
 		short trueNbHumans = filterNbHumans(nbHumans);
-
+		this.nbHumans = nbHumans;
 		for (int i = 0; i < trueNbHumans; i++) {
 			createPlayer(GameObjectType.HUMAN, null);
 		}
@@ -224,6 +229,9 @@ public class Game implements Bias, Update, Render {
 				if (p.getHitBox().checkCollision(e.getHitBox())) {
 					System.out.println("collision");
 					playerBufferList.add(p);
+					if (p.getObjectType() == GameObjectType.AI) {
+						((PlayerAI) p).getReseau().setScore(getScore());
+					}
 				}
 			}));
 
@@ -257,8 +265,13 @@ public class Game implements Bias, Update, Render {
 			playerBufferList.clear();
 			enemyBufferList.clear();
 
-			if (playersSet.size() == 0)
-				stop();
+			if (playersSet.size() == 0) {
+				if (nbHumans != 0) {
+					stop();
+				} else {
+
+				}
+			}
 		}
 	}
 
