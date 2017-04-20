@@ -58,16 +58,18 @@ public class PlayerAI extends Player {
 				listeEntreesNumeriques.set(i, 0.0);
 			}
 		}
-		System.out.println(listeEntreesNumeriques);
 		moveBitch();
 	}
 
 	private void moveBitch() {
 		modifierValEntrees();
-		System.out.println("valEntrees: " + reseau.getValEntrees());
 		reseau.calculer();
 		int i = (int) (reseau.getSortie())[0];
 		changeDirection(i);
+	}
+
+	public Reseau<CompetitionInterReseaux> getReseau() {
+		return reseau;
 	}
 
 }
