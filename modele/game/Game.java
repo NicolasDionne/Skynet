@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
+import ai.coeur.Reseau;
 import controleur.Controleur;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -14,7 +16,9 @@ import modele.game.game_objects.Bias;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.GameObjectType;
 import modele.game.game_objects.Player;
+import modele.game.game_objects.PlayerAI;
 import modele.graphique.GraphiqueIA;
+import modele.reseau.GenerateurReseau;
 
 public class Game implements Bias, Update, Render {
 
@@ -33,21 +37,42 @@ public class Game implements Bias, Update, Render {
 	private IntegerProperty score;
 	private GraphiqueIA graph;
 
+	private ArrayList<Reseau<CompetitionInterReseaux>> listeReseauxCIR;
+	private ArrayList<Reseau<CompetitionInterReseaux>> listeReseauxCIRLorsJeu;
+
 	public final Consumer<Void> updater = (v) -> update();
 	public final Consumer<Void> renderer = (v) -> render();
 
-	public Game(short nbHumans, short nbAI, GraphiqueIA graph) {
+	public Game(short nbHumans, short nbAI, GraphiqueIA graph,
+			ArrayList<Reseau<CompetitionInterReseaux>> listeReseauxCIR) {
+		this.listeReseauxCIR = listeReseauxCIR;
+		this.listeReseauxCIRLorsJeu = new ArrayList<>();
+		if (listeReseauxCIR == null && nbAI != 0) {
+			GenerateurReseau g = new GenerateurReseau();
+			g.genererReseauCIR(nbAI, 40, 1, 7, 10, -100, 100);
+			listeReseauxCIR = g.getReseauxCIR();
+			this.listeReseauxCIR = listeReseauxCIR;
+			Controleur.setListeReseauxCIR(this.listeReseauxCIR);
+			listeReseauxCIRLorsJeu.addAll(listeReseauxCIR);
+			Controleur.alreadyLaunch = true;
+			Controleur.setCompetitionInterReseaux(new CompetitionInterReseaux(Controleur.getListeReseauxCIR()));
+		} else if (Controleur.alreadyLaunch) {
+			listeReseauxCIRLorsJeu.addAll(listeReseauxCIR);
+		}
 		hbGen = new EnemySpawner();
 		short trueNbHumans = filterNbHumans(nbHumans);
-
 		for (int i = 0; i < trueNbHumans; i++) {
-			createPlayer(GameObjectType.HUMAN);
+			createPlayer(GameObjectType.HUMAN, null);
 		}
 		for (int j = 0; j < nbAI; j++) {
-			createPlayer(GameObjectType.AI);
+			createPlayer(GameObjectType.AI, listeReseauxCIR.get(j));
 		}
 		score = new SimpleIntegerProperty();
 		this.graph = graph;
+		if (this.graph != null) {
+			this.graph.changerAffichageLiens(this.listeReseauxCIR.get(0));
+		}
+
 	}
 
 	public ArrayList<ArrayList<Integer>> getCollisionIndexList() {
@@ -100,7 +125,6 @@ public class Game implements Bias, Update, Render {
 
 	public void stop() {
 		gameState = GameState.STOPPED;
-		score.set(0);
 	}
 
 	public Enemy spawnEnemy() {
@@ -119,12 +143,22 @@ public class Game implements Bias, Update, Render {
 		hb.getCenterPoint().rotate(hb.getOrigin());
 	}
 
-	public void createPlayer(GameObjectType pType) {
+	public void createPlayer(GameObjectType pType, Reseau reseau) {
 		HitBox hb = new HitBox(Player.PLAYER_DIM, Player.PLAYER_DIM, 50, Controleur.MID_HEIGHT);
-		Player p = new Player(pType, hb);
-
+		Player p;
+		if (pType.equals(GameObjectType.AI)) {
+			p = createPlayerAI(hb, reseau);
+		} else {
+			p = new Player(pType, hb);
+		}
 		playersSet.add(p);
 
+	}
+
+	private PlayerAI createPlayerAI(HitBox hb, Reseau reseau) {
+		PlayerAI p = new PlayerAI(hb, reseau);
+
+		return p;
 	}
 
 	public List<Player> getPlayersSet() {
@@ -178,7 +212,6 @@ public class Game implements Bias, Update, Render {
 					playerImagesSet.add(eR);
 				}
 			});
-			
 
 		}
 	}
@@ -205,36 +238,61 @@ public class Game implements Bias, Update, Render {
 				if (p.getHitBox().checkCollision(e.getHitBox())) {
 					System.out.println("collision");
 					playerBufferList.add(p);
+
+					if (p.getObjectType() == GameObjectType.AI) {
+						((PlayerAI) p).getReseau().setScore(getScore());
+						Reseau r = ((PlayerAI) p).getReseau();
+
+						if (listeReseauxCIRLorsJeu.size() > 1) {
+							boolean updateReseauVisible = listeReseauxCIRLorsJeu.get(0).equals(r);
+
+							listeReseauxCIRLorsJeu.remove(r);
+							if (updateReseauVisible) {
+								graph.changerAffichageLiens(listeReseauxCIRLorsJeu.get(0));
+							}
+						}
+
+					}
+
 				}
 			}));
-			
-			collisionIndexList.clear();
-			
+
 			playersSet.forEach(p -> {
-				if (p.getObjectType() == GameObjectType.HUMAN) {
-					ArrayList<Integer> indexListBuffer = new ArrayList<>();
+				if (p.getObjectType() == GameObjectType.AI) {
+					List<Integer> indexListBuffer = new ArrayList<>();
 
 					p.getvGrid().getHitBoxes().forEach(hb -> enemiesSet.forEach(e -> {
 						if (hb.checkCollision(e.getHitBox())) {
 							indexListBuffer.add(p.getvGrid().getHitBoxes().indexOf(hb));
 						}
+
+						// List<Double> listeEntreesNumeriquesDeP = ((PlayerAI)
+						// p).getListeEntreesNumeriques();
+						//
+						// for (int i = 0; i < listeEntreesNumeriquesDeP.size();
+						// i++) {
+						//
+						// }
+
 					}));
 
-					collisionIndexList.add(indexListBuffer);
+					p.setListeIndexEntrees(indexListBuffer);
+					p.appliquerIndex();
 				}
 			});
 
-			graph.refreshGraph(playersSet.get(0).getHitBox().getCenterPoint().velocityY(),getCollisionIndexList().get(0));
-			
 			playersSet.removeAll(playerBufferList);
 			enemiesSet.removeAll(enemyBufferList);
 
 			playerBufferList.clear();
 			enemyBufferList.clear();
-			
-			if (playersSet.size() == 0)
+
+			if (playersSet.size() == 0) {
 				stop();
+				Controleur.setListeReseauxCIR(listeReseauxCIR);
+			}
 		}
+
 	}
 
 	private short filterNbHumans(short nbHumans) {

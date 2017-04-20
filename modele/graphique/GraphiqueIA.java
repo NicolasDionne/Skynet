@@ -3,8 +3,10 @@ package modele.graphique;
 import java.util.ArrayList;
 import java.util.Random;
 
+import ai.coeur.Lien;
 import ai.coeur.Reseau;
 import ai.coeur.apprentissage.ApprentissageSupervise;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -177,7 +179,7 @@ public class GraphiqueIA {
 	public void refreshGraph(int mouvement) {
 		sortie.setFill(couleurParInt(mouvement));
 		for (Rectangle r : listeEntrants) {
-			//TODO mettre la valeur de la case testee dans le spot boolean
+			// TODO mettre la valeur de la case testee dans le spot boolean
 			r.setFill(couleurParInt(booleanToInt(false)));
 		}
 
@@ -262,10 +264,10 @@ public class GraphiqueIA {
 	private Color couleurCelonDouble(double d) {
 		Color c;
 		// TODO METTRE LE WEIGHT DE 0 A 1
-		if (d >= 0.5) {
-			c = new Color(0, 0, 1, d);
+		if (d >= 0) {
+			c = new Color(0, 0, 1, Math.abs(d));
 		} else {
-			c = new Color(1, 0, 0, d);
+			c = new Color(1, 0, 0, Math.abs(d));
 		}
 		return c;
 
@@ -285,15 +287,59 @@ public class GraphiqueIA {
 		}
 		return retour;
 	}
+
 	/**
 	 * remets a zero les liens liant les neurones
 	 */
-	public void resetLiens(){
-		zoneAffichage.getChildren().clear();
-		genererAffichageNeuronesEntree();
-		genererAffichageNiveaux();
-		genererAffichageOutput();
-		
+	public void resetLiens() {
+		ArrayList<Node> listeNodesAEnlever = new ArrayList<>();
+		for (Node node : zoneAffichage.getChildren()) {
+			if (node.getClass() == Line.class) {
+				listeNodesAEnlever.add(node);
+			}
+		}
+		zoneAffichage.getChildren().removeAll(listeNodesAEnlever);
 	}
 
+	public void changerAffichageLiens(Reseau reseau) {
+		resetLiens();
+		Line l = new Line();
+		int i = 0;
+		Circle c;
+		ArrayList<Lien> listeLiens = reseau.getListeLiens();
+
+		for (int j = 0; j < nbNeuronesNiveau; j++) {
+			for (Rectangle r : listeEntrants) {
+				c = listeNiveaux.get(j);
+				l = new Line(r.getX() + r.getWidth() / 2, r.getY() + r.getHeight() / 2, c.getCenterX(), c.getCenterY());
+				// TODO mettre la vraie importance
+				double valStroke = listeLiens.get(i).getImportance().getValImportance();
+				valStroke = valStroke / 100;
+				l.setStroke(couleurCelonDouble(valStroke));
+				zoneAffichage.getChildren().add(l);
+				l.toBack();
+				i++;
+			}
+		}
+		for (Circle r1 : listeNiveaux) {
+			for (Shape r2 : getNextColumn(r1)) {
+				if (r2.getClass().equals(Circle.class)) {
+					l = new Line(r1.getCenterX(), r1.getCenterY(), ((Circle) r2).getCenterX(),
+							((Circle) r2).getCenterY());
+				} else if (r2.getClass().equals(Rectangle.class)) {
+					l = new Line(r1.getCenterX(), r1.getCenterY(),
+							((Rectangle) r2).getX() + ((Rectangle) r2).getWidth() / 2,
+							((Rectangle) r2).getY() + ((Rectangle) r2).getHeight() / 2);
+				}
+				double valStroke = listeLiens.get(i).getImportance().getValImportance();
+				valStroke = valStroke / 100;
+				l.setStroke(couleurCelonDouble(valStroke));
+				zoneAffichage.getChildren().add(l);
+				l.toBack();
+				i++;
+			}
+
+		}
+
+	}
 }

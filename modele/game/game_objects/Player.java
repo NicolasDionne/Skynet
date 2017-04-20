@@ -13,7 +13,7 @@ public class Player extends GameObject {
 	public static final short PLAYER_DIM = 20;
 	public static final short VELOCITY_PLAYER = 4;
 	protected VisionGrid vGrid;
-	protected List<Double> listeIndexEntrees;
+	protected List<Integer> listeIndexEntrees;
 
 	public Player(GameObjectType pType, HitBox hb) {
 		super(hb);
@@ -58,11 +58,11 @@ public class Player extends GameObject {
 		return false;
 	}
 
-	public List<Double> getListeIndexEntrees() {
+	public List<Integer> getListeIndexEntrees() {
 		return listeIndexEntrees;
 	}
 
-	public void setListeIndexEntrees(List<Double> listeEntreesNumeriques) {
+	public void setListeIndexEntrees(List<Integer> listeEntreesNumeriques) {
 		this.listeIndexEntrees = listeEntreesNumeriques;
 	}
 

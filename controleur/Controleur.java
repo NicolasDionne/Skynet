@@ -5,17 +5,17 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
+import java.util.ArrayList;
 
+import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
+import ai.coeur.Reseau;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -23,10 +23,8 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import modele.elements.visuals.ExtendedRectangle;
+import modele.elements.visuals.ExtendedImageView;
 import modele.game.Game;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.GameObjectType;
@@ -55,6 +53,7 @@ public class Controleur {
 
 	@FXML
 	private ImageView limitDown;
+
 	@FXML
 	private Pane affichageReseau;
 
@@ -63,7 +62,9 @@ public class Controleur {
 	public static final int EDGE = 1066;
 	public static final int MID_HEIGHT = PLAFOND + ((PLANCHER - PLAFOND) / 2);
 	public static final float DIFFICULTY_INCREMENT = 0.02f;
+
 	public GraphiqueIA graph;
+	public static boolean alreadyLaunch = false;
 
 	Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
 
@@ -73,6 +74,9 @@ public class Controleur {
 	long lastUpdate = 0;
 	float timeBetweenEnemies = 0;
 	float timerScaleFactor;
+
+	private static ArrayList<Reseau<CompetitionInterReseaux>> listeReseauxCIR;
+	private static CompetitionInterReseaux competitionInterReseaux;
 
 	@FXML
 	public void initialize() {
@@ -112,8 +116,8 @@ public class Controleur {
 
 				if (game.isRunning()) {
 					Enemy enemy = game.spawnEnemy();
-					ExtendedRectangle er = new ExtendedRectangle(enemy);
-					displayJeu.getChildren().add(er);
+					ExtendedImageView r = new ExtendedImageView(enemy, enemy.getObjectType().getURL());
+					displayJeu.getChildren().add(r);
 				}
 
 			}));
@@ -127,7 +131,6 @@ public class Controleur {
 
 					if (tempsEcouleDepuisDerniereVerification.get() > 0) {
 						game.update();
-						// System.out.println(now);
 					}
 					if (now - lastUpdate >= 20)
 						tempsEcouleDepuisDerniereVerification.set(now);
@@ -137,11 +140,10 @@ public class Controleur {
 						spawnEnemyTimeLine.stop();
 					}
 					for (int i = displayJeu.getChildren().size() - 1; i >= 0; i--) {
-						if(displayJeu.getChildren().get(i).getClass().equals(Rectangle.class)){
-						Rectangle r = (Rectangle) displayJeu.getChildren().get(i);
+						ImageView r = (ImageView) displayJeu.getChildren().get(i);
 						if (r.getX() < -Enemy.ENEMY_DIM)
 							displayJeu.getChildren().remove(i);
-					}}
+					}
 				}
 			};
 			timer.start();
@@ -174,28 +176,27 @@ public class Controleur {
 	}
 
 	private void gameStop() {
-
+		graph = null;
+		affichageReseau.getChildren().clear();
 		animStarted = false;
-		
-		clearObstacles();
-		if (graph != null) {
-			graph.resetLiens();
-		}
-		game = new Game((short) 0, (short) 0, graph);
+		displayJeu.getChildren().clear();
+		game = new Game((short) 0, (short) 0, graph, listeReseauxCIR);
 
 	}
 
 	private void newGame() {
 		graph = new GraphiqueIA(affichageReseau);
-		game = new Game((short) 1, (short) 1, graph);
+		if(alreadyLaunch){
+			competitionInterReseaux.faireUneIterationApprentissage();
+			listeReseauxCIR=competitionInterReseaux.getListeReseauxEnCompetitions();
+		}
+		game = new Game((short) 0, (short) 25, graph, listeReseauxCIR);
 
 		game.getPlayersSet().forEach(p -> {
-			ExtendedRectangle er2 = new ExtendedRectangle(p);
-			displayJeu.getChildren().add(er2);
-			er2.setFill(Paint.valueOf("red"));
+			ExtendedImageView r = new ExtendedImageView(p, p.getObjectType().getURL());
+			displayJeu.getChildren().add(r);
 		});
-		// TODO fix le score
-		// scoreLabel.textProperty().bind(game.scoreProperty().asString());
+		scoreLabel.textProperty().bind(game.scoreProperty().asString());
 
 	}
 
@@ -281,12 +282,21 @@ public class Controleur {
 			confirm.close();
 		}
 	}
-	
-	private void clearObstacles(){
-		ObservableList<Node> childrenOfDisplayJeu=displayJeu.getChildren();
-		for (Node node : childrenOfDisplayJeu) {
-			
-		}
+
+	public static ArrayList<Reseau<CompetitionInterReseaux>> getListeReseauxCIR() {
+		return listeReseauxCIR;
+	}
+
+	public static void setListeReseauxCIR(ArrayList<Reseau<CompetitionInterReseaux>> listeNouveauxReseauxCIR) {
+		listeReseauxCIR = listeNouveauxReseauxCIR;
+	}
+
+	public static CompetitionInterReseaux getCompetitionInterReseaux() {
+		return competitionInterReseaux;
+	}
+
+	public static void setCompetitionInterReseaux(CompetitionInterReseaux competitionInterReseaux) {
+		Controleur.competitionInterReseaux = competitionInterReseaux;
 	}
 
 }

@@ -6,6 +6,8 @@ import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
 import ai.coeur.Neurone;
 import ai.coeur.Niveau;
 import ai.coeur.Reseau;
+import ai.coeur.entree.SommeImportance;
+import ai.coeur.transfers.EtapeSortie;
 
 public class GenerateurReseau {
 	// TODO Javadoc
@@ -40,7 +42,7 @@ public class GenerateurReseau {
 		ArrayList<Neurone> neuronesSorties = new ArrayList<>();
 
 		for (int i = 0; i < nbrSorties; i++) {
-			neuronesSorties.add(new Neurone());
+			neuronesSorties.add(new Neurone(new SommeImportance(), new EtapeSortie()));
 		}
 
 		reseau.setNeuronesSorties(neuronesSorties);

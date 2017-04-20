@@ -19,7 +19,7 @@ public class PlayerAI extends Player {
 		this.reseau = reseau;
 		this.vGrid = new VisionGrid(hb, (short) 4, (short) 2);
 		listeNeuronesEntrees = reseau.getNeuronesEntree();
-		listeEntreesNumeriques=new ArrayList<>();
+		listeEntreesNumeriques = new ArrayList<>();
 		for (int i = 0; i < listeNeuronesEntrees.size(); i++) {
 			listeEntreesNumeriques.add(0.0);
 		}
@@ -27,9 +27,6 @@ public class PlayerAI extends Player {
 
 	@Override
 	public void changeDirection(int i) {
-		modifierValEntrees();
-		reseau.calculer();
-		i = (int) (reseau.getSortie())[0];
 		if (i >= 1)
 			getHitBox().getCenterPoint().setVelocityY(-VELOCITY_PLAYER);
 		else if (i <= -1)
@@ -41,10 +38,7 @@ public class PlayerAI extends Player {
 	}
 
 	private void modifierValEntrees() {
-		for (int i = 0; i < listeNeuronesEntrees.size(); i++) {
-			double result = vGrid.getHitBoxes().get(i).isInCollision() ? 1 : 0;
-			listeNeuronesEntrees.get(i).setTotalEntrees(result);
-		}
+		reseau.setValEntree(listeEntreesNumeriques);
 	}
 
 	public ArrayList<Double> getListeEntreesNumeriques() {
@@ -57,7 +51,25 @@ public class PlayerAI extends Player {
 
 	@Override
 	public void appliquerIndex() {
+		for (int i = 0; i < listeEntreesNumeriques.size(); i++) {
+			if (listeIndexEntrees.contains(i)) {
+				listeEntreesNumeriques.set(i, 1.0);
+			} else {
+				listeEntreesNumeriques.set(i, 0.0);
+			}
+		}
+		moveBitch();
+	}
 
+	private void moveBitch() {
+		modifierValEntrees();
+		reseau.calculer();
+		int i = (int) (reseau.getSortie())[0];
+		changeDirection(i);
+	}
+
+	public Reseau<CompetitionInterReseaux> getReseau() {
+		return reseau;
 	}
 
 }
