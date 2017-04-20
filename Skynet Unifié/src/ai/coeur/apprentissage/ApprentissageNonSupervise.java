@@ -22,7 +22,7 @@ public abstract class ApprentissageNonSupervise extends ApprentissageIteratif {
 
 	protected void patternApprentissage(LigneEnsembleDonnees elementEntrainement) {
 		double[] entrees = elementEntrainement.getEntrees();
-		this.reseau.setEntree(entrees);
+		this.reseau.setValEntree(entrees);
 		this.reseau.calculer();
 		this.mettreAJourImportancesReseau();
 	}

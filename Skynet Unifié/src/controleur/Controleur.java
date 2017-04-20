@@ -1,13 +1,21 @@
 package controleur;
 
-import javafx.animation.Animation;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -18,264 +26,267 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import modele.elements.visuals.ExtendedImageView;
 import modele.elements.visuals.ExtendedRectangle;
-import modele.elements.hitbox.HitBox;
 import modele.game.Game;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.GameObjectType;
 import modele.game.game_objects.Player;
 import modele.graphique.GraphiqueIA;
 
-import java.io.*;
-import java.util.TreeSet;
-
 public class Controleur {
 
-    @FXML
-    private Label scoreLabel;
+	@FXML
+	private Label scoreLabel;
 
-    @FXML
-    private Pane displayJeu;
+	@FXML
+	private Pane displayJeu;
 
-    @FXML
-    private Button btnReinit;
+	@FXML
+	private Button btnReinit;
 
-    @FXML
-    private Button btnJouer;
+	@FXML
+	private Button btnJouer;
 
-    @FXML
-    private Button btnQuit;
+	@FXML
+	private Button btnQuit;
 
-    @FXML
-    private ImageView limitUp;
+	@FXML
+	private ImageView limitUp;
 
-    @FXML
-    private ImageView limitDown;
+	@FXML
+	private ImageView limitDown;
+	@FXML
+	private Pane affichageReseau;
 
-    @FXML
-    private Pane affichageReseau;
+	public static final int PLAFOND = 64;
+	public static final int PLANCHER = 243;
+	public static final int EDGE = 1066;
+	public static final int MID_HEIGHT = PLAFOND + ((PLANCHER - PLAFOND) / 2);
+	public static final float DIFFICULTY_INCREMENT = 0.02f;
+	public GraphiqueIA graph;
 
-    public static final int PLAFOND = 64;
-    public static final int PLANCHER = 243;
-    public static final int EDGE = 1066;
-    public static final int MID_HEIGHT = PLAFOND + ((PLANCHER - PLAFOND) / 2);
-    public static final float DIFFICULTY_INCREMENT = 0.02f;
+	Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
 
-    public GraphiqueIA graph;
+	AnimationTimer timer;
+	Game game;
+	boolean animStarted = false;
+	long lastUpdate = 0;
+	float timeBetweenEnemies = 0;
+	float timerScaleFactor;
 
-    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+	@FXML
+	public void initialize() {
+		gameStop();
+		System.out.println(MID_HEIGHT);
+	}
 
-    AnimationTimer timer;
-    Game game;
-    boolean animStarted = false;
-    long lastUpdate = 0;
-    float timeBetweenEnemies = 0;
-    float timerScaleFactor;
+	@FXML
+	void play() {
+		if (game.isStopped()) {
+			newGame();
+			demarerAnimation();
+		}
+		if (game.isPaused()) {
+			game.run();
+		}
 
+	}
 
-    @FXML
-    public void initialize() {
-        gameStop();
-    }
+	@FXML
+	private void pause() {
+		game.pause();
+	}
 
-    @FXML
-    void play() {
-    	
-        if (game.isStopped()) {
-            newGame();
-            demarerAnimation();
-        }
-        if (game.isPaused()) {
-            game.run();
-        }
+	/**
+	 * le point de lancement du thread, il calcule à répétition le nombre de
+	 * temps passé depuis le dernier check et, si il n'est pas de zéro, update
+	 * les positions des objets De plus, a intervalle regulier il ajoute un
+	 * obstacle dans lecran
+	 */
+	public void demarerAnimation() {
+		if (!animStarted) {
+			game.run();
+			LongProperty tempsEcouleDepuisDerniereVerification = new SimpleLongProperty(0);
 
-    }
+			Timeline spawnEnemyTimeLine = new Timeline(new KeyFrame(Duration.millis(1000), e -> {
 
-    @FXML
-    private void pause() {
-        game.pause();
-    }
+				if (game.isRunning()) {
+					Enemy enemy = game.spawnEnemy();
+					ExtendedRectangle er = new ExtendedRectangle(enemy);
+					displayJeu.getChildren().add(er);
+				}
 
-    /**
-     * le point de lancement du thread, il calcule à répétition le nombre de
-     * temps passé depuis le dernier check et, si il n'est pas de zéro, update
-     * les positions des objets De plus, a intervalle regulier il ajoute un
-     * obstacle dans lecran
-     */
-    public void demarerAnimation() {
-        if (!animStarted) {
-            game.run();
-            LongProperty tempsEcouleDepuisDerniereVerification = new SimpleLongProperty(0);
+			}));
+			// spawnEnemyTimeLine.setCycleCount(Animation.INDEFINITE);
+			spawnEnemyTimeLine.play();
+			spawnEnemyTimeLine.setOnFinished(e -> spawnEnemyTimeLine.play());
 
-            Timeline spawnEnemyTimeLine = new Timeline(new KeyFrame(Duration.millis(1000), e -> {
+			timer = new AnimationTimer() {
+				@Override
+				public void handle(long now) {
 
-                if (game.isRunning()) {
-                    Enemy enemy = game.spawnEnemy();
-                    ExtendedImageView r = new ExtendedImageView(enemy, enemy.getObjectType().getURL());
-                    displayJeu.getChildren().add(r);
-                }
+					if (tempsEcouleDepuisDerniereVerification.get() > 0) {
+						game.update();
+						// System.out.println(now);
+					}
+					if (now - lastUpdate >= 20)
+						tempsEcouleDepuisDerniereVerification.set(now);
+					if (game.isStopped()) {
+						gameStop();
+						timer.stop();
+						spawnEnemyTimeLine.stop();
+					}
+					for (int i = displayJeu.getChildren().size() - 1; i >= 0; i--) {
+						if(displayJeu.getChildren().get(i).getClass().equals(Rectangle.class)){
+						Rectangle r = (Rectangle) displayJeu.getChildren().get(i);
+						if (r.getX() < -Enemy.ENEMY_DIM)
+							displayJeu.getChildren().remove(i);
+					}}
+				}
+			};
+			timer.start();
+		}
+		animStarted = true;
 
-            }));
-            // spawnEnemyTimeLine.setCycleCount(Animation.INDEFINITE);
-            spawnEnemyTimeLine.play();
-            spawnEnemyTimeLine.setOnFinished(e -> spawnEnemyTimeLine.play());
+	}
 
-            timer = new AnimationTimer() {
-                @Override
-                public void handle(long now) {
+	@FXML
+	void quit(ActionEvent event) {
+		confirm.setTitle("Quitter");
+		confirm.setContentText("Voulez-vous vraiment quitter l'application?");
 
-                    if (tempsEcouleDepuisDerniereVerification.get() > 0) {
-                       game.update();
-                    }
-                    if (now - lastUpdate >= 20)
-                        tempsEcouleDepuisDerniereVerification.set(now);
-                    if (game.isStopped()) {
-                        gameStop();
-                        timer.stop();
-                        spawnEnemyTimeLine.stop();
-                    }
-                    for (int i = displayJeu.getChildren().size() - 1; i >= 0; i--) {
-                       ImageView r = (ImageView) displayJeu.getChildren().get(i);
-                        if (r.getX() < -Enemy.ENEMY_DIM)
-                            displayJeu.getChildren().remove(i);
-                    }
-                }
-            };
-            timer.start();
-        }
-        animStarted = true;
+		if (confirm.showAndWait().get() == ButtonType.OK) {
+			System.exit(0);
+		}
+	}
 
-    }
+	@FXML
+	void reinit(ActionEvent event) {
+		confirm.setTitle("Réinitialiser");
+		confirm.setContentText("Voulez-vous vraiment réinitialiser la progression et le score?");
 
-    @FXML
-    void quit(ActionEvent event) {
-        confirm.setTitle("Quitter");
-        confirm.setContentText("Voulez-vous vraiment quitter l'application?");
+		pause();
 
-        if (confirm.showAndWait().get() == ButtonType.OK) {
-            System.exit(0);
-        }
-    }
+		if (confirm.showAndWait().get() == ButtonType.OK) {
+			gameStop();
+		} else
+			play();
+	}
 
-    @FXML
-    void reinit(ActionEvent event) {
-        confirm.setTitle("Réinitialiser");
-        confirm.setContentText("Voulez-vous vraiment réinitialiser la progression et le score?");
+	private void gameStop() {
 
-        pause();
+		animStarted = false;
+		
+		clearObstacles();
+		if (graph != null) {
+			graph.resetLiens();
+		}
+		game = new Game((short) 0, (short) 0, graph);
 
-        if (confirm.showAndWait().get() == ButtonType.OK) {
-        	
-            gameStop();
-        } else
-            play();
-    }
+	}
 
-    private void gameStop() {
+	private void newGame() {
+		graph = new GraphiqueIA(affichageReseau);
+		game = new Game((short) 1, (short) 6, graph);
 
-    	graph=null;
-    	affichageReseau.getChildren().clear();
-        animStarted = false;
-        displayJeu.getChildren().clear();
-        game = new Game((short) 0, (short) 0,graph);
+		game.getPlayersSet().forEach(p -> {
+			ExtendedRectangle er2 = new ExtendedRectangle(p);
+			displayJeu.getChildren().add(er2);
+			er2.setFill(Paint.valueOf("red"));
+		});
+		// TODO fix le score
+		// scoreLabel.textProperty().bind(game.scoreProperty().asString());
 
-    }
+	}
 
-    private void newGame() {
-    	
-    	graph = new GraphiqueIA(affichageReseau);
-        game = new Game((short) 1, (short) 0,graph);
+	@FXML
+	void debutMouvement(KeyEvent event) {
+		if (game.getPlayersSet().size() > 0) {
+			Player p = game.getPlayersSet().get(0);
 
-        game.getPlayersSet().forEach(p -> {
-            ExtendedImageView r = new ExtendedImageView(p,p.getObjectType().getURL());
-            displayJeu.getChildren().add(r);
-        });
-        scoreLabel.textProperty().bind(game.scoreProperty().asString());
+			if (p.getObjectType() == GameObjectType.HUMAN) {
+				switch (event.getCode()) {
+				case UP: {
+					p.changeDirection(1);
+					break;
+				}
+				case DOWN: {
+					p.changeDirection(-1);
+					break;
+				}
+				default: {
+					p.changeDirection(0);
+					break;
+				}
+				}
+			}
+		}
 
-    }
+	}
 
-    @FXML
-    void debutMouvement(KeyEvent event) {
-        if (game.getPlayersSet().size() > 0) {
-            Player p = game.getPlayersSet().get(0);
+	@FXML
+	void finMouvement() {
 
-            if (p.getObjectType() == GameObjectType.HUMAN) {
-                switch (event.getCode()) {
-                    case UP: {
-                        p.changeDirection(1);
-                        break;
-                    }
-                    case DOWN: {
-                        p.changeDirection(-1);
-                        break;
-                    }
-                    default: {
-                        p.changeDirection(0);
-                        break;
-                    }
-                }
-            }
-        }
+		if (game.getPlayersSet().size() > 0) {
+			Player p = game.getPlayersSet().get(0);
+			if (p.getObjectType() == GameObjectType.HUMAN)
+				p.changeDirection(0);
+		}
+	}
 
-    }
+	/**
+	 * Méthode qui permet de sauvegarder une partie. Pour l'instant, elle n'est
+	 * que dans un état basique, puisqu'il n'y a aucun paramètres à sauvegarder.
+	 */
+	@FXML
+	private boolean save() {
+		// TODO Implémenter la méthode save dans son entièreté lorsque le jeu
+		// est construit.
+		String content = "content";
+		try {
+			/* f.createNewFile(); */
+			PrintWriter sortie = new PrintWriter(new FileWriter("save"));
 
-    @FXML
-    void finMouvement() {
+			sortie.println(content);
 
-        if (game.getPlayersSet().size() > 0) {
-            Player p = game.getPlayersSet().get(0);
-            if (p.getObjectType() == GameObjectType.HUMAN)
-                p.changeDirection(0);
-        }
-    }
+			sortie.close();
+		} catch (IOException e) {
+		}
 
-    /**
-     * Méthode qui permet de sauvegarder une partie. Pour l'instant, elle n'est
-     * que dans un état basique, puisqu'il n'y a aucun paramètres à sauvegarder.
-     */
-    @FXML
-    private boolean save() {
-        // TODO Implémenter la méthode save dans son entièreté lorsque le jeu
-        // est construit.
-        String content = "content";
-        try {
-            /* f.createNewFile(); */
-            PrintWriter sortie = new PrintWriter(new FileWriter("save"));
+		return true;
+	}
 
-            sortie.println(content);
+	/**
+	 * Méthode qui permet de charger une partie. Pour l'instant, elle n'est que
+	 * dans un état basique, puisqu'il n'y a aucun paramètres à charger.
+	 */
+	@FXML
+	private void load() {
+		// TODO Implémenter la méthode load dans son entièreté lorsque le jeu
+		// est construit.
+		String ligneRetour = null;
 
-            sortie.close();
-        } catch (IOException e) {
-        }
+		try {
+			BufferedReader entree = new BufferedReader(new FileReader("save"));
+			ligneRetour = entree.readLine();
 
-        return true;
-    }
+			entree.close();
+		} catch (IOException e) {
+		}
 
-    /**
-     * Méthode qui permet de charger une partie. Pour l'instant, elle n'est que
-     * dans un état basique, puisqu'il n'y a aucun paramètres à charger.
-     */
-    @FXML
-    private void load() {
-        // TODO Implémenter la méthode load dans son entièreté lorsque le jeu
-        // est construit.
-        String ligneRetour = null;
+		confirm.setTitle("Load Test View");
+		confirm.setContentText(ligneRetour.equals("content") ? "true" : "false");
 
-        try {
-            BufferedReader entree = new BufferedReader(new FileReader("save"));
-            ligneRetour = entree.readLine();
-
-            entree.close();
-        } catch (IOException e) {
-        }
-
-        confirm.setTitle("Load Test View");
-        confirm.setContentText(ligneRetour.equals("content") ? "true" : "false");
-
-        if (confirm.showAndWait().get() == ButtonType.OK) {
-            confirm.close();
-        }
-    }
+		if (confirm.showAndWait().get() == ButtonType.OK) {
+			confirm.close();
+		}
+	}
+	
+	private void clearObstacles(){
+		ObservableList<Node> childrenOfDisplayJeu=displayJeu.getChildren();
+		for (Node node : childrenOfDisplayJeu) {
+			
+		}
+	}
 
 }

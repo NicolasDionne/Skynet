@@ -14,8 +14,8 @@ public class VisionGrid {
 
     public static final short NB_ROWS_DEFAULT = 4;
     public static final short NB_COLUMNS_DEFAULT = 10;
-    public static final short CELL_HEIGHT = 40;
-    public static final short CELL_WIDTH = 80;
+    public static final short CELL_HEIGHT = 20;
+    public static final short CELL_WIDTH = 20;
 
     private ArrayList<HitBox> hitBoxes = new ArrayList<>();
 

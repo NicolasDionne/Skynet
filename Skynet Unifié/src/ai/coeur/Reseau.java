@@ -198,20 +198,43 @@ public class Reseau<R extends RegleApprentissage> implements Sortable {
 	 * neurones d'entrée.
 	 * <P>
 	 * Le nombre d'entrées en paramètre doit être le même que le nombre de
-	 * neurones d'entrée.
+	 * neurones d'entrée. Si ce n'est pas le cas, une nouvelle exception
+	 * <code>IllegalArgumentException</code> est lancée.
 	 * 
-	 * @param entrees
+	 * @param nouvellesValsEntrees
 	 *            <code>double...</code>, les valeurs désirées.
 	 */
-	public void setEntree(double... entrees) {
-		if (entrees.length != neuronesEntree.size()) {
+	public void setValEntree(double... nouvellesValsEntrees) {
+		if (nouvellesValsEntrees.length != neuronesEntree.size()) {
 			throw new IllegalArgumentException("la taille n'est pas conforme");
 		} else {
 			for (int i = 0; i < this.neuronesEntree.size(); i++) {
-				neuronesEntree.get(i).setTotalEntrees(entrees[i]);
+				neuronesEntree.get(i).setSortie(nouvellesValsEntrees[i]);
 			}
 		}
-		renommerComposantes();
+
+	}
+
+	/**
+	 * Définit les entrées spécifiées comme étant la valeur de sortie des
+	 * neurones d'entrée.
+	 * <P>
+	 * Le nombre d'entrées en paramètre doit être le même que le nombre de
+	 * neurones d'entrée. Si ce n'est pas le cas, une nouvelle exception
+	 * <code>IllegalArgumentException</code> est lancée.
+	 * 
+	 * @param nouvellesValsEntrees
+	 *            <code>ArrayList&ltDouble&gt</code>, les nouvelles entrées dans
+	 *            un <code>ArrayList</code>.
+	 */
+	public void setValEntree(ArrayList<Double> nouvellesValsEntrees) {
+		if (nouvellesValsEntrees.size() != neuronesEntree.size()) {
+			throw new IllegalArgumentException("la taille n'est pas conforme");
+		} else {
+			for (int i = 0; i < this.neuronesEntree.size(); i++) {
+				neuronesEntree.get(i).setSortie(nouvellesValsEntrees.get(i));
+			}
+		}
 	}
 
 	/**
@@ -620,6 +643,16 @@ public class Reseau<R extends RegleApprentissage> implements Sortable {
 				listeLiens.add(lien);
 			}
 		}
+	}
+
+	public ArrayList<Double> getValEntrees() {
+		ArrayList<Double> valEntrees = new ArrayList<>();
+
+		for (int i = 0; i < neuronesEntree.size(); i++) {
+			valEntrees.add(neuronesEntree.get(i).getSortie());
+		}
+
+		return valEntrees;
 	}
 
 	@Override

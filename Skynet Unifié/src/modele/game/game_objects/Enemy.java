@@ -2,6 +2,7 @@ package modele.game.game_objects;
 
 import modele.elements.hitbox.HitBox;
 import modele.elements.hitbox.MotionPoint;
+import modele.elements.visuals.ExtendedRectangle;
 
 public class Enemy extends GameObject {
 

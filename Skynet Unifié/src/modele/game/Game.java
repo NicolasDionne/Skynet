@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
+import ai.coeur.Reseau;
 import controleur.Controleur;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -14,7 +16,9 @@ import modele.game.game_objects.Bias;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.GameObjectType;
 import modele.game.game_objects.Player;
+import modele.game.game_objects.PlayerAI;
 import modele.graphique.GraphiqueIA;
+import modele.reseau.GenerateurReseau;
 
 public class Game implements Bias, Update, Render {
 
@@ -33,18 +37,25 @@ public class Game implements Bias, Update, Render {
 	private IntegerProperty score;
 	private GraphiqueIA graph;
 
+	private ArrayList<Reseau<CompetitionInterReseaux>> listeReseauxCIR;
+
 	public final Consumer<Void> updater = (v) -> update();
 	public final Consumer<Void> renderer = (v) -> render();
 
 	public Game(short nbHumans, short nbAI, GraphiqueIA graph) {
+		if (listeReseauxCIR == null && nbAI != 0) {
+			GenerateurReseau g = new GenerateurReseau();
+			g.genererReseauCIR(nbAI, 40, 1, 7, 10, -100, 100);
+			listeReseauxCIR = g.getReseauxCIR();
+		}
 		hbGen = new EnemySpawner();
 		short trueNbHumans = filterNbHumans(nbHumans);
 
 		for (int i = 0; i < trueNbHumans; i++) {
-			createPlayer(GameObjectType.HUMAN);
+			createPlayer(GameObjectType.HUMAN, null);
 		}
 		for (int j = 0; j < nbAI; j++) {
-			createPlayer(GameObjectType.AI);
+			createPlayer(GameObjectType.AI, listeReseauxCIR.get(j));
 		}
 		score = new SimpleIntegerProperty();
 		this.graph = graph;
@@ -118,12 +129,22 @@ public class Game implements Bias, Update, Render {
 		hb.getCenterPoint().rotate(hb.getOrigin());
 	}
 
-	public void createPlayer(GameObjectType pType) {
+	public void createPlayer(GameObjectType pType, Reseau reseau) {
 		HitBox hb = new HitBox(Player.PLAYER_DIM, Player.PLAYER_DIM, 50, Controleur.MID_HEIGHT);
-		Player p = new Player(pType, hb);
-
+		Player p;
+		if (pType.equals(GameObjectType.AI)) {
+			p = createPlayerAI(hb, reseau);
+		} else {
+			p = new Player(pType, hb);
+		}
 		playersSet.add(p);
 
+	}
+
+	private PlayerAI createPlayerAI(HitBox hb, Reseau reseau) {
+		PlayerAI p = new PlayerAI(hb, reseau);
+
+		return p;
 	}
 
 	public List<Player> getPlayersSet() {
@@ -208,15 +229,25 @@ public class Game implements Bias, Update, Render {
 
 			playersSet.forEach(p -> {
 				if (p.getObjectType() == GameObjectType.AI) {
-					ArrayList<Integer> indexListBuffer = new ArrayList<>();
+					List<Integer> indexListBuffer = new ArrayList<>();
 
 					p.getvGrid().getHitBoxes().forEach(hb -> enemiesSet.forEach(e -> {
 						if (hb.checkCollision(e.getHitBox())) {
 							indexListBuffer.add(p.getvGrid().getHitBoxes().indexOf(hb));
 						}
+
+						// List<Double> listeEntreesNumeriquesDeP = ((PlayerAI)
+						// p).getListeEntreesNumeriques();
+						//
+						// for (int i = 0; i < listeEntreesNumeriquesDeP.size();
+						// i++) {
+						//
+						// }
+
 					}));
 
-					collisionIndexList.add(indexListBuffer);
+					p.setListeIndexEntrees(indexListBuffer);
+					p.appliquerIndex();
 				}
 			});
 
