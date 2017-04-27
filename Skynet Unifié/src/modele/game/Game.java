@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
 import ai.coeur.Reseau;
 import controleur.Controleur;
 import javafx.beans.property.IntegerProperty;
@@ -13,13 +12,12 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.layout.Pane;
 import modele.elements.hitbox.HitBox;
 import modele.elements.visuals.ExtendedImageView;
-import modele.elements.visuals.ExtendedRectangle;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.GameObjectType;
 import modele.game.game_objects.Player;
 import modele.game.game_objects.PlayerAI;
 import modele.graphique.GraphiqueIA;
-import modele.reseau.GenerateurReseau;
+import modele.reseau.GenerateurReseauCIL;
 
 public class Game implements Bias, Update, Render, Spawn {
 
@@ -37,7 +35,7 @@ public class Game implements Bias, Update, Render, Spawn {
 	private EnemySpawner hbGen;
 	private IntegerProperty score;
 	private GraphiqueIA graph;
-	private ArrayList<Reseau<CompetitionInterReseaux>> listeReseauxCIR;
+	private ArrayList<Reseau> listeReseauxCIR;
 
 	private float timeBetweenEnemies = 0;
 	private float timerScaleFactor = 1;
@@ -47,18 +45,18 @@ public class Game implements Bias, Update, Render, Spawn {
 	public final Consumer<Pane> renderer = (p) -> render(p);
 	public final Consumer<Void> spawner = (v) -> spawn();
 
-	public Game(short nbHumans, short nbAI, GraphiqueIA graph,
-			ArrayList<Reseau<CompetitionInterReseaux>> listeReseauxCIR) {
+	public Game(short nbHumans, short nbAI, GraphiqueIA graph, ArrayList<Reseau> listeReseauxCIR, Controleur c) {
 
 		score = new SimpleIntegerProperty();
 
 		if (listeReseauxCIR == null && nbAI != 0) {
 			System.out.println("asd");
 
-			GenerateurReseau g = new GenerateurReseau();
-			g.genererReseauCIR(nbAI, 40, 1, 7, 10, -100, 100);
+			GenerateurReseauCIL g = new GenerateurReseauCIL();
+			g.genererReseauCIL(nbAI, 40, 1, 7, 20, -100, 100);
 			listeReseauxCIR = g.getReseauxCIR();
-			// Controleur.setListeReseauxCIR(this.listeReseauxCIR);
+			this.listeReseauxCIR = listeReseauxCIR;
+			c.setListeReseaux(this.listeReseauxCIR);
 		}
 
 		this.listeReseauxCIR = listeReseauxCIR;
@@ -69,7 +67,7 @@ public class Game implements Bias, Update, Render, Spawn {
 			createPlayer(GameObjectType.HUMAN, null);
 		}
 		for (int j = 0; j < nbAI; j++) {
-			createPlayer(GameObjectType.AI, listeReseauxCIR.get(j));
+			createPlayer(GameObjectType.AI, this.listeReseauxCIR.get(j));
 		}
 
 		this.graph = graph;
@@ -301,6 +299,10 @@ public class Game implements Bias, Update, Render, Spawn {
 			}));
 
 			collisionIndexList.add(indexListBuffer);
+			if (p.getClass() == PlayerAI.class) {
+				p.setListeIndexEntrees(indexListBuffer);
+				p.appliquerIndex();
+			}
 
 		});
 

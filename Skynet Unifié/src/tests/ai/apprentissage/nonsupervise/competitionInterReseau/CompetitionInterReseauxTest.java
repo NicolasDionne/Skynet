@@ -8,20 +8,20 @@ import java.util.LinkedList;
 import org.junit.Before;
 import org.junit.Test;
 
-import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
-import ai.apprentissage.nonsupervise.competitionInterReseau.Similarite;
+import ai.apprentissage.nonsupervise.competitionInter.CompetitionInterReseaux;
+import ai.apprentissage.nonsupervise.competitionInter.competitionInterReseau.Similarite;
 import ai.coeur.Lien;
 import ai.coeur.Reseau;
-import modele.reseau.GenerateurReseau;
+import modele.reseau.GenerateurReseauCIR;
 
 public class CompetitionInterReseauxTest {
 	CompetitionInterReseaux c;
-	GenerateurReseau g;
-	ArrayList<Reseau<CompetitionInterReseaux>> listeReseaux;
+	GenerateurReseauCIR g;
+	ArrayList<Reseau> listeReseaux;
 
 	@Before
 	public void setUp() throws Exception {
-		g = new GenerateurReseau();
+		g = new GenerateurReseauCIR();
 		g.genererReseauCIR(8, 3, 2, 3, 3, -100, 100);
 		c = new CompetitionInterReseaux(g.getReseauxCIR());
 		listeReseaux = c.getListeReseauxEnCompetitions();
@@ -47,7 +47,7 @@ public class CompetitionInterReseauxTest {
 
 		c.faireUneIterationApprentissage();
 
-		ArrayList<Reseau<CompetitionInterReseaux>> listeMoinsBonsReseaux = c.getListeMoinsBonsReseaux();
+		ArrayList<Reseau> listeMoinsBonsReseaux = c.getListeMoinsBonsReseaux();
 		LinkedList<Similarite> listeSimilarites = c.getListeSimilaritesMeilleursReseaux();
 
 		for (Reseau<CompetitionInterReseaux> reseau : listeMoinsBonsReseaux) {

@@ -1,12 +1,11 @@
 package application;
 
+import controleur.Controleur;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.scene.input.KeyEvent;
 
 public class Main extends Application {
 	@Override
@@ -17,6 +16,7 @@ public class Main extends Application {
 			Scene s = new Scene(root);
 			primaryStage.setScene(s);
 			primaryStage.show();
+			Controleur c = new Controleur();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

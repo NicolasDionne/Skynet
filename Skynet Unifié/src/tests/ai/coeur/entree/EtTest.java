@@ -1,11 +1,10 @@
 package tests.ai.coeur.entree;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import ai.coeur.Lien;
 import ai.coeur.Neurone;
 import ai.coeur.entree.Et;
 

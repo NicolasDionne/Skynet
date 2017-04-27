@@ -27,7 +27,8 @@ public class CompetitionInterLiens extends CompetitionInter implements Serializa
 
 	@Override
 	protected void mettreAJourImportancesReseau() {
-		this.valModification = getValModification.getVal();
+		this.valModification = 5;
+		// this.valModification = getValModification.getVal();
 		appliquerImportanceMeilleurReseau();
 		appliquerModificationImportance();
 	}

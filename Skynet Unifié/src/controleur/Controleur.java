@@ -1,5 +1,10 @@
 package controleur;
 
+import java.util.ArrayList;
+
+import ai.apprentissage.nonsupervise.CompetitionInter;
+import ai.apprentissage.nonsupervise.competitionInter.CompetitionInterLiens;
+import ai.coeur.Reseau;
 import javafx.animation.AnimationTimer;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -56,6 +61,10 @@ public class Controleur {
 
 	public GraphiqueIA graph;
 
+	private CompetitionInter regleApprentissageCompetitionInter;
+
+	private ArrayList<Reseau> listeReseaux;
+
 	Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
 
 	AnimationTimer timer;
@@ -63,6 +72,14 @@ public class Controleur {
 	boolean animStarted = false;
 	float timeBetweenEnemies = 0;
 	float timerScaleFactor = 1;
+
+	public ArrayList<Reseau> getListeReseaux() {
+		return listeReseaux;
+	}
+
+	public void setListeReseaux(ArrayList<Reseau> listeReseaux) {
+		this.listeReseaux = listeReseaux;
+	}
 
 	@FXML
 	public void initialize() {
@@ -124,6 +141,7 @@ public class Controleur {
 						timer.stop();
 						timerScaleFactor = 1;
 						timeBetweenEnemies = 0;
+						play();
 					}
 				}
 			};
@@ -166,13 +184,19 @@ public class Controleur {
 
 		animStarted = false;
 		displayJeu.getChildren().clear();
-		game = new Game((short) 0, (short) 0, graph, null);
+		game = new Game((short) 0, (short) 0, graph, listeReseaux, this);
+
 	}
 
 	private void newGame() {
-
+		if (listeReseaux != null) {
+			if (regleApprentissageCompetitionInter == null) {
+				regleApprentissageCompetitionInter = new CompetitionInterLiens(listeReseaux, 10);
+			}
+			regleApprentissageCompetitionInter.faireUneIterationApprentissage();
+		}
 		graph = new GraphiqueIA(affichageReseau);
-		game = new Game((short) 1, (short) 4, graph, null);
+		game = new Game((short) 1, (short) 4, graph, listeReseaux, this);
 
 		// Les ennemis "floor" et "roof" sont pour que l'intelligence
 		// artificielle reconnaisse qu'il y a des murs.

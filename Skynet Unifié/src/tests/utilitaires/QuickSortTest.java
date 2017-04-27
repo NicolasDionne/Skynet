@@ -7,18 +7,17 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
-import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
+import ai.apprentissage.nonsupervise.competitionInter.CompetitionInterReseaux;
 import ai.coeur.Reseau;
-import modele.reseau.GenerateurReseau;
+import modele.reseau.GenerateurReseauCIR;
 import utilitaires.QuickSort;
-import utilitaires.Sortable;
 
 public class QuickSortTest {
 	Reseau<CompetitionInterReseaux> r1, r2, r3, r4;
 
 	@Before
 	public void setUp() throws Exception {
-		GenerateurReseau g = new GenerateurReseau();
+		GenerateurReseauCIR g = new GenerateurReseauCIR();
 		g.genererReseauCIR(4, 1, 1, 1, 2, 1, 2);
 		r1 = g.getReseauxCIR().get(0);
 		r2 = g.getReseauxCIR().get(1);
