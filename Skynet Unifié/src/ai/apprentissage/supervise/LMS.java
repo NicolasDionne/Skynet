@@ -8,6 +8,11 @@ import ai.coeur.Neurone;
 import ai.coeur.apprentissage.ApprentissageSupervise;
 
 public class LMS extends ApprentissageSupervise {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5421303050095899405L;
+
 	// TODO Javadoc
 	public LMS() {
 	}

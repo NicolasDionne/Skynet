@@ -1,5 +1,6 @@
 package ai.coeur;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -32,7 +33,9 @@ import utilitaires.Sortable;
  * @see Niveau
  * @see RegleApprentissage
  */
-public class Reseau<R extends RegleApprentissage> implements Sortable {
+public class Reseau<R extends RegleApprentissage> implements Serializable, Sortable {
+
+	private static final long serialVersionUID = 5967360194072459874L;
 
 	/**
 	 * La liste des niveaux que contient le réseau.
@@ -660,4 +663,8 @@ public class Reseau<R extends RegleApprentissage> implements Sortable {
 		return Integer.MAX_VALUE - this.score;
 	}
 
+	public void save(String filePath) {
+		
+	}
+	
 }

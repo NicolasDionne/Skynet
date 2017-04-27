@@ -2,21 +2,20 @@ package ai.coeur.transfers;
 
 import ai.utilitaire.Proprietes;
 
-public class Etape extends FonctionTransfers {
+public class EtapeSortie extends FonctionTransfers {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -4103641407126396051L;
-	// TODO Javadoc
+	private static final long serialVersionUID = -5881013521618703650L;
 	private double yHaut = 1;
-	private double yBas = 0;
+	private double yBas = -1;
 
-	public Etape() {
+	public EtapeSortie() {
 
 	}
 
-	public Etape(Proprietes proprietes) {
+	public EtapeSortie(Proprietes proprietes) {
 		try {
 			this.yHaut = (Double) proprietes.getPropriete("fonctionTransfers.yHaut");
 			this.yBas = (Double) proprietes.getPropriete("fonctionTransfers.yBas");
@@ -30,7 +29,7 @@ public class Etape extends FonctionTransfers {
 
 	@Override
 	public double getSortie(double totalEntree) {
-		return (0 < totalEntree) ? yHaut : yBas;
+		return (0 < totalEntree) ? yHaut : (totalEntree < 0) ? yBas : 0;
 	}
 
 	public double getYHaut() {
@@ -57,5 +56,4 @@ public class Etape extends FonctionTransfers {
 
 		return proprietes;
 	}
-
 }

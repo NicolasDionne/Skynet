@@ -1,5 +1,6 @@
 package ai.coeur;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -17,7 +18,9 @@ import java.util.ArrayList;
  * @see Reseau
  * @see Lien
  */
-public class Niveau {
+public class Niveau implements Serializable {
+
+	private static final long serialVersionUID = 7356903300583621306L;
 
 	/**
 	 * Le réseau dans lequel se trouve le niveau.
@@ -205,7 +208,8 @@ public class Niveau {
 	}
 
 	/**
-	 * Lance la méthode <code>calculer()</code> de toutes les neurones du réseau
+	 * Lance la méthode {@link Neurone#calculer()} de toutes les neurones du
+	 * réseau.
 	 */
 	public void calculer() {
 		for (Neurone neurone : listeNeuronesNiveau) {
@@ -215,7 +219,7 @@ public class Niveau {
 
 	/**
 	 * Réinitialise toutes les neurones du niveau en lançant leur méthode
-	 * <code>reinitialiser()</code>.
+	 * {@link Neurone#reinitialiser()}.
 	 */
 	public void reinitialiser() {
 		for (Neurone neurone : listeNeuronesNiveau) {
@@ -259,8 +263,8 @@ public class Niveau {
 	/**
 	 * Vérifie si le niveau ne contient aucune neurone.
 	 * 
-	 * @return <code>boolean</code>, true si le niveau ne contient pas de
-	 *         neurones, sinon false.
+	 * @return <code>boolean</code>, <code>true</code> si le niveau ne contient
+	 *         pas de neurones, sinon <code>false</code>.
 	 */
 	public boolean isVide() {
 		return listeNeuronesNiveau.isEmpty();
