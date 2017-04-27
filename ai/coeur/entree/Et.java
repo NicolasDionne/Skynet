@@ -6,11 +6,6 @@ import ai.coeur.Lien;
 
 public class Et extends FonctionEntree {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2828005308549763288L;
-
 	@Override
 	public double getSortie(ArrayList<Lien> liensEntree) {
 		double val;

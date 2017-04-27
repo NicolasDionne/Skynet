@@ -8,34 +8,39 @@ import modele.game.game_objects.Player;
 
 public class ExtendedImageView extends ImageView {
 
-	HitBox hb;
-	GameObject gOb;
+    HitBox hb;
+    GameObject gOb;
 
-	public ExtendedImageView(HitBox hb, String styleName) {
-		super();
-		if (hb != null) {
+    public ExtendedImageView(HitBox hb, String url) {
+        super();
+        if (hb != null) {
+            try {
 
-			this.hb = hb;
+                this.hb = hb;
 
-			xProperty().bind(hb.getCenterPoint().xProperty().subtract(hb.getWidth() / 2.0));
-			yProperty().bind(hb.getCenterPoint().yProperty().subtract(hb.getHeight() / 2.0));
-			rotateProperty().bind(hb.getSelfRotationParameters().angleProperty().multiply(360 / 2.0 / Math.PI));
+                xProperty().bind(hb.getCenterPoint().xProperty().subtract(hb.getWidth() / 2.0));
+                yProperty().bind(hb.getCenterPoint().yProperty().subtract(hb.getHeight() / 2.0));
+                rotateProperty().bind(hb.getSelfRotationParameters().angleProperty().multiply(360 / 2.0 / Math.PI));
 
-			getStyleClass().set(0, styleName);
-		}
-	}
+                setImage(new Image(url));
 
-	public ExtendedImageView(GameObject gameObject, String url) {
-		this(gameObject.getHitBox(), url);
-		this.gOb = gameObject;
-	}
+            } catch (IllegalArgumentException iae) {
+                setImage(null);
+            }
+        }
+    }
 
-	public HitBox getHitBox() {
-		return hb;
-	}
+    public ExtendedImageView(GameObject gameObject, String url) {
+        this(gameObject.getHitBox(), url);
+        this.gOb = gameObject;
+    }
 
-	public GameObject getGameObject() {
-		return gOb;
-	}
+    public HitBox getHitBox() {
+        return hb;
+    }
+
+    public GameObject getGameObject() {
+        return gOb;
+    }
 
 }

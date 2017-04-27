@@ -1,13 +1,19 @@
 package controleur;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import ai.apprentissage.nonsupervise.CompetitionInter;
-import ai.apprentissage.nonsupervise.competitionInter.CompetitionInterLiens;
+import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
 import ai.coeur.Reseau;
 import javafx.animation.AnimationTimer;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -17,8 +23,8 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 import modele.elements.visuals.ExtendedImageView;
-import modele.elements.hitbox.HitBox;
 import modele.game.Game;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.GameObjectType;
@@ -51,44 +57,35 @@ public class Controleur {
 	@FXML
 	private Pane affichageReseau;
 
-	public static final int PLAFOND = 35;
-	public static final int PLANCHER = 220;
+	public static final int PLAFOND = 64;
+	public static final int PLANCHER = 243;
 	public static final int EDGE = 1066;
 	public static final int MID_HEIGHT = PLAFOND + ((PLANCHER - PLAFOND) / 2);
-	public static final float DIFFICULTY_INCREMENT = 0.05f;
-
-	public static final float TIME_BETWEEN_DEFAULT = 2f;
+	public static final float DIFFICULTY_INCREMENT = 0.02f;
 
 	public GraphiqueIA graph;
-
-	private CompetitionInter regleApprentissageCompetitionInter;
-
-	private ArrayList<Reseau> listeReseaux;
+	public static boolean alreadyLaunch = false;
 
 	Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
 
 	AnimationTimer timer;
 	Game game;
 	boolean animStarted = false;
+	long lastUpdate = 0;
 	float timeBetweenEnemies = 0;
-	float timerScaleFactor = 1;
+	float timerScaleFactor;
 
-	public ArrayList<Reseau> getListeReseaux() {
-		return listeReseaux;
-	}
-
-	public void setListeReseaux(ArrayList<Reseau> listeReseaux) {
-		this.listeReseaux = listeReseaux;
-	}
+	private static ArrayList<Reseau<CompetitionInterReseaux>> listeReseauxCIR;
+	private static CompetitionInterReseaux competitionInterReseaux;
 
 	@FXML
 	public void initialize() {
 		gameStop();
+		System.out.println(MID_HEIGHT);
 	}
 
 	@FXML
 	void play() {
-
 		if (game.isStopped()) {
 			newGame();
 			demarerAnimation();
@@ -113,40 +110,43 @@ public class Controleur {
 	public void demarerAnimation() {
 		if (!animStarted) {
 			game.run();
+			LongProperty tempsEcouleDepuisDerniereVerification = new SimpleLongProperty(0);
+
+			Timeline spawnEnemyTimeLine = new Timeline(new KeyFrame(Duration.millis(1000), e -> {
+
+				if (game.isRunning()) {
+					Enemy enemy = game.spawnEnemy();
+					ExtendedImageView r = new ExtendedImageView(enemy, enemy.getObjectType().getURL());
+					displayJeu.getChildren().add(r);
+				}
+
+			}));
+			// spawnEnemyTimeLine.setCycleCount(Animation.INDEFINITE);
+			spawnEnemyTimeLine.play();
+			spawnEnemyTimeLine.setOnFinished(e -> spawnEnemyTimeLine.play());
 
 			timer = new AnimationTimer() {
-
-				private long previousTime = 0;
-
 				@Override
 				public void handle(long now) {
 
-					float secondsElapsed = (now - previousTime) / 1e9f;
-
-					if (game.isRunning()) {
-						if (game.getTimeBetweenEnemies() * game.getTimerScaleFactor() >= TIME_BETWEEN_DEFAULT) {
-							game.spawn();
-						}
-
-						game.setTimeBetweenEnemies(game.getTimeBetweenEnemies() + secondsElapsed);
-
+					if (tempsEcouleDepuisDerniereVerification.get() > 0) {
 						game.update();
-						game.render(displayJeu);
 					}
-
-					previousTime = now;
-
+					if (now - lastUpdate >= 20)
+						tempsEcouleDepuisDerniereVerification.set(now);
 					if (game.isStopped()) {
 						gameStop();
 						timer.stop();
-						timerScaleFactor = 1;
-						timeBetweenEnemies = 0;
-						play();
+						spawnEnemyTimeLine.stop();
+					}
+					for (int i = displayJeu.getChildren().size() - 1; i >= 0; i--) {
+						ImageView r = (ImageView) displayJeu.getChildren().get(i);
+						if (r.getX() < -Enemy.ENEMY_DIM)
+							displayJeu.getChildren().remove(i);
 					}
 				}
 			};
 			timer.start();
-
 		}
 		animStarted = true;
 
@@ -176,44 +176,25 @@ public class Controleur {
 	}
 
 	private void gameStop() {
-
 		graph = null;
 		affichageReseau.getChildren().clear();
-
-		System.out.println("qwe");
-
 		animStarted = false;
 		displayJeu.getChildren().clear();
-		game = new Game((short) 0, (short) 0, graph, listeReseaux, this);
+		game = new Game((short) 0, (short) 0, graph, listeReseauxCIR);
 
 	}
 
 	private void newGame() {
-		if (listeReseaux != null) {
-			if (regleApprentissageCompetitionInter == null) {
-				regleApprentissageCompetitionInter = new CompetitionInterLiens(listeReseaux, 10);
-			}
-			regleApprentissageCompetitionInter.faireUneIterationApprentissage();
-		}
 		graph = new GraphiqueIA(affichageReseau);
-		game = new Game((short) 1, (short) 4, graph, listeReseaux, this);
-
-		// Les ennemis "floor" et "roof" sont pour que l'intelligence
-		// artificielle reconnaisse qu'il y a des murs.
-		Enemy roof = new Enemy(new HitBox((short) 1000, (short) PLAFOND, 500, -PLAFOND));
-		game.getEnemiesSet().add(roof);
-		ExtendedImageView roofIV = new ExtendedImageView(roof, "voidImage");
-		game.getEnemyImagesSet().add(roofIV);
-
-		Enemy floor = new Enemy(new HitBox((short) 1000, (short) PLAFOND, 500, PLANCHER + 2 * PLAFOND));
-		game.getEnemiesSet().add(floor);
-		ExtendedImageView floorIV = new ExtendedImageView(floor, "voidImage");
-		game.getEnemyImagesSet().add(floorIV);
+		if(alreadyLaunch){
+			competitionInterReseaux.faireUneIterationApprentissage();
+			listeReseauxCIR=competitionInterReseaux.getListeReseauxEnCompetitions();
+		}
+		game = new Game((short) 0, (short) 25, graph, listeReseauxCIR);
 
 		game.getPlayersSet().forEach(p -> {
-			ExtendedImageView iv = new ExtendedImageView(p, "joueur");
-			// ExtendedRectangle iv = new ExtendedRectangle(p);
-			displayJeu.getChildren().add(iv);
+			ExtendedImageView r = new ExtendedImageView(p, p.getObjectType().getURL());
+			displayJeu.getChildren().add(r);
 		});
 		scoreLabel.textProperty().bind(game.scoreProperty().asString());
 
@@ -252,6 +233,70 @@ public class Controleur {
 			if (p.getObjectType() == GameObjectType.HUMAN)
 				p.changeDirection(0);
 		}
+	}
+
+	/**
+	 * Méthode qui permet de sauvegarder une partie. Pour l'instant, elle n'est
+	 * que dans un état basique, puisqu'il n'y a aucun paramètres à sauvegarder.
+	 */
+	@FXML
+	private boolean save() {
+		// TODO Implémenter la méthode save dans son entièreté lorsque le jeu
+		// est construit.
+		String content = "content";
+		try {
+			/* f.createNewFile(); */
+			PrintWriter sortie = new PrintWriter(new FileWriter("save"));
+
+			sortie.println(content);
+
+			sortie.close();
+		} catch (IOException e) {
+		}
+
+		return true;
+	}
+
+	/**
+	 * Méthode qui permet de charger une partie. Pour l'instant, elle n'est que
+	 * dans un état basique, puisqu'il n'y a aucun paramètres à charger.
+	 */
+	@FXML
+	private void load() {
+		// TODO Implémenter la méthode load dans son entièreté lorsque le jeu
+		// est construit.
+		String ligneRetour = null;
+
+		try {
+			BufferedReader entree = new BufferedReader(new FileReader("save"));
+			ligneRetour = entree.readLine();
+
+			entree.close();
+		} catch (IOException e) {
+		}
+
+		confirm.setTitle("Load Test View");
+		confirm.setContentText(ligneRetour.equals("content") ? "true" : "false");
+
+		if (confirm.showAndWait().get() == ButtonType.OK) {
+			confirm.close();
+		}
+	}
+
+	public static ArrayList<Reseau<CompetitionInterReseaux>> getListeReseauxCIR() {
+		return listeReseauxCIR;
+	}
+
+	public static void setListeReseauxCIR(ArrayList<Reseau<CompetitionInterReseaux>> listeNouveauxReseauxCIR) {
+		listeReseauxCIR = listeNouveauxReseauxCIR;
+	}
+
+	public static CompetitionInterReseaux getCompetitionInterReseaux() {
+		return competitionInterReseaux;
+	}
+
+	public static void setCompetitionInterReseaux(CompetitionInterReseaux competitionInterReseaux) {
+		Controleur.competitionInterReseaux = competitionInterReseaux;
 	}
 
 }

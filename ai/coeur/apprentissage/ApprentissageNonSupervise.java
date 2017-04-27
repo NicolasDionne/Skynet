@@ -6,8 +6,6 @@ import ai.coeur.donnee.EnsembleDonnees;
 import ai.coeur.donnee.LigneEnsembleDonnees;
 
 public abstract class ApprentissageNonSupervise extends ApprentissageIteratif {
-	private static final long serialVersionUID = 6713522365035755553L;
-
 	// TODO Javadoc
 	public ApprentissageNonSupervise() {
 		super();

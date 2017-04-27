@@ -1,12 +1,13 @@
 package ai.coeur.donnee;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ai.utilitaire.SeparateurEnTableau;
 
 /**
  * Cette classe est une seule ligne dans <code>EnsembleDonnees</code>. Elle est
- * utilisée pour entrainer le <code>Reseau</code>.
+ * utilisée pour entrainer le <code>Reseau<code>.
  * <P>
  * Elle contient la liste d'entrées représentant une situation possibles du
  * <code>Reseau</code> pour son apprentissage.

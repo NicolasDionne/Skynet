@@ -2,19 +2,22 @@ package modele.game.game_objects;
 
 import java.util.ArrayList;
 
+import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
 import ai.coeur.Neurone;
 import ai.coeur.Reseau;
+import modele.elements.ai_related.VisionGrid;
 import modele.elements.hitbox.HitBox;
 
 public class PlayerAI extends Player {
 
-	private Reseau reseau;
+	private Reseau<CompetitionInterReseaux> reseau;
 	private ArrayList<Neurone> listeNeuronesEntrees;
 	private ArrayList<Double> listeEntreesNumeriques;
 
-	public PlayerAI(HitBox hb, Reseau reseau) {
+	public PlayerAI(HitBox hb, Reseau<CompetitionInterReseaux> reseau) {
 		super(GameObjectType.AI, hb);
 		this.reseau = reseau;
+		this.vGrid = new VisionGrid(hb, (short) 4, (short) 2);
 		listeNeuronesEntrees = reseau.getNeuronesEntree();
 		listeEntreesNumeriques = new ArrayList<>();
 		for (int i = 0; i < listeNeuronesEntrees.size(); i++) {
@@ -65,7 +68,7 @@ public class PlayerAI extends Player {
 		changeDirection(i);
 	}
 
-	public Reseau getReseau() {
+	public Reseau<CompetitionInterReseaux> getReseau() {
 		return reseau;
 	}
 

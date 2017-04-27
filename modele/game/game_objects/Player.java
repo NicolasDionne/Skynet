@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import controleur.Controleur;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import modele.elements.hitbox.HitBox;
 import modele.elements.hitbox.MotionPoint;
 import modele.elements.ai_related.VisionGrid;
@@ -14,32 +12,19 @@ public class Player extends GameObject {
 
 	public static final short PLAYER_DIM = 20;
 	public static final short VELOCITY_PLAYER = 4;
-
-	private VisionGrid vGrid;
-	private IntegerProperty score;
+	protected VisionGrid vGrid;
 	protected List<Integer> listeIndexEntrees;
 
 	public Player(GameObjectType pType, HitBox hb) {
 		super(hb);
-
 		MotionPoint origin = new MotionPoint(0, 0);
 		getHitBox().setOrigin(origin);
 		getHitBox().setCanHitOthers(true);
 		setObjectType(pType);
 
-
-		vGrid = new VisionGrid(hb);
-		score = new SimpleIntegerProperty();
+		// if (pType == GameObjectType.AI)
+		vGrid = new VisionGrid(getHitBox());
 		listeIndexEntrees = new ArrayList<>();
-
-	}
-
-	public IntegerProperty scoreProperty() {
-		return score;
-	}
-
-	public int getScore() {
-		return score.get();
 	}
 
 	public VisionGrid getvGrid() {
@@ -47,7 +32,6 @@ public class Player extends GameObject {
 	}
 
 	public void changeDirection(int i) {
-
 		if (i >= 1)
 			getHitBox().getCenterPoint().setVelocityY(-VELOCITY_PLAYER);
 		else if (i <= -1)
@@ -81,6 +65,9 @@ public class Player extends GameObject {
 	public void setListeIndexEntrees(List<Integer> listeEntreesNumeriques) {
 		this.listeIndexEntrees = listeEntreesNumeriques;
 	}
+
 	public void appliquerIndex() {
+
 	}
+
 }

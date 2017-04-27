@@ -1,15 +1,9 @@
 package ai.coeur.transfers;
 
-import java.io.Serializable;
-
 /**
  * Classe abstraite pour toutes les fonctions de transfers
  */
-abstract public class FonctionTransfers implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1568710356491223774L;
+abstract public class FonctionTransfers {
 	// TODO Javadoc
 	protected double sortie;
 
