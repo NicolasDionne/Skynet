@@ -20,18 +20,16 @@ public class EnemySpawner implements Bias {
 
 	public static final float START_VELOCITY_BIAS = 0.5f;
 
+	public final static int MIN_HEIGHT = Controleur.PLAFOND + Enemy.ENEMY_DIM / 2;
+	public final static int MAX_HEIGHT = Controleur.PLANCHER - Enemy.ENEMY_DIM / 2;
+
 	public HitBox spawn(short size) {
 
 		RotationParameters rotP = new RotationParameters();
 		float startHeight = startHeight();
 
-		if (testBias(ORIGIN_ROTATION_BIAS)) {
-			rotP = startOriginRotationParameters();
-			startHeight = Controleur.PLAFOND + Enemy.ENEMY_DIM + 5;
-		}
-
 		HitBox hb = new HitBox(size, size, new MotionPoint(Controleur.EDGE + size, startHeight,
-				new Vector2D(startVelocity(), 0), new Vector2D(startAcceleration(), 0), rotP),
+				new Vector2D(startVelocity(), 0), new Vector2D(startAcceleration(), 0), new RotationParameters()),
 				startSelfRotationParameters());
 
 		hb.setOrigin(startOrigin(hb));
@@ -39,20 +37,27 @@ public class EnemySpawner implements Bias {
 		return hb;
 	}
 
+	public HitBox spawnTop(short size) {
+
+		HitBox hb = new HitBox(size, size, new MotionPoint(Controleur.EDGE + size, MIN_HEIGHT,
+				new Vector2D(startVelocity(), 0), new Vector2D(startAcceleration(), 0), new RotationParameters()),
+				startSelfRotationParameters());
+
+		return hb;
+	}
+
+	public HitBox spawnBottom(short size) {
+
+		HitBox hb = new HitBox(size, size, new MotionPoint(Controleur.EDGE + size, MAX_HEIGHT,
+				new Vector2D(startVelocity(), 0), new Vector2D(startAcceleration(), 0), new RotationParameters()),
+				startSelfRotationParameters());
+
+		return hb;
+	}
+
 	private float startHeight() {
 
-		int minHeight = Controleur.PLAFOND + Enemy.ENEMY_DIM / 2;
-		int maxHeight = Controleur.PLANCHER - Enemy.ENEMY_DIM / 2;
-		
-		int startHeight;
-		
-		if (spawnTopOrBottom()){
-			if (testBias(0.5f))
-				startHeight = minHeight;
-			else
-				startHeight = maxHeight;
-		}
-		else startHeight = (int) MathUtilitaires.getRandomInRange(minHeight, maxHeight);
+		int startHeight = (int) MathUtilitaires.getRandomInRange(MIN_HEIGHT, MAX_HEIGHT);
 
 		return startHeight;
 	}
@@ -123,10 +128,5 @@ public class EnemySpawner implements Bias {
 
 	private float randRange(float min, float max) {
 		return MathUtilitaires.getRandomInRange(min, max);
-	}
-
-	private boolean spawnTopOrBottom() {		
-
-		return testBias(0.3f);
 	}
 }
