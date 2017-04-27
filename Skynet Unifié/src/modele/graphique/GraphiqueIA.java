@@ -32,7 +32,7 @@ public class GraphiqueIA {
 	/**
 	 * constructeur du GraphiqueIA, reçoit uniquement en paramètre sa zone
 	 * d'affichage, requiers de lui assigner un réseau avant d'être complet.
-	 * 
+	 *
 	 * @param affichage
 	 *            le Pane où le graphique se situeras.
 	 */
@@ -50,7 +50,7 @@ public class GraphiqueIA {
 
 	/**
 	 * assigne un nouveau réseau à représenter au graphiqueIA
-	 * 
+	 *
 	 * @param reseau
 	 *            le réseau à représenter
 	 */
@@ -192,7 +192,7 @@ public class GraphiqueIA {
 	/**
 	 * retourne une couleur prédéfinie pour différents integers, utilisé dans
 	 * refresh graph pour la couleur des entrées et de la sortie.
-	 * 
+	 *
 	 * @param i
 	 *            la valeur numérique de la couleur
 	 * @return la couleur assignée au chiffre en paramètre
@@ -213,7 +213,7 @@ public class GraphiqueIA {
 	 * Retourne le prochain niveau de neurones d'une neurone choisie ou la
 	 * sortie dans une liste de shapes si il n'y a pas de prochain niveau pour
 	 * celle-ci
-	 * 
+	 *
 	 * @param c
 	 *            la neurone
 	 * @return la liste des shapes suivant la neurone
@@ -246,7 +246,7 @@ public class GraphiqueIA {
 
 	/**
 	 * retourne la couleur du lien celon son importance
-	 * 
+	 *
 	 * @param d
 	 *            la valeur de l'importance du lien
 	 * @return la couleur a donner au lien
@@ -265,7 +265,7 @@ public class GraphiqueIA {
 
 	/**
 	 * retourne la valeur numerique d'un boolean 1 = vrai 0 = faux
-	 * 
+	 *
 	 * @param b
 	 *            le boolean a evaluer
 	 * @return la valeur numerique
@@ -285,7 +285,7 @@ public class GraphiqueIA {
 		genererAffichageNeuronesEntree();
 		genererAffichageNiveaux();
 		genererAffichageOutput();
-		
+
 	}
 
 }

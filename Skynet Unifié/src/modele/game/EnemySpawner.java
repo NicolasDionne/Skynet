@@ -5,13 +5,12 @@ import modele.elements.hitbox.HitBox;
 import modele.elements.hitbox.MotionPoint;
 import modele.elements.hitbox.RotationParameters;
 import modele.game.game_objects.Enemy;
-import modele.game.game_objects.Spawn;
 import modele.math.Vector2D;
 import utilitaires.MathUtilitaires;
 
 import java.awt.*;
 
-public class EnemySpawner implements Spawn<HitBox>, Bias {
+public class EnemySpawner implements Bias {
 
     public static final float SELF_ROTATION_BIAS = 0.3f;
     public static final float SELF_ROTATION_START_VELOCITY_BIAS = 0.3f;
@@ -21,7 +20,6 @@ public class EnemySpawner implements Spawn<HitBox>, Bias {
 
     public static final float START_VELOCITY_BIAS = 0.5f;
 
-    @Override
     public HitBox spawn(short size) {
 
         RotationParameters rotP = new RotationParameters();

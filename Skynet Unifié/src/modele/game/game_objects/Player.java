@@ -1,11 +1,11 @@
 package modele.game.game_objects;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
-import ai.coeur.Neurone;
-import ai.coeur.Reseau;
 import controleur.Controleur;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import modele.elements.hitbox.HitBox;
 import modele.elements.hitbox.MotionPoint;
 import modele.elements.ai_related.VisionGrid;
@@ -16,6 +16,8 @@ public class Player extends GameObject {
 	public static final short VELOCITY_PLAYER = 4;
 
 	private VisionGrid vGrid;
+	private IntegerProperty score;
+	protected List<Integer> listeIndexEntrees;
 
 	public Player(GameObjectType pType, HitBox hb) {
 		super(hb);
@@ -25,7 +27,19 @@ public class Player extends GameObject {
 		getHitBox().setCanHitOthers(true);
 		setObjectType(pType);
 
+
 		vGrid = new VisionGrid(hb);
+		score = new SimpleIntegerProperty();
+		listeIndexEntrees = new ArrayList<>();
+
+	}
+
+	public IntegerProperty scoreProperty() {
+		return score;
+	}
+
+	public int getScore() {
+		return score.get();
 	}
 
 	public VisionGrid getvGrid() {
@@ -60,4 +74,13 @@ public class Player extends GameObject {
 		return false;
 	}
 
+	public List<Integer> getListeIndexEntrees() {
+		return listeIndexEntrees;
+	}
+
+	public void setListeIndexEntrees(List<Integer> listeEntreesNumeriques) {
+		this.listeIndexEntrees = listeEntreesNumeriques;
+	}
+	public void appliquerIndex() {
+	}
 }
