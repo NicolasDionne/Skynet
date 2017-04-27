@@ -1,21 +1,13 @@
 package controleur;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
-
+import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -26,12 +18,19 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import modele.elements.visuals.ExtendedImageView;
 import modele.elements.visuals.ExtendedRectangle;
+import modele.elements.hitbox.HitBox;
+import modele.elements.hitbox.MotionPoint;
 import modele.game.Game;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.GameObjectType;
 import modele.game.game_objects.Player;
 import modele.graphique.GraphiqueIA;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.TreeSet;
 
 public class Controleur {
 
@@ -55,14 +54,16 @@ public class Controleur {
 
 	@FXML
 	private ImageView limitDown;
+
 	@FXML
 	private Pane affichageReseau;
 
-	public static final int PLAFOND = 64;
-	public static final int PLANCHER = 243;
+	public static final int PLAFOND = 35;
+	public static final int PLANCHER = 220;
 	public static final int EDGE = 1066;
 	public static final int MID_HEIGHT = PLAFOND + ((PLANCHER - PLAFOND) / 2);
-	public static final float DIFFICULTY_INCREMENT = 0.02f;
+	public static final float DIFFICULTY_INCREMENT = 0.05f;
+
 	public GraphiqueIA graph;
 
 	Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
@@ -70,18 +71,17 @@ public class Controleur {
 	AnimationTimer timer;
 	Game game;
 	boolean animStarted = false;
-	long lastUpdate = 0;
 	float timeBetweenEnemies = 0;
-	float timerScaleFactor;
+	float timerScaleFactor = 1;
 
 	@FXML
 	public void initialize() {
 		gameStop();
-		System.out.println(MID_HEIGHT);
 	}
 
 	@FXML
 	void play() {
+
 		if (game.isStopped()) {
 			newGame();
 			demarerAnimation();
@@ -106,42 +106,44 @@ public class Controleur {
 	public void demarerAnimation() {
 		if (!animStarted) {
 			game.run();
-			LongProperty tempsEcouleDepuisDerniereVerification = new SimpleLongProperty(0);
-
-			Timeline spawnEnemyTimeLine = new Timeline(new KeyFrame(Duration.millis(1000), e -> {
-
-				if (game.isRunning()) {
-					Enemy enemy = game.spawnEnemy();
-					ExtendedRectangle er = new ExtendedRectangle(enemy);
-					displayJeu.getChildren().add(er);
-				}
-
-			}));
-			// spawnEnemyTimeLine.setCycleCount(Animation.INDEFINITE);
-			spawnEnemyTimeLine.play();
-			spawnEnemyTimeLine.setOnFinished(e -> spawnEnemyTimeLine.play());
 
 			timer = new AnimationTimer() {
+
+				private long previousTime = 0;
+
 				@Override
 				public void handle(long now) {
 
-					if (tempsEcouleDepuisDerniereVerification.get() > 0) {
-						game.update();
-						// System.out.println(now);
+					float secondsElapsed = (now - previousTime) / 1e9f;
+					previousTime = now;
+
+					timeBetweenEnemies += secondsElapsed;
+
+					if (timeBetweenEnemies * timerScaleFactor >= 2f) {
+
+						timeBetweenEnemies = 0;
+						timerScaleFactor += DIFFICULTY_INCREMENT;
+
+						Enemy enemy = game.spawnEnemy();
+						ExtendedImageView r = new ExtendedImageView(enemy, "obstacle");
+						// ExtendedRectangle r = new ExtendedRectangle(enemy);
+						displayJeu.getChildren().add(r);
 					}
-					if (now - lastUpdate >= 20)
-						tempsEcouleDepuisDerniereVerification.set(now);
+
+					game.update();
+
 					if (game.isStopped()) {
 						gameStop();
 						timer.stop();
-						spawnEnemyTimeLine.stop();
+						timerScaleFactor = 1;
+						timeBetweenEnemies = 0;
 					}
+
 					for (int i = displayJeu.getChildren().size() - 1; i >= 0; i--) {
-						if(displayJeu.getChildren().get(i).getClass().equals(Rectangle.class)){
-						Rectangle r = (Rectangle) displayJeu.getChildren().get(i);
+						ImageView r = (ImageView) displayJeu.getChildren().get(i);
 						if (r.getX() < -Enemy.ENEMY_DIM)
 							displayJeu.getChildren().remove(i);
-					}}
+					}
 				}
 			};
 			timer.start();
@@ -168,6 +170,7 @@ public class Controleur {
 		pause();
 
 		if (confirm.showAndWait().get() == ButtonType.OK) {
+
 			gameStop();
 		} else
 			play();
@@ -175,27 +178,34 @@ public class Controleur {
 
 	private void gameStop() {
 
+		graph = null;
+		affichageReseau.getChildren().clear();
+
 		animStarted = false;
-		
-		clearObstacles();
-		if (graph != null) {
-			graph.resetLiens();
-		}
-		game = new Game((short) 0, (short) 0, graph);
+		displayJeu.getChildren().clear();
+		game = new Game((short) 0, (short) 0, graph, new ArrayList<>());
 
 	}
 
 	private void newGame() {
+
 		graph = new GraphiqueIA(affichageReseau);
-		game = new Game((short) 1, (short) 6, graph);
+		game = new Game((short) 1, (short) 0, graph, new ArrayList<>());
+
+		// Les ennemis "floor" et "roof" sont pour que l'intelligence
+		// artificielle reconnaisse qu'il y a des murs.
+		Enemy roof = new Enemy(new HitBox((short) 1000, (short) PLAFOND, 500, -PLAFOND));
+		game.getEnemiesSet().add(roof);
+
+		Enemy floor = new Enemy(new HitBox((short) 1000, (short) PLAFOND, 500, PLANCHER + 2 * PLAFOND));
+		game.getEnemiesSet().add(floor);
 
 		game.getPlayersSet().forEach(p -> {
-			ExtendedRectangle er2 = new ExtendedRectangle(p);
-			displayJeu.getChildren().add(er2);
-			er2.setFill(Paint.valueOf("red"));
+			ExtendedImageView iv = new ExtendedImageView(p, "joueur");
+			// ExtendedRectangle iv = new ExtendedRectangle(p);
+			displayJeu.getChildren().add(iv);
 		});
-		// TODO fix le score
-		// scoreLabel.textProperty().bind(game.scoreProperty().asString());
+		scoreLabel.textProperty().bind(game.scoreProperty().asString());
 
 	}
 
@@ -279,13 +289,6 @@ public class Controleur {
 
 		if (confirm.showAndWait().get() == ButtonType.OK) {
 			confirm.close();
-		}
-	}
-	
-	private void clearObstacles(){
-		ObservableList<Node> childrenOfDisplayJeu=displayJeu.getChildren();
-		for (Node node : childrenOfDisplayJeu) {
-			
 		}
 	}
 
