@@ -1,5 +1,5 @@
 .display {
-	-fx-background-color: white;
+	-fx-background-color: rgb(255.0,255.0,255.0,0.0) ;
 }
 
 .background {
@@ -28,4 +28,12 @@
 
 .VBox {
     -fx-alignment: CENTER;
+}
+
+.joueur {
+	-fx-image: url("../images/joueur.png");
+}
+
+.obstacle {
+	-fx-image : url("../images/obstacle.png");
 }
