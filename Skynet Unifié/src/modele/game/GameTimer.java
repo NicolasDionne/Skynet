@@ -3,16 +3,19 @@ package modele.game;
 import java.util.function.Consumer;
 
 import javafx.animation.AnimationTimer;
+import javafx.scene.layout.Pane;
 
 public class GameTimer extends AnimationTimer {
 
     private final Consumer<Void> updater;
-    private final Consumer<Void> renderer;
+    private final Consumer<Pane> renderer;
     private float maximumStep = Float.MAX_VALUE;
+    private Pane pane;
 
-    public GameTimer(Game game) {
+    public GameTimer(Game game, Pane pane) {
         this.updater = game.updater;
         this.renderer = game.renderer;
+        this.pane = pane;
     }
 
     private long previousTime = 0;
@@ -27,17 +30,17 @@ public class GameTimer extends AnimationTimer {
 
     @Override
     public void handle(long currentTime) {
+
         if (previousTime == 0) {
             previousTime = currentTime;
             return;
         }
 
         updater.accept(null);
-        renderer.accept(null);
-        //if(previousTime )
+        renderer.accept(pane);
 
         float secondsElapsed = (currentTime - previousTime) / 1e9f;
-        float secondsElapsedCapped = Math.min(secondsElapsed, getMaximumStep());
+
         previousTime = currentTime;
 
 

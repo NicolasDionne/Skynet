@@ -11,7 +11,7 @@ public class ExtendedImageView extends ImageView {
     HitBox hb;
     GameObject gOb;
 
-    public ExtendedImageView(HitBox hb, String url) {
+    public ExtendedImageView(HitBox hb, String styleName) {
         super();
         if (hb != null) {
             try {
@@ -22,7 +22,7 @@ public class ExtendedImageView extends ImageView {
                 yProperty().bind(hb.getCenterPoint().yProperty().subtract(hb.getHeight() / 2.0));
                 rotateProperty().bind(hb.getSelfRotationParameters().angleProperty().multiply(360 / 2.0 / Math.PI));
 
-                setImage(new Image(url));
+    			getStyleClass().set(0, styleName);
 
             } catch (IllegalArgumentException iae) {
                 setImage(null);

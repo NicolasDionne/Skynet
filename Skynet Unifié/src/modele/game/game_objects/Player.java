@@ -1,8 +1,10 @@
 package modele.game.game_objects;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
+import ai.coeur.Neurone;
+import ai.coeur.Reseau;
 import controleur.Controleur;
 import modele.elements.hitbox.HitBox;
 import modele.elements.hitbox.MotionPoint;
@@ -12,19 +14,18 @@ public class Player extends GameObject {
 
 	public static final short PLAYER_DIM = 20;
 	public static final short VELOCITY_PLAYER = 4;
-	protected VisionGrid vGrid;
-	protected List<Integer> listeIndexEntrees;
+
+	private VisionGrid vGrid;
 
 	public Player(GameObjectType pType, HitBox hb) {
 		super(hb);
+
 		MotionPoint origin = new MotionPoint(0, 0);
 		getHitBox().setOrigin(origin);
 		getHitBox().setCanHitOthers(true);
 		setObjectType(pType);
 
-		// if (pType == GameObjectType.AI)
-		vGrid = new VisionGrid(getHitBox());
-		listeIndexEntrees = new ArrayList<>();
+		vGrid = new VisionGrid(hb);
 	}
 
 	public VisionGrid getvGrid() {
@@ -32,6 +33,7 @@ public class Player extends GameObject {
 	}
 
 	public void changeDirection(int i) {
+
 		if (i >= 1)
 			getHitBox().getCenterPoint().setVelocityY(-VELOCITY_PLAYER);
 		else if (i <= -1)
@@ -56,18 +58,6 @@ public class Player extends GameObject {
 			c.setVelocity(0);
 		}
 		return false;
-	}
-
-	public List<Integer> getListeIndexEntrees() {
-		return listeIndexEntrees;
-	}
-
-	public void setListeIndexEntrees(List<Integer> listeEntreesNumeriques) {
-		this.listeIndexEntrees = listeEntreesNumeriques;
-	}
-
-	public void appliquerIndex() {
-
 	}
 
 }

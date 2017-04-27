@@ -4,7 +4,6 @@ import controleur.Controleur;
 import modele.elements.hitbox.HitBox;
 import modele.elements.hitbox.MotionPoint;
 import modele.elements.hitbox.RotationParameters;
-import modele.game.game_objects.Bias;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.Spawn;
 import modele.math.Vector2D;

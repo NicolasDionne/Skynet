@@ -10,13 +10,12 @@ import ai.coeur.Reseau;
 import controleur.Controleur;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.layout.Pane;
 import modele.elements.hitbox.HitBox;
 import modele.elements.visuals.ExtendedRectangle;
-import modele.game.game_objects.Bias;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.GameObjectType;
 import modele.game.game_objects.Player;
-import modele.game.game_objects.PlayerAI;
 import modele.graphique.GraphiqueIA;
 import modele.reseau.GenerateurReseau;
 
@@ -36,31 +35,30 @@ public class Game implements Bias, Update, Render {
 	private EnemySpawner hbGen;
 	private IntegerProperty score;
 	private GraphiqueIA graph;
-	private int nbHumans;
-
 	private ArrayList<Reseau<CompetitionInterReseaux>> listeReseauxCIR;
 
 	public final Consumer<Void> updater = (v) -> update();
-	public final Consumer<Void> renderer = (v) -> render();
+	public final Consumer<Pane> renderer = (p) -> render(p);
 
-	public Game(short nbHumans, short nbAI, GraphiqueIA graph,
-			ArrayList<Reseau<CompetitionInterReseaux>> listeReseauxCIR) {
+	public Game(short nbHumans, short nbAI, GraphiqueIA graph,ArrayList<Reseau<CompetitionInterReseaux>> listeReseauxCIR) {
+
 		this.listeReseauxCIR = listeReseauxCIR;
 		if (listeReseauxCIR == null && nbAI != 0) {
 			GenerateurReseau g = new GenerateurReseau();
 			g.genererReseauCIR(nbAI, 40, 1, 7, 10, -100, 100);
 			listeReseauxCIR = g.getReseauxCIR();
 			this.listeReseauxCIR=listeReseauxCIR;
-			Controleur.setListeReseauxCIR(this.listeReseauxCIR);
+			//Controleur.setListeReseauxCIR(this.listeReseauxCIR);
 		}
+
 		hbGen = new EnemySpawner();
 		short trueNbHumans = filterNbHumans(nbHumans);
-		this.nbHumans = nbHumans;
+
 		for (int i = 0; i < trueNbHumans; i++) {
-			createPlayer(GameObjectType.HUMAN, null);
+			createPlayer(GameObjectType.HUMAN);
 		}
 		for (int j = 0; j < nbAI; j++) {
-			createPlayer(GameObjectType.AI, listeReseauxCIR.get(j));
+			createPlayer(GameObjectType.AI);
 		}
 		score = new SimpleIntegerProperty();
 		this.graph = graph;
@@ -128,28 +126,23 @@ public class Game implements Bias, Update, Render {
 	}
 
 	private void handleMovement(HitBox hb) {
+
+		if (hb.getCenterPoint().getRotationParameters().getAngularVelocity() != 0
+				&& hb.getCenterPoint().getRotationParameters().getAngularAcceleration() != 0)
+			hb.getCenterPoint().rotate(hb.getOrigin());
+
 		hb.getCenterPoint().move();
 		hb.moveOrigin();
 		hb.rotateSelf();
-		hb.getCenterPoint().rotate(hb.getOrigin());
+
 	}
 
-	public void createPlayer(GameObjectType pType, Reseau reseau) {
+	public void createPlayer(GameObjectType pType) {
 		HitBox hb = new HitBox(Player.PLAYER_DIM, Player.PLAYER_DIM, 50, Controleur.MID_HEIGHT);
-		Player p;
-		if (pType.equals(GameObjectType.AI)) {
-			p = createPlayerAI(hb, reseau);
-		} else {
-			p = new Player(pType, hb);
-		}
+		Player p = new Player(pType, hb);
+
 		playersSet.add(p);
 
-	}
-
-	private PlayerAI createPlayerAI(HitBox hb, Reseau reseau) {
-		PlayerAI p = new PlayerAI(hb, reseau);
-
-		return p;
 	}
 
 	public List<Player> getPlayersSet() {
@@ -160,7 +153,8 @@ public class Game implements Bias, Update, Render {
 		return enemiesSet;
 	}
 
-	public void render() {
+	@Override
+	public void render(Pane pane) {
 		if (isRunning()) {
 
 			List<ExtendedRectangle> playerImagesBufferList = new LinkedList<>();
@@ -204,6 +198,10 @@ public class Game implements Bias, Update, Render {
 				}
 			});
 
+			pane.getChildren().clear();
+			pane.getChildren().addAll(playerImagesSet);
+			pane.getChildren().addAll(enemyImagesSet);
+
 		}
 	}
 
@@ -229,35 +227,25 @@ public class Game implements Bias, Update, Render {
 				if (p.getHitBox().checkCollision(e.getHitBox())) {
 					System.out.println("collision");
 					playerBufferList.add(p);
-					if (p.getObjectType() == GameObjectType.AI) {
-						((PlayerAI) p).getReseau().setScore(getScore());
-					}
 				}
 			}));
 
+			collisionIndexList.clear();
+
 			playersSet.forEach(p -> {
-				if (p.getObjectType() == GameObjectType.AI) {
-					List<Integer> indexListBuffer = new ArrayList<>();
+				ArrayList<Integer> indexListBuffer = new ArrayList<>();
 
-					p.getvGrid().getHitBoxes().forEach(hb -> enemiesSet.forEach(e -> {
-						if (hb.checkCollision(e.getHitBox())) {
-							indexListBuffer.add(p.getvGrid().getHitBoxes().indexOf(hb));
-						}
+				p.getvGrid().getHitBoxes().forEach(hb -> enemiesSet.forEach(e -> {
+					if (hb.checkCollision(e.getHitBox())) {
+						indexListBuffer.add(p.getvGrid().getHitBoxes().indexOf(hb));
+					}
+				}));
 
-						// List<Double> listeEntreesNumeriquesDeP = ((PlayerAI)
-						// p).getListeEntreesNumeriques();
-						//
-						// for (int i = 0; i < listeEntreesNumeriquesDeP.size();
-						// i++) {
-						//
-						// }
+				collisionIndexList.add(indexListBuffer);
 
-					}));
-
-					p.setListeIndexEntrees(indexListBuffer);
-					p.appliquerIndex();
-				}
 			});
+
+			graph.refreshGraph(playersSet.get(0).getHitBox().getCenterPoint().velocityY(), collisionIndexList.get(0));
 
 			playersSet.removeAll(playerBufferList);
 			enemiesSet.removeAll(enemyBufferList);
@@ -265,13 +253,8 @@ public class Game implements Bias, Update, Render {
 			playerBufferList.clear();
 			enemyBufferList.clear();
 
-			if (playersSet.size() == 0) {
-				if (nbHumans != 0) {
-					stop();
-				} else {
-
-				}
-			}
+			if (playersSet.size() == 0)
+				stop();
 		}
 	}
 
