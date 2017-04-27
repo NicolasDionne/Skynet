@@ -2,11 +2,11 @@ package modele.game.game_objects;
 
 import modele.elements.hitbox.HitBox;
 import modele.elements.hitbox.MotionPoint;
-import modele.elements.visuals.ExtendedRectangle;
 
 public class Enemy extends GameObject {
 
 	public static final short ENEMY_DIM = 32;
+	public static final String ENEMY_URL = "images/obstacle.png";
 
 	public Enemy(HitBox hb) {
 		super(hb);

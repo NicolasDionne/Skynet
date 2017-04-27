@@ -14,7 +14,10 @@ import ai.coeur.donnee.EnsembleDonnees;
 import ai.coeur.donnee.LigneEnsembleDonnees;
 
 public abstract class ApprentissageSupervise extends ApprentissageIteratif {
+
 	// TODO Javadoc
+	private static final long serialVersionUID = -1418951059208713829L;
+
 	private double erreurEpochPrecedente;
 	private double erreurMax = 0.01;
 	private double erreurIterationChangementMin = Double.POSITIVE_INFINITY;
@@ -171,6 +174,14 @@ public abstract class ApprentissageSupervise extends ApprentissageIteratif {
 		}
 	}
 
+	/**
+	 * Calcule le changement d'importace à appliquer au <code>Reseau</code>
+	 * selon l'erreur de sortie de chaque <code>LigneEnsembleDonnees</code>.
+	 * 
+	 * @param erreurSortie
+	 *            <code>double[]</code> le tableau contenant l'erreur de chaque
+	 *            ligne.
+	 */
 	abstract protected void calculerChangementImportance(double[] erreurSortie);
 
 }

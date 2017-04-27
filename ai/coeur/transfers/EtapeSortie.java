@@ -4,6 +4,10 @@ import ai.utilitaire.Proprietes;
 
 public class EtapeSortie extends FonctionTransfers {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5881013521618703650L;
 	private double yHaut = 1;
 	private double yBas = -1;
 

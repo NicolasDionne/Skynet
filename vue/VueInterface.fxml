@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity"
+	minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#debutMouvement"
+	onKeyReleased="#finMouvement" prefHeight="733.0" prefWidth="1067.0"
+	styleClass="background" stylesheets="@../../res/styles/style1.css"
+	xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="controleur.Controleur">
+	<children>
+
+		<ImageView fitHeight="220.0" fitWidth="1110.0" layoutX="-19.0"
+			layoutY="58.0" pickOnBounds="true" preserveRatio="true">
+			<image>
+				<Image url="@../../res/images/background.png" />
+			</image>
+		</ImageView>
+		<ImageView fx:id="limitDown" fitHeight="64.0" fitWidth="1068.0"
+			layoutX="-1.0" layoutY="271.0" pickOnBounds="true" preserveRatio="true">
+			<image>
+				<Image url="@../../res/images/sol.png" />
+			</image>
+		</ImageView>
+		<ImageView fx:id="limitUp" fitHeight="71.0" fitWidth="1068.0"
+			pickOnBounds="true" preserveRatio="true">
+			<image>
+				<Image url="@../../res/images/plafon.png" />
+			</image>
+		</ImageView>
+
+		<Pane fx:id="displayJeu" layoutY="29.0" prefHeight="350.0"
+			prefWidth="1068.0" styleClass="display" AnchorPane.leftAnchor="0.0"
+			AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="29.0" >
+		</Pane>
+
+		<VBox layoutX="442.0" layoutY="348.0" prefHeight="64.0"
+			prefWidth="185.0" styleClass="VBox">
+			<children>
+				<Label fx:id="scoreLabel" styleClass="labelScore" text="0" />
+			</children>
+		</VBox>
+		<Button fx:id="btnJouer" layoutX="627.0" layoutY="673.0"
+			mnemonicParsing="false" onAction="#play" prefHeight="46.0" prefWidth="185.0"
+			text="Jouer" />
+		<Button id="btnReinit" fx:id="btnReinit" layoutX="327.0"
+			layoutY="673.0" mnemonicParsing="false" onAction="#reinit" text="Réinitialiser" />
+		<Button fx:id="btnQuit" layoutX="892.0" layoutY="673.0"
+			mnemonicParsing="false" onAction="#quit" text="Quitter" />
+		<Label layoutX="404.0" layoutY="364.0" styleClass="labelScore"
+			text="Score : " />
+		<Button layoutX="144.0" layoutY="673.0" mnemonicParsing="false"
+			onAction="#pause" text="Pause" />
+		<Pane fx:id="affichageReseau" layoutX="14.0" layoutY="412.0"
+			prefHeight="232.0" prefWidth="1039.0">
+			<children>
+				<Label layoutX="70.0" layoutY="7.0" prefHeight="30.0"
+					prefWidth="51.0" text="Entrées" />
+				<Label layoutX="542.0" layoutY="13.0" text="Niveaux" />
+				<Label layoutX="921.0" layoutY="13.0" text="Sortie" />
+			</children>
+		</Pane>
+	</children>
+</AnchorPane>

@@ -9,7 +9,7 @@ public abstract class GameObject {
     public static final int maxw = 1500;
     public static final int maxh = 600;
 
-    public static final short MAX_DIM = 40;
+    public static final short MAX_DIM = 1000;
     public static final short MIN_DIM = 10;
 
     private HitBox hitBox;

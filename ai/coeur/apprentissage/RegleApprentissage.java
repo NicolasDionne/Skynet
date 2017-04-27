@@ -1,5 +1,7 @@
 package ai.coeur.apprentissage;
 
+import java.io.Serializable;
+
 import ai.coeur.Reseau;
 import ai.coeur.donnee.EnsembleDonnees;
 
@@ -13,7 +15,9 @@ import ai.coeur.donnee.EnsembleDonnees;
  * @see Reseau
  * @see EnsembleDonnees
  */
-public abstract class RegleApprentissage {
+public abstract class RegleApprentissage implements Serializable {
+
+	private static final long serialVersionUID = 3752688592274839787L;
 
 	/**
 	 * L'instance de <code>Reseau</code> qui possède cette

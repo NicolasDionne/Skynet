@@ -4,6 +4,10 @@ import ai.utilitaire.Proprietes;
 
 public class Etape extends FonctionTransfers {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4103641407126396051L;
 	// TODO Javadoc
 	private double yHaut = 1;
 	private double yBas = 0;

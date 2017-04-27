@@ -6,6 +6,8 @@ import ai.coeur.Lien;
 
 public class SommeImportance extends FonctionEntree {
 
+	private static final long serialVersionUID = -6742742486463591274L;
+
 	@Override
 	public double getSortie(ArrayList<Lien> liensEntree) {
 		double sortie = 0;
