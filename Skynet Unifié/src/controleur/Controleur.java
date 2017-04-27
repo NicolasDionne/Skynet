@@ -1,11 +1,8 @@
 package controleur;
 
-import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleLongProperty;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -15,22 +12,13 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
-import javafx.util.Duration;
 import modele.elements.visuals.ExtendedImageView;
-import modele.elements.visuals.ExtendedRectangle;
 import modele.elements.hitbox.HitBox;
-import modele.elements.hitbox.MotionPoint;
 import modele.game.Game;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.GameObjectType;
 import modele.game.game_objects.Player;
 import modele.graphique.GraphiqueIA;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.TreeSet;
 
 public class Controleur {
 
@@ -63,6 +51,8 @@ public class Controleur {
 	public static final int EDGE = 1066;
 	public static final int MID_HEIGHT = PLAFOND + ((PLANCHER - PLAFOND) / 2);
 	public static final float DIFFICULTY_INCREMENT = 0.05f;
+
+	public static final float TIME_BETWEEN_DEFAULT = 2f;
 
 	public GraphiqueIA graph;
 
@@ -115,22 +105,19 @@ public class Controleur {
 				public void handle(long now) {
 
 					float secondsElapsed = (now - previousTime) / 1e9f;
-					previousTime = now;
 
-					timeBetweenEnemies += secondsElapsed;
+					if (game.isRunning()) {
+						if (game.getTimeBetweenEnemies() * game.getTimerScaleFactor() >= TIME_BETWEEN_DEFAULT) {
+							game.spawn();
+						}
 
-					if (timeBetweenEnemies * timerScaleFactor >= 2f) {
+						game.setTimeBetweenEnemies(game.getTimeBetweenEnemies() + secondsElapsed);
 
-						timeBetweenEnemies = 0;
-						timerScaleFactor += DIFFICULTY_INCREMENT;
-
-						Enemy enemy = game.spawnEnemy();
-						ExtendedImageView r = new ExtendedImageView(enemy, "obstacle");
-						// ExtendedRectangle r = new ExtendedRectangle(enemy);
-						displayJeu.getChildren().add(r);
+						game.update();
+						game.render(displayJeu);
 					}
 
-					game.update();
+					previousTime = now;
 
 					if (game.isStopped()) {
 						gameStop();
@@ -138,15 +125,10 @@ public class Controleur {
 						timerScaleFactor = 1;
 						timeBetweenEnemies = 0;
 					}
-
-					for (int i = displayJeu.getChildren().size() - 1; i >= 0; i--) {
-						ImageView r = (ImageView) displayJeu.getChildren().get(i);
-						if (r.getX() < -Enemy.ENEMY_DIM)
-							displayJeu.getChildren().remove(i);
-					}
 				}
 			};
 			timer.start();
+
 		}
 		animStarted = true;
 
@@ -170,7 +152,6 @@ public class Controleur {
 		pause();
 
 		if (confirm.showAndWait().get() == ButtonType.OK) {
-
 			gameStop();
 		} else
 			play();
@@ -181,24 +162,29 @@ public class Controleur {
 		graph = null;
 		affichageReseau.getChildren().clear();
 
+		System.out.println("qwe");
+
 		animStarted = false;
 		displayJeu.getChildren().clear();
-		game = new Game((short) 0, (short) 0, graph, new ArrayList<>());
-
+		game = new Game((short) 0, (short) 0, graph, null);
 	}
 
 	private void newGame() {
 
 		graph = new GraphiqueIA(affichageReseau);
-		game = new Game((short) 1, (short) 0, graph, new ArrayList<>());
+		game = new Game((short) 1, (short) 4, graph, null);
 
 		// Les ennemis "floor" et "roof" sont pour que l'intelligence
 		// artificielle reconnaisse qu'il y a des murs.
 		Enemy roof = new Enemy(new HitBox((short) 1000, (short) PLAFOND, 500, -PLAFOND));
 		game.getEnemiesSet().add(roof);
+		ExtendedImageView roofIV = new ExtendedImageView(roof, "voidImage");
+		game.getEnemyImagesSet().add(roofIV);
 
 		Enemy floor = new Enemy(new HitBox((short) 1000, (short) PLAFOND, 500, PLANCHER + 2 * PLAFOND));
 		game.getEnemiesSet().add(floor);
+		ExtendedImageView floorIV = new ExtendedImageView(floor, "voidImage");
+		game.getEnemyImagesSet().add(floorIV);
 
 		game.getPlayersSet().forEach(p -> {
 			ExtendedImageView iv = new ExtendedImageView(p, "joueur");
@@ -241,54 +227,6 @@ public class Controleur {
 			Player p = game.getPlayersSet().get(0);
 			if (p.getObjectType() == GameObjectType.HUMAN)
 				p.changeDirection(0);
-		}
-	}
-
-	/**
-	 * Méthode qui permet de sauvegarder une partie. Pour l'instant, elle n'est
-	 * que dans un état basique, puisqu'il n'y a aucun paramètres à sauvegarder.
-	 */
-	@FXML
-	private boolean save() {
-		// TODO Implémenter la méthode save dans son entièreté lorsque le jeu
-		// est construit.
-		String content = "content";
-		try {
-			/* f.createNewFile(); */
-			PrintWriter sortie = new PrintWriter(new FileWriter("save"));
-
-			sortie.println(content);
-
-			sortie.close();
-		} catch (IOException e) {
-		}
-
-		return true;
-	}
-
-	/**
-	 * Méthode qui permet de charger une partie. Pour l'instant, elle n'est que
-	 * dans un état basique, puisqu'il n'y a aucun paramètres à charger.
-	 */
-	@FXML
-	private void load() {
-		// TODO Implémenter la méthode load dans son entièreté lorsque le jeu
-		// est construit.
-		String ligneRetour = null;
-
-		try {
-			BufferedReader entree = new BufferedReader(new FileReader("save"));
-			ligneRetour = entree.readLine();
-
-			entree.close();
-		} catch (IOException e) {
-		}
-
-		confirm.setTitle("Load Test View");
-		confirm.setContentText(ligneRetour.equals("content") ? "true" : "false");
-
-		if (confirm.showAndWait().get() == ButtonType.OK) {
-			confirm.close();
 		}
 	}
 
