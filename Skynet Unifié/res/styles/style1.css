@@ -37,3 +37,7 @@
 .obstacle {
 	-fx-image : url("../images/obstacle.png");
 }
+
+.voidImage {
+	-fx-image : url("../images/void.png");
+}
