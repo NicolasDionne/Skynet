@@ -6,6 +6,10 @@ import ai.apprentissage.nonsupervise.CompetitionInter;
 import ai.apprentissage.nonsupervise.competitionInter.CompetitionInterLiens;
 import ai.coeur.Reseau;
 import javafx.animation.AnimationTimer;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -13,7 +17,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
@@ -43,6 +49,15 @@ public class Controleur {
 	private Button btnQuit;
 
 	@FXML
+	private Slider sliderFrequence;
+
+	@FXML
+	private Slider sliderVitesse;
+
+	@FXML
+	private CheckBox boxJoueurHumain;
+
+	@FXML
 	private ImageView limitUp;
 
 	@FXML
@@ -56,6 +71,9 @@ public class Controleur {
 	public static final int EDGE = 1066;
 	public static final int MID_HEIGHT = PLAFOND + ((PLANCHER - PLAFOND) / 2);
 	public static final float DIFFICULTY_INCREMENT = 0.05f;
+	private DoubleProperty optionVitesse = new SimpleDoubleProperty();
+	private DoubleProperty optionFrequence = new SimpleDoubleProperty();
+	private BooleanProperty optionHumain = new SimpleBooleanProperty();
 
 	public static final float TIME_BETWEEN_DEFAULT = 2f;
 
@@ -105,8 +123,8 @@ public class Controleur {
 	}
 
 	/**
-	 * le point de lancement du thread, il calcule à répétition le nombre de
-	 * temps passé depuis le dernier check et, si il n'est pas de zéro, update
+	 * le point de lancement du thread, il calcule Ã  rÃ©pÃ©tition le nombre de
+	 * temps passÃ© depuis le dernier check et, si il n'est pas de zÃ©ro, update
 	 * les positions des objets De plus, a intervalle regulier il ajoute un
 	 * obstacle dans lecran
 	 */
@@ -164,7 +182,7 @@ public class Controleur {
 
 	@FXML
 	void reinit(ActionEvent event) {
-		confirm.setTitle("Réinitialiser");
+		confirm.setTitle("RÃ©initialiser");
 		confirm.setContentText("Voulez-vous vraiment réinitialiser la progression et le score?");
 
 		pause();
@@ -177,6 +195,9 @@ public class Controleur {
 
 	private void gameStop() {
 
+		optionVitesse.bindBidirectional(sliderVitesse.valueProperty());
+		optionFrequence.bindBidirectional(sliderFrequence.valueProperty());
+		optionHumain.bindBidirectional(boxJoueurHumain.selectedProperty());
 		graph = null;
 		affichageReseau.getChildren().clear();
 
@@ -242,6 +263,36 @@ public class Controleur {
 			}
 		}
 
+	}
+
+	/**
+	 * retourne la valeur du slider d'option de vitesse des obstacles en short
+	 * 
+	 * @return la vitesse choisie pour les obstacles en short, limité entre 5 et
+	 *         20 par le slider source.
+	 */
+	public short getVitesseObstacles() {
+		return (short) Math.round(Math.round(optionVitesse.doubleValue()));
+	}
+
+	/**
+	 * Retourne la valeur du slider d'option de fréquence des obstacles en short
+	 * 
+	 * @return la fréquence choisie pour les obstacles en short, limité entre 5
+	 *         et 20 par le slider source
+	 */
+	public short getFrequenceObstacles() {
+		return (short) Math.round(Math.round(optionFrequence.doubleValue()));
+
+	}
+
+	/**
+	 * retourne si l'option de jeu humain a été sélectionnée ou non
+	 * 
+	 * @return un booléen disant si un humain joue ou non
+	 */
+	public boolean joueurHumainPresent() {
+		return optionHumain.get();
 	}
 
 	@FXML
