@@ -23,7 +23,7 @@ public class Game implements Bias, Update, Render, Spawn {
 
 	public static final short MAX_NB_PLAYERS = 20;
 	public static final float SPAWN_ENEMY_BIAS = 0.1f;
-
+	private Controleur c;
 	private List<Player> playersSet = new LinkedList<>();
 	private List<Enemy> enemiesSet = new LinkedList<>();
 	private List<ExtendedImageView> playerImagesSet = new LinkedList<>();
@@ -44,16 +44,18 @@ public class Game implements Bias, Update, Render, Spawn {
 
 	public Game(short nbHumans, short nbAI, GraphiqueIA graph, ArrayList<Reseau> listeReseauxCIR, Controleur c) {
 
+		this.c = c;
 		score = new SimpleIntegerProperty();
 
 		if (listeReseauxCIR == null && nbAI != 0) {
 			System.out.println("asd");
 
 			GenerateurReseauCIL g = new GenerateurReseauCIL();
-			g.genererReseauCIL(nbAI, 40, 1, 7, 20, -100, 100);
+			g.genererReseauCIL(nbAI, (this.c.parametres.getValNbColonnes() * this.c.parametres.getValNbLignes()), 1,
+					this.c.parametres.getValNbNiveaux(), this.c.parametres.getValNbNeuronesParNiveau(), -100, 100);
 			listeReseauxCIR = g.getReseauxCIR();
 			this.listeReseauxCIR = listeReseauxCIR;
-			c.setListeReseaux(this.listeReseauxCIR);
+			this.c.setListeReseaux(this.listeReseauxCIR);
 		}
 
 		this.listeReseauxCIR = listeReseauxCIR;
@@ -202,7 +204,7 @@ public class Game implements Bias, Update, Render, Spawn {
 		if (pType.equals(GameObjectType.AI)) {
 			p = createPlayerAI(hb, reseau);
 		} else {
-			p = new Player(pType, hb);
+			p = new Player(pType, hb, this.c.parametres);
 		}
 
 		ExtendedImageView eI = new ExtendedImageView(p, "joueur");
@@ -214,7 +216,7 @@ public class Game implements Bias, Update, Render, Spawn {
 	}
 
 	private PlayerAI createPlayerAI(HitBox hb, Reseau reseau) {
-		PlayerAI p = new PlayerAI(hb, reseau);
+		PlayerAI p = new PlayerAI(hb, reseau, this.c.parametres);
 
 		return p;
 	}
@@ -348,6 +350,7 @@ public class Game implements Bias, Update, Render, Spawn {
 		enemiesSet.removeAll(enemyBufferList);
 
 		if (playersSet.size() == 0) {
+			System.out.println("score: " + score.intValue());
 			stop();
 			enemiesSet.clear();
 		}

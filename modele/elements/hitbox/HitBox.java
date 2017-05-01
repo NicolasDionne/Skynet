@@ -10,7 +10,7 @@ public class HitBox implements AddressString {
 
     //TODO Tester rigoureusement la combinaison de mouvement linéaire et rotationnel.
 
-    public static final short MAX_WIDTH = 400;
+    public static final short MAX_WIDTH = 1000;
     public static final short MAX_HEIGHT = 400;
     public static final short MIN_WIDTH = 2;
     public static final short MIN_HEIGHT = 2;
@@ -46,7 +46,7 @@ public class HitBox implements AddressString {
         this(width, height, new MotionPoint(x, y, new Vector2D(0, 0), new Vector2D(0, 0), new RotationParameters()), new RotationParameters());
     }
 
-    /**
+	/**
      * Méthode qui permet de représenter les quatres lignes qui forment la HitBox
      *
      * @return un array de 4 objets Line2D : les 4 lignes qui délimitent le périmètre de la HitBox
