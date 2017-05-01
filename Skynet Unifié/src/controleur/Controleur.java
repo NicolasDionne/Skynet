@@ -1,95 +1,130 @@
 package controleur;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import ai.apprentissage.nonsupervise.CompetitionInter;
 import ai.apprentissage.nonsupervise.competitionInter.CompetitionInterLiens;
 import ai.coeur.Reseau;
+import application.Main;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import modele.elements.visuals.ExtendedImageView;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
 import modele.elements.hitbox.HitBox;
+import modele.elements.visuals.ExtendedImageView;
 import modele.game.Game;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.GameObjectType;
 import modele.game.game_objects.Player;
 import modele.graphique.GraphiqueIA;
+import utilitaires.Parametres;
+import utilitaires.parametres.ModificateurParametres;
 
-public class Controleur {
+public class Controleur implements Serializable {
 
-	@FXML
-	private Label scoreLabel;
-
-	@FXML
-	private Pane displayJeu;
+	private static final long serialVersionUID = 3726618757536085818L;
 
 	@FXML
-	private Button btnReinit;
+	private transient Label scoreLabel;
 
 	@FXML
-	private Button btnJouer;
+	private transient Pane displayJeu;
 
 	@FXML
-	private Button btnQuit;
+	private transient Button btnReinit;
 
 	@FXML
-	private Slider sliderFrequence;
+	private transient Button btnJouer;
 
 	@FXML
-	private Slider sliderVitesse;
+	private transient Button btnQuit;
 
 	@FXML
-	private CheckBox boxJoueurHumain;
+	private transient Slider sliderFrequence;
 
 	@FXML
-	private ImageView limitUp;
+	private transient Slider sliderVitesse;
 
 	@FXML
-	private ImageView limitDown;
+	private transient CheckBox boxJoueurHumain;
 
 	@FXML
-	private Pane affichageReseau;
+	private transient ImageView limitUp;
 
-	public static final int PLAFOND = 35;
-	public static final int PLANCHER = 220;
-	public static final int EDGE = 1066;
-	public static final int MID_HEIGHT = PLAFOND + ((PLANCHER - PLAFOND) / 2);
-	public static final float DIFFICULTY_INCREMENT = 0.05f;
-	private DoubleProperty optionVitesse = new SimpleDoubleProperty();
-	private DoubleProperty optionFrequence = new SimpleDoubleProperty();
-	private BooleanProperty optionHumain = new SimpleBooleanProperty();
+	@FXML
+	private transient ImageView limitDown;
 
-	public static final float TIME_BETWEEN_DEFAULT = 2f;
+	@FXML
+	private transient Pane affichageReseau;
 
-	public GraphiqueIA graph;
+	@FXML
+	private transient MenuItem sauvegarderMenu;
+
+	@FXML
+	private transient MenuItem chargerMenu;
+
+	@FXML
+	private transient MenuItem modifierMenu;
+
+	public transient static final int PLAFOND = 35;
+	public transient static final int PLANCHER = 220;
+	public transient static final int EDGE = 1066;
+	public transient static final int MID_HEIGHT = PLAFOND + ((PLANCHER - PLAFOND) / 2);
+	public transient static final float DIFFICULTY_INCREMENT = 0.05f;
+	private transient DoubleProperty optionVitesse = new SimpleDoubleProperty();
+	private transient DoubleProperty optionFrequence = new SimpleDoubleProperty();
+	private transient BooleanProperty optionHumain = new SimpleBooleanProperty();
+
+	public transient static final float TIME_BETWEEN_DEFAULT = 2f;
+
+	public transient GraphiqueIA graph;
 
 	private CompetitionInter regleApprentissageCompetitionInter;
 
 	private ArrayList<Reseau> listeReseaux;
+	public Parametres parametres;
 
-	Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+	transient Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
 
-	AnimationTimer timer;
-	Game game;
-	boolean animStarted = false;
-	float timeBetweenEnemies = 0;
-	float timerScaleFactor = 1;
+	transient AnimationTimer timer;
+	transient Game game;
+	transient boolean animStarted = false;
+	transient float timeBetweenEnemies = 0;
+	transient float timerScaleFactor = 1;
 
 	public ArrayList<Reseau> getListeReseaux() {
 		return listeReseaux;
@@ -101,7 +136,64 @@ public class Controleur {
 
 	@FXML
 	public void initialize() {
+		this.parametres = new Parametres(8, 4, 8, 10);
+		KeyCodeCombination chargerMenuKeyCombination = new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN);
+		chargerMenu.setAccelerator(chargerMenuKeyCombination);
+
+		KeyCodeCombination sauvegarderMenuKeyCombination = new KeyCodeCombination(KeyCode.S,
+				KeyCombination.CONTROL_DOWN);
+		sauvegarderMenu.setAccelerator(sauvegarderMenuKeyCombination);
+
+		KeyCodeCombination modifierMenuKeyCombination = new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN);
+		modifierMenu.setAccelerator(modifierMenuKeyCombination);
+
+		parametres.getNbLignes().addListener(new ChangeListener<Number>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+
+				if (oldValue != newValue) {
+					listeReseaux = null;
+					regleApprentissageCompetitionInter = null;
+				}
+			}
+		});
+		parametres.getNbColonnes().addListener(new ChangeListener<Number>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				if (oldValue != newValue) {
+					listeReseaux = null;
+					regleApprentissageCompetitionInter = null;
+				}
+			}
+		});
+
+		parametres.getNbNiveaux().addListener(new ChangeListener<Number>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				if (oldValue != newValue) {
+					listeReseaux = null;
+					regleApprentissageCompetitionInter = null;
+				}
+			}
+		});
+
+		parametres.getNbNeuronesParNiveau().addListener(new ChangeListener<Number>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				if (oldValue != newValue) {
+					listeReseaux = null;
+					regleApprentissageCompetitionInter = null;
+				}
+			}
+		});
+
 		gameStop();
+		modifierParametres();
+
 	}
 
 	@FXML
@@ -123,10 +215,10 @@ public class Controleur {
 	}
 
 	/**
-	 * le point de lancement du thread, il calcule Ã  rÃ©pÃ©tition le nombre de
-	 * temps passÃ© depuis le dernier check et, si il n'est pas de zÃ©ro, update
-	 * les positions des objets De plus, a intervalle regulier il ajoute un
-	 * obstacle dans lecran
+	 * le point de lancement du thread, il calcule à répétition le nombre de
+	 * temps passé depuis le dernier check et, si il n'est pas de zéro, update
+	 * les positions des objets De plus, à intervalles réguliers il ajoute un
+	 * obstacle dans l'écran
 	 */
 	public void demarerAnimation() {
 		if (!animStarted) {
@@ -159,7 +251,6 @@ public class Controleur {
 						timer.stop();
 						timerScaleFactor = 1;
 						timeBetweenEnemies = 0;
-						play();
 					}
 				}
 			};
@@ -182,7 +273,7 @@ public class Controleur {
 
 	@FXML
 	void reinit(ActionEvent event) {
-		confirm.setTitle("RÃ©initialiser");
+		confirm.setTitle("Réinitialiser");
 		confirm.setContentText("Voulez-vous vraiment réinitialiser la progression et le score?");
 
 		pause();
@@ -216,8 +307,12 @@ public class Controleur {
 			}
 			regleApprentissageCompetitionInter.faireUneIterationApprentissage();
 		}
-		graph = new GraphiqueIA(affichageReseau);
-		game = new Game((short) 1, (short) 4, graph, listeReseaux, this);
+		graph = new GraphiqueIA(affichageReseau, parametres);
+		if (boxJoueurHumain.isSelected()) {
+			game = new Game((short) 1, (short) 4, graph, listeReseaux, this);
+		} else {
+			game = new Game((short) 1, (short) 4, graph, listeReseaux, this);
+		}
 
 		// Les ennemis "floor" et "roof" sont pour que l'intelligence
 		// artificielle reconnaisse qu'il y a des murs.
@@ -302,6 +397,89 @@ public class Controleur {
 			Player p = game.getPlayersSet().get(0);
 			if (p.getObjectType() == GameObjectType.HUMAN)
 				p.changeDirection(0);
+		}
+	}
+
+	@FXML
+	private void sauvegarder() {
+		try {
+			FileChooser chooser = new FileChooser();
+
+			ExtensionFilter filter = new ExtensionFilter("liste de reseaux de neurones", "*.listereseaux");
+			chooser.getExtensionFilters().add(filter);
+			chooser.setSelectedExtensionFilter(filter);
+			String pathName = System.getProperty("user.home") + "\\Documents\\Reseau";
+			File initialDirectory = new File(pathName);
+			if (!initialDirectory.exists()) {
+				initialDirectory.mkdirs();
+			}
+			chooser.setInitialDirectory(initialDirectory);
+
+			File selectedFile = chooser.showSaveDialog(Main.stage);
+			FileOutputStream fileOutputStream = new FileOutputStream(selectedFile);
+			ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
+
+			outputStream.writeObject(this);
+			outputStream.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@FXML
+	private void charger() {
+		try {
+			FileChooser chooser = new FileChooser();
+
+			ExtensionFilter filter = new ExtensionFilter("liste de reseaux de neurones", "*.listereseaux");
+			chooser.getExtensionFilters().add(filter);
+			chooser.setSelectedExtensionFilter(filter);
+			String pathName = System.getProperty("user.home") + "\\Documents\\Reseau";
+			File initialDirectory = new File(pathName);
+			chooser.setInitialDirectory(initialDirectory);
+
+			File selectedFile = chooser.showOpenDialog(Main.stage);
+			FileInputStream fileInputStream = new FileInputStream(selectedFile);
+			ObjectInputStream inputStream = new ObjectInputStream(fileInputStream);
+
+			Controleur charge = (Controleur) inputStream.readObject();
+			this.listeReseaux = charge.listeReseaux;
+			this.regleApprentissageCompetitionInter = charge.regleApprentissageCompetitionInter;
+			this.parametres = charge.parametres;
+
+			inputStream.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@FXML
+	private void modifierParametres() {
+		Stage stage;
+		try {
+			FXMLLoader loader = new FXMLLoader(
+					getClass().getResource("/utilitaires/parametres/modificateurParametres/Vue.fxml"));
+			GridPane root = loader.load();
+			ModificateurParametres modificateurParametres = loader.getController();
+			Scene s = new Scene(root);
+			stage = new Stage();
+			stage.setScene(s);
+			stage.showAndWait();
+
+			parametres.setValNbLignes(modificateurParametres.getSpinnerNbLignes().getValue());
+			parametres.setValNbColonnes(modificateurParametres.getSpinnerNbColonnes().getValue());
+			parametres.setValNbNiveaux(modificateurParametres.getSpinnerNbNiveaux().getValue());
+			parametres.setValNbNeuronesParNiveau(modificateurParametres.getSpinnerNbNeuronesPN().getValue());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
