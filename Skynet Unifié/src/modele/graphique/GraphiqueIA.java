@@ -12,6 +12,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import utilitaires.Parametres;
 
 public class GraphiqueIA {
 	private Pane zoneAffichage;
@@ -26,6 +27,8 @@ public class GraphiqueIA {
 	private ArrayList<Circle> listeNiveaux;
 	private Rectangle sortie;
 	private Reseau<?> reseau;
+	private int nbLignesEntrees;
+	private int nbColonnesEntrees;
 	private int nbNiveau = 6;
 	private int nbNeuronesNiveau = 6;
 
@@ -36,7 +39,8 @@ public class GraphiqueIA {
 	 * @param affichage
 	 *            le Pane où le graphique se situeras.
 	 */
-	public GraphiqueIA(Pane affichage) {
+	public GraphiqueIA(Pane affichage, Parametres parametres) {
+		setParametres(parametres);
 		this.zoneAffichage = affichage;
 		listeEntrants = new ArrayList<Rectangle>();
 		genererAffichageNeuronesEntree();
@@ -70,8 +74,8 @@ public class GraphiqueIA {
 	 */
 	private void genererAffichageNeuronesEntree() {
 		Rectangle r;
-		for (int col = 0; col < 10; col++) {
-			for (int li = 0; li < 4; li++) {
+		for (int col = 0; col < nbColonnesEntrees; col++) {
+			for (int li = 0; li < nbLignesEntrees; li++) {
 				r = new Rectangle(col * 25, li * 30 + 60, largeur, hauteur);
 				r.setFill(couleurNeutre);
 				listeEntrants.add(r);
@@ -173,16 +177,18 @@ public class GraphiqueIA {
 			}
 		}
 	}
-/**
- * Rafraichit le graphique: ses liens, ses entrées et sa sortie
- * @param mouvement
- */
+
+	/**
+	 * Rafraichit le graphique: ses liens, ses entrées et sa sortie
+	 * 
+	 * @param mouvement
+	 */
 	public void refreshGraph(float mouvement, ArrayList<Integer> arrayList) {
 		sortie.setFill(couleurParFloat(mouvement));
 		for (Rectangle r : listeEntrants) {
-			if(arrayList.indexOf(listeEntrants.indexOf(r))!=-1){
+			if (arrayList.indexOf(listeEntrants.indexOf(r)) != -1) {
 				r.setFill(couleurParFloat(booleanToInt(true)));
-			}else{
+			} else {
 				r.setFill(couleurParFloat(booleanToInt(false)));
 			}
 		}
@@ -198,10 +204,10 @@ public class GraphiqueIA {
 	 * @return la couleur assignée au chiffre en paramètre
 	 */
 	private Color couleurParFloat(float i) {
-		Color c=couleurNeutre;
-		if(i>0){
+		Color c = couleurNeutre;
+		if (i > 0) {
 			c = couleurOff;
-		}else if(i<0){
+		} else if (i < 0) {
 			c = couleurOn;
 		}
 
@@ -277,15 +283,23 @@ public class GraphiqueIA {
 		}
 		return retour;
 	}
+
 	/**
 	 * remets a zero les liens liant les neurones
 	 */
-	public void resetLiens(){
+	public void resetLiens() {
 		zoneAffichage.getChildren().clear();
 		genererAffichageNeuronesEntree();
 		genererAffichageNiveaux();
 		genererAffichageOutput();
 
+	}
+
+	public void setParametres(Parametres parametres) {
+		this.nbLignesEntrees = parametres.getValNbLignes();
+		this.nbColonnesEntrees = parametres.getValNbColonnes();
+		this.nbNiveau = parametres.getValNbNiveaux();
+		this.nbNeuronesNiveau = parametres.getValNbNeuronesParNiveau();
 	}
 
 }
