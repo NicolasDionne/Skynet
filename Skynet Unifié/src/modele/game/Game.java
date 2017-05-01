@@ -23,7 +23,7 @@ public class Game implements Bias, Update, Render, Spawn {
 
 	public static final short MAX_NB_PLAYERS = 20;
 	public static final float SPAWN_ENEMY_BIAS = 0.1f;
-
+	private Controleur c;
 	private List<Player> playersSet = new LinkedList<>();
 	private List<Enemy> enemiesSet = new LinkedList<>();
 	private List<ExtendedImageView> playerImagesSet = new LinkedList<>();
@@ -40,23 +40,22 @@ public class Game implements Bias, Update, Render, Spawn {
 	private float timeBetweenEnemies = 0;
 	private float timerScaleFactor = 1;
 	private float difficultyIncrement = 0.05f;
-
-	public final Consumer<Void> updater = (v) -> update();
-	public final Consumer<Pane> renderer = (p) -> render(p);
-	public final Consumer<Void> spawner = (v) -> spawn();
+	private float timeBetweenDoubles = 0;
 
 	public Game(short nbHumans, short nbAI, GraphiqueIA graph, ArrayList<Reseau> listeReseauxCIR, Controleur c) {
 
+		this.c = c;
 		score = new SimpleIntegerProperty();
 
 		if (listeReseauxCIR == null && nbAI != 0) {
 			System.out.println("asd");
 
 			GenerateurReseauCIL g = new GenerateurReseauCIL();
-			g.genererReseauCIL(nbAI, 40, 1, 7, 20, -100, 100);
+			g.genererReseauCIL(nbAI, (this.c.parametres.getValNbColonnes() * this.c.parametres.getValNbLignes()), 1,
+					this.c.parametres.getValNbNiveaux(), this.c.parametres.getValNbNeuronesParNiveau(), -100, 100);
 			listeReseauxCIR = g.getReseauxCIR();
 			this.listeReseauxCIR = listeReseauxCIR;
-			c.setListeReseaux(this.listeReseauxCIR);
+			this.c.setListeReseaux(this.listeReseauxCIR);
 		}
 
 		this.listeReseauxCIR = listeReseauxCIR;
@@ -125,6 +124,14 @@ public class Game implements Bias, Update, Render, Spawn {
 		gameState = GameState.STOPPED;
 	}
 
+	public float getTimeBetweenDoubles() {
+		return timeBetweenDoubles;
+	}
+
+	public void setTimeBetweenDoubles(float timeBetweenDoubles) {
+		this.timeBetweenDoubles = timeBetweenDoubles;
+	}
+
 	public float getTimeBetweenEnemies() {
 		return timeBetweenEnemies;
 	}
@@ -158,6 +165,26 @@ public class Game implements Bias, Update, Render, Spawn {
 		return toSpawn;
 	}
 
+	public Enemy spawnEnemyTop() {
+		HitBox hb = hbGen.spawnTop(Enemy.ENEMY_DIM);
+
+		Enemy toSpawn = new Enemy(hb);
+		enemiesSet.add(toSpawn);
+
+		return toSpawn;
+
+	}
+
+	public Enemy spawnEnemyBottom() {
+		HitBox hb = hbGen.spawnBottom(Enemy.ENEMY_DIM);
+
+		Enemy toSpawn = new Enemy(hb);
+		enemiesSet.add(toSpawn);
+
+		return toSpawn;
+
+	}
+
 	private void handleMovement(HitBox hb) {
 
 		if (hb.getCenterPoint().getRotationParameters().getAngularVelocity() != 0
@@ -177,7 +204,7 @@ public class Game implements Bias, Update, Render, Spawn {
 		if (pType.equals(GameObjectType.AI)) {
 			p = createPlayerAI(hb, reseau);
 		} else {
-			p = new Player(pType, hb);
+			p = new Player(pType, hb, this.c.parametres);
 		}
 
 		ExtendedImageView eI = new ExtendedImageView(p, "joueur");
@@ -189,7 +216,7 @@ public class Game implements Bias, Update, Render, Spawn {
 	}
 
 	private PlayerAI createPlayerAI(HitBox hb, Reseau reseau) {
-		PlayerAI p = new PlayerAI(hb, reseau);
+		PlayerAI p = new PlayerAI(hb, reseau, this.c.parametres);
 
 		return p;
 	}
@@ -211,6 +238,18 @@ public class Game implements Bias, Update, Render, Spawn {
 		ExtendedImageView r = new ExtendedImageView(enemy, "obstacle");
 
 		enemyImagesSet.add(r);
+	}
+
+	public void spawnTopBottom() {
+		timeBetweenDoubles = 0;
+		Enemy enemyTop = spawnEnemyTop();
+		Enemy enemyBottom = spawnEnemyBottom();
+
+		ExtendedImageView top = new ExtendedImageView(enemyTop, "obstacle");
+		ExtendedImageView bot = new ExtendedImageView(enemyBottom, "obstacle");
+
+		enemyImagesSet.add(top);
+		enemyImagesSet.add(bot);
 	}
 
 	@Override
@@ -282,7 +321,6 @@ public class Game implements Bias, Update, Render, Spawn {
 
 		playersSet.forEach(p -> enemiesSet.forEach(e -> {
 			if (p.getHitBox().checkCollision(e.getHitBox())) {
-				System.out.println("collision");
 				playerBufferList.add(p);
 			}
 		}));
@@ -301,7 +339,7 @@ public class Game implements Bias, Update, Render, Spawn {
 			collisionIndexList.add(indexListBuffer);
 			if (p.getClass() == PlayerAI.class) {
 				p.setListeIndexEntrees(indexListBuffer);
-				p.appliquerIndex();
+				((PlayerAI) p).appliquerIndex();
 			}
 
 		});
@@ -312,6 +350,7 @@ public class Game implements Bias, Update, Render, Spawn {
 		enemiesSet.removeAll(enemyBufferList);
 
 		if (playersSet.size() == 0) {
+			System.out.println("score: " + score.intValue());
 			stop();
 			enemiesSet.clear();
 		}
