@@ -6,8 +6,8 @@ import utilitaires.MathUtilitaires;
 
 public class MotionPoint extends Point {
 
-    public static final short MAX_VELOCITY = 10;
-    public static final short MIN_VELOCITY = 0;
+    public static final short MAX_VELOCITY = 15;
+    public static final short MIN_VELOCITY = -15;
     public static final short MAX_ACCELERATION = 2;
     public static final short MIN_ACCELERATION = -2;
 
