@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class VisionGrid {
 
     public static final short NB_ROWS_DEFAULT = 4;
-    public static final short NB_COLUMNS_DEFAULT = 10;
+    public static final short NB_COLUMNS_DEFAULT =10 ;
     public static final short CELL_HEIGHT = 40;
     public static final short CELL_WIDTH = 80;
 

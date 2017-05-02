@@ -9,6 +9,7 @@ import ai.coeur.apprentissage.RegleApprentissage;
 import ai.coeur.donnee.EnsembleDonnees;
 import ai.utilitaire.random.RandomiserALimites;
 import ai.utilitaire.random.RandomizerImportance;
+import utilitaires.QuickSort;
 import utilitaires.Sortable;
 
 /**
@@ -646,6 +647,8 @@ public class Reseau<R extends RegleApprentissage> implements Serializable, Sorta
 				listeLiens.add(lien);
 			}
 		}
+
+		listeLiens = (ArrayList<Lien>) QuickSort.sort(listeLiens);
 	}
 
 	public ArrayList<Double> getValEntrees() {
@@ -664,7 +667,7 @@ public class Reseau<R extends RegleApprentissage> implements Serializable, Sorta
 	}
 
 	public void save(String filePath) {
-		
+
 	}
-	
+
 }

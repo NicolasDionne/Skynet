@@ -30,6 +30,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Slider;
@@ -46,6 +47,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import modele.elements.hitbox.HitBox;
 import modele.elements.visuals.ExtendedImageView;
+import modele.game.Difficulty;
 import modele.game.Game;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.GameObjectType;
@@ -74,10 +76,7 @@ public class Controleur implements Serializable {
 	private transient Button btnQuit;
 
 	@FXML
-	private transient Slider sliderFrequence;
-
-	@FXML
-	private transient Slider sliderVitesse;
+	private transient ChoiceBox<String> choixDifficulte;
 
 	@FXML
 	private transient CheckBox boxJoueurHumain;
@@ -105,9 +104,6 @@ public class Controleur implements Serializable {
 	public transient static final int EDGE = 1066;
 	public transient static final int MID_HEIGHT = PLAFOND + ((PLANCHER - PLAFOND) / 2);
 	public transient static final float DIFFICULTY_INCREMENT = 0.05f;
-	private transient DoubleProperty optionVitesse = new SimpleDoubleProperty();
-	private transient DoubleProperty optionFrequence = new SimpleDoubleProperty();
-	private transient BooleanProperty optionHumain = new SimpleBooleanProperty();
 
 	public transient static final float TIME_BETWEEN_DEFAULT = 2f;
 
@@ -190,6 +186,8 @@ public class Controleur implements Serializable {
 				}
 			}
 		});
+
+		choixDifficulte.getItems().addAll("Très facile", "Facile", "Moyen", "Difficile", "Très difficile");
 
 		gameStop();
 		modifierParametres();
@@ -286,9 +284,6 @@ public class Controleur implements Serializable {
 
 	private void gameStop() {
 
-		optionVitesse.bindBidirectional(sliderVitesse.valueProperty());
-		optionFrequence.bindBidirectional(sliderFrequence.valueProperty());
-		optionHumain.bindBidirectional(boxJoueurHumain.selectedProperty());
 		graph = null;
 		affichageReseau.getChildren().clear();
 
@@ -296,7 +291,7 @@ public class Controleur implements Serializable {
 
 		animStarted = false;
 		displayJeu.getChildren().clear();
-		game = new Game((short) 0, (short) 0, graph, listeReseaux, this);
+		game = new Game((short) 0, (short) 0, graph, listeReseaux, this, Difficulty.LIKE_REALLY_REALLY_HARD);
 
 	}
 
@@ -308,11 +303,34 @@ public class Controleur implements Serializable {
 			regleApprentissageCompetitionInter.faireUneIterationApprentissage();
 		}
 		graph = new GraphiqueIA(affichageReseau, parametres);
-		if (boxJoueurHumain.isSelected()) {
-			game = new Game((short) 1, (short) 4, graph, listeReseaux, this);
-		} else {
-			game = new Game((short) 1, (short) 4, graph, listeReseaux, this);
+		Difficulty dif = Difficulty.LIKE_REALLY_REALLY_HARD;
+		if (choixDifficulte.getValue() != null) {
+			switch (choixDifficulte.getValue()) {
+			case ("Très facile"):
+				dif = Difficulty.VERY_EASY;
+				break;
+			case ("Facile"):
+				dif = Difficulty.EASY;
+				break;
+			case ("Moyen"):
+				dif = Difficulty.MEDIUM;
+				break;
+			case ("Difficile"):
+				dif = Difficulty.HARD;
+				break;
+			case ("Très difficile"):
+				dif = Difficulty.VERY_HARD;
+				break;
+
+			}
 		}
+		if (boxJoueurHumain.isSelected()) {
+			game = new Game((short) 1, (short) 25, graph, listeReseaux, this, dif);
+		} else {
+			game = new Game((short) 0, (short) 25, graph, listeReseaux, this, dif);
+		}
+
+		System.out.println(game.getDifficulty());
 
 		// Les ennemis "floor" et "roof" sont pour que l'intelligence
 		// artificielle reconnaisse qu'il y a des murs.
@@ -360,36 +378,6 @@ public class Controleur implements Serializable {
 
 	}
 
-	/**
-	 * retourne la valeur du slider d'option de vitesse des obstacles en short
-	 * 
-	 * @return la vitesse choisie pour les obstacles en short, limité entre 5 et
-	 *         20 par le slider source.
-	 */
-	public short getVitesseObstacles() {
-		return (short) Math.round(Math.round(optionVitesse.doubleValue()));
-	}
-
-	/**
-	 * Retourne la valeur du slider d'option de fréquence des obstacles en short
-	 * 
-	 * @return la fréquence choisie pour les obstacles en short, limité entre 5
-	 *         et 20 par le slider source
-	 */
-	public short getFrequenceObstacles() {
-		return (short) Math.round(Math.round(optionFrequence.doubleValue()));
-
-	}
-
-	/**
-	 * retourne si l'option de jeu humain a été sélectionnée ou non
-	 * 
-	 * @return un booléen disant si un humain joue ou non
-	 */
-	public boolean joueurHumainPresent() {
-		return optionHumain.get();
-	}
-
 	@FXML
 	void finMouvement() {
 
@@ -403,9 +391,10 @@ public class Controleur implements Serializable {
 	@FXML
 	private void sauvegarder() {
 		try {
+			this.parametres.setValsSelonIntProp();
 			FileChooser chooser = new FileChooser();
 
-			ExtensionFilter filter = new ExtensionFilter("liste de reseaux de neurones", "*.listereseaux");
+			ExtensionFilter filter = new ExtensionFilter("fichier de sauvegarde du logiciel Skynet", "*.skynet");
 			chooser.getExtensionFilters().add(filter);
 			chooser.setSelectedExtensionFilter(filter);
 			String pathName = System.getProperty("user.home") + "\\Documents\\Reseau";
@@ -434,7 +423,7 @@ public class Controleur implements Serializable {
 		try {
 			FileChooser chooser = new FileChooser();
 
-			ExtensionFilter filter = new ExtensionFilter("liste de reseaux de neurones", "*.listereseaux");
+			ExtensionFilter filter = new ExtensionFilter("fichier de sauvegarde du logiciel Skynet", "*.skynet");
 			chooser.getExtensionFilters().add(filter);
 			chooser.setSelectedExtensionFilter(filter);
 			String pathName = System.getProperty("user.home") + "\\Documents\\Reseau";
@@ -449,6 +438,7 @@ public class Controleur implements Serializable {
 			this.listeReseaux = charge.listeReseaux;
 			this.regleApprentissageCompetitionInter = charge.regleApprentissageCompetitionInter;
 			this.parametres = charge.parametres;
+			this.parametres.setIntsPropsSelonVal();
 
 			inputStream.close();
 

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import ai.coeur.Neurone;
 import ai.coeur.Reseau;
 import modele.elements.hitbox.HitBox;
+import utilitaires.Parametres;
 
 public class PlayerAI extends Player {
 
@@ -12,8 +13,8 @@ public class PlayerAI extends Player {
 	private ArrayList<Neurone> listeNeuronesEntrees;
 	private ArrayList<Double> listeEntreesNumeriques;
 
-	public PlayerAI(HitBox hb, Reseau reseau) {
-		super(GameObjectType.AI, hb);
+	public PlayerAI(HitBox hb, Reseau reseau, Parametres parametres) {
+		super(GameObjectType.AI, hb, parametres);
 		this.reseau = reseau;
 		listeNeuronesEntrees = reseau.getNeuronesEntree();
 		listeEntreesNumeriques = new ArrayList<>();

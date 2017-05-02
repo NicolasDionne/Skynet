@@ -24,7 +24,7 @@ public abstract class ApprentissageIteratif extends RegleApprentissage {
 	 * Le numéro de l'itération en cours. C'est numéro de la génération du
 	 * réseau de neurones.
 	 */
-	protected int iterationCourante = 0;
+	protected int iterationCourante = 1;
 
 	/**
 	 * Le nombre maximal d'itérations possibles, et donc celui de la dernière

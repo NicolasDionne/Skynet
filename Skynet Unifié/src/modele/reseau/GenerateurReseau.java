@@ -34,6 +34,9 @@ public class GenerateurReseau {
 	protected void genererNiveaux(Reseau reseau, int nbrNiveaux, int nbrNeuronesParNiveau) {
 		for (int i = 0; i < nbrNiveaux; i++) {
 			Niveau niveau = new Niveau(nbrNeuronesParNiveau);
+			for (Neurone neurone : niveau.getListeNeuronesNiveau()) {
+				neurone.setFonctionTransfers(new EtapeSortie());
+			}
 			reseau.ajouterNiveau(niveau);
 		}
 	}

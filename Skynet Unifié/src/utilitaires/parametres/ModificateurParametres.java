@@ -32,8 +32,8 @@ public class ModificateurParametres {
 	public void initialize() {
 		nbLignesSp = new IntegerSpinnerValueFactory(2, 6);
 		nbColonnesSp = new IntegerSpinnerValueFactory(2, 10);
-		nbNiveauxSp = new IntegerSpinnerValueFactory(1, 20);
-		nbNeuronesPNSp = new IntegerSpinnerValueFactory(2, 90);
+		nbNiveauxSp = new IntegerSpinnerValueFactory(1, 6);
+		nbNeuronesPNSp = new IntegerSpinnerValueFactory(2, 7);
 
 		spinnerNbLignes = new Spinner<>(nbLignesSp);
 		spinnerNbColonnes = new Spinner<>(nbColonnesSp);

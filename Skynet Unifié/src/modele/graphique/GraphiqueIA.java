@@ -3,6 +3,8 @@ package modele.graphique;
 import java.util.ArrayList;
 import java.util.Random;
 
+import ai.coeur.Lien;
+import ai.coeur.Niveau;
 import ai.coeur.Reseau;
 import ai.coeur.apprentissage.ApprentissageSupervise;
 import javafx.scene.control.Label;
@@ -31,6 +33,7 @@ public class GraphiqueIA {
 	private int nbColonnesEntrees;
 	private int nbNiveau = 6;
 	private int nbNeuronesNiveau = 6;
+	private ArrayList<Line> listeLine;
 
 	/**
 	 * constructeur du GraphiqueIA, reçoit uniquement en paramètre sa zone
@@ -48,6 +51,7 @@ public class GraphiqueIA {
 		genererAffichageOutput();
 		// TODO requiers de mettre un réseau pour marcher
 		genererAffichageNiveaux();
+		listeLine = new ArrayList<>();
 		afficherLiens();
 
 	}
@@ -58,12 +62,12 @@ public class GraphiqueIA {
 	 * @param reseau
 	 *            le réseau à représenter
 	 */
-	public void setResau(Reseau<?> reseau) {
+	public void setReseau(Reseau<?> reseau) {
+
 		this.reseau = reseau;
 		nbNiveau = reseau.getNombreNiveaux();
-		// TODO assigner la bone valeur à ceci.
-		nbNeuronesNiveau = reseau.getNombreEntrees();
-		afficherLiens();
+		nbNeuronesNiveau = reseau.getListeNiveaux().get(0).getNombreDeNeurones();
+		resetLiens();
 
 	}
 
@@ -89,14 +93,12 @@ public class GraphiqueIA {
 	 * cercles et les place dans le listeNiveaux
 	 */
 	private void genererAffichageNiveaux() {
-		// TODO prendre les valeurs du cerveau pour afficher le bon nombre de
-		// stock
 		if (reseau != null) {
 			Circle r;
 			for (int col = 0; col < nbNiveau; col++) {
 				Label l = new Label(new Integer(col).toString());
 				l.setLayoutX(col * 100 + 107);
-				;
+				l.setLayoutY(23);
 				zoneAffichage.getChildren().add(l);
 				for (int li = 0; li < nbNeuronesNiveau; li++) {
 					r = new Circle(col * 100 + 100, li * 30 + 20, largeur);
@@ -106,12 +108,11 @@ public class GraphiqueIA {
 				}
 			}
 		} else {
-			// TODO affiche pour le test
 			Circle c;
 			for (int col = 0; col < nbNiveau; col++) {
 				Label l = new Label(new Integer(col).toString());
 				l.setLayoutX(col * 100 + 347);
-				l.setLayoutY(26);
+				l.setLayoutY(23);
 
 				zoneAffichage.getChildren().add(l);
 				for (int li = 0; li < nbNeuronesNiveau; li++) {
@@ -144,6 +145,7 @@ public class GraphiqueIA {
 	 * enfin à la sortie.
 	 */
 	private void afficherLiens() {
+		int k = 0;
 		Line l = new Line();
 		Random ra = new Random();
 		// Liens entre les neurones "cachees" et jusqu'a la sortie
@@ -157,10 +159,12 @@ public class GraphiqueIA {
 							((Rectangle) r2).getX() + ((Rectangle) r2).getWidth() / 2,
 							((Rectangle) r2).getY() + ((Rectangle) r2).getHeight() / 2);
 				}
-				// TODO mettre la vraie importance
+
 				l.setStroke(couleurCelonDouble(ra.nextDouble()));
+				listeLine.add(l);
 				zoneAffichage.getChildren().add(l);
 				l.toBack();
+				k++;
 			}
 		}
 		// liens entre les entrees et la premiere ligne de neurones "cachees"
@@ -170,11 +174,20 @@ public class GraphiqueIA {
 			for (int i = 0; i < nbNeuronesNiveau; i++) {
 				c = listeNiveaux.get(i);
 				l = new Line(r.getX() + r.getWidth() / 2, r.getY() + r.getHeight() / 2, c.getCenterX(), c.getCenterY());
-				// TODO mettre la vraie importance
 				l.setStroke(couleurCelonDouble(ra.nextDouble()));
+				listeLine.add(l);
 				zoneAffichage.getChildren().add(l);
 				l.toBack();
 			}
+		}
+	}
+
+	private void afficherLiens(Reseau reseau) {
+		ArrayList<Lien> liens = reseau.getListeLiens();
+		for (int i = 0; (liens.size() < listeLine.size()) ? i < liens.size() : i < listeLine.size(); i++) {
+			double valStroke = liens.get(i).getImportance().getValImportance();
+			valStroke = valStroke / 100;
+			listeLine.get(i).setStroke(couleurCelonDouble(valStroke));
 		}
 	}
 
@@ -193,6 +206,16 @@ public class GraphiqueIA {
 			}
 		}
 
+	}
+
+	public void refreshGraphMiddle(Reseau reseau) {
+		int k = 0;
+		for (int i = 0; i < reseau.getListeNiveaux().size(); i++) {
+			for (int j = 0; j < ((Niveau) reseau.getListeNiveaux().get(0)).getNombreDeNeurones(); j++, k++) {
+				listeNiveaux.get(k).setFill(couleurParFloat((float) (((Niveau) reseau.getListeNiveaux().get(i))
+						.getListeNeuronesNiveau().get(j).getSortie())));
+			}
+		}
 	}
 
 	/**
@@ -259,11 +282,10 @@ public class GraphiqueIA {
 	 */
 	private Color couleurCelonDouble(double d) {
 		Color c;
-		// TODO METTRE LE WEIGHT DE 0 A 1
-		if (d >= 0.5) {
+		if (d >= 0) {
 			c = new Color(0, 0, 1, d);
 		} else {
-			c = new Color(1, 0, 0, d);
+			c = new Color(1, 0, 0, Math.abs(d));
 		}
 		return c;
 
@@ -288,10 +310,8 @@ public class GraphiqueIA {
 	 * remets a zero les liens liant les neurones
 	 */
 	public void resetLiens() {
-		zoneAffichage.getChildren().clear();
-		genererAffichageNeuronesEntree();
-		genererAffichageNiveaux();
-		genererAffichageOutput();
+
+		afficherLiens(this.reseau);
 
 	}
 

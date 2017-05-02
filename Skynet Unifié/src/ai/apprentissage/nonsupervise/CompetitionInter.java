@@ -10,6 +10,9 @@ public abstract class CompetitionInter extends ApprentissageNonSupervise impleme
 
 	private static final long serialVersionUID = -5743381037817513332L;
 
+	/**
+	 * La liste de <code>Reseau</code> qui sont en compétition.
+	 */
 	protected ArrayList<Reseau> listeReseauxEnCompetitions;
 
 	protected ArrayList<Reseau> listeMoinsBonsReseaux;
@@ -29,6 +32,7 @@ public abstract class CompetitionInter extends ApprentissageNonSupervise impleme
 
 	@Override
 	public void faireUneIterationApprentissage() {
+		this.iterationCourante++;
 		avantEpoch();
 		mettreAJourImportancesReseau();
 		apresEpoch();

@@ -10,10 +10,14 @@ public class Parametres extends SimpleObjectProperty implements Serializable {
 
 	private static final long serialVersionUID = 8644035316408438516L;
 
-	private IntegerProperty nbColonnes = new SimpleIntegerProperty();
-	private IntegerProperty nbLignes = new SimpleIntegerProperty();
-	private IntegerProperty nbNiveaux = new SimpleIntegerProperty();
-	private IntegerProperty nbNeuronesParNiveau = new SimpleIntegerProperty();
+	private transient IntegerProperty nbColonnes = new SimpleIntegerProperty();
+	private transient IntegerProperty nbLignes = new SimpleIntegerProperty();
+	private transient IntegerProperty nbNiveaux = new SimpleIntegerProperty();
+	private transient IntegerProperty nbNeuronesParNiveau = new SimpleIntegerProperty();
+	private int valNbCol;
+	private int valNbLig;
+	private int valNbNiv;
+	private int valNbNeuPN;
 
 	/**
 	 * @param nbColonnes
@@ -91,6 +95,52 @@ public class Parametres extends SimpleObjectProperty implements Serializable {
 
 	public void setValNbNeuronesParNiveau(int nbNeuronesParNiveau) {
 		this.nbNeuronesParNiveau.set(nbNeuronesParNiveau);
+	}
+
+	public int getValNbCol() {
+		return valNbCol;
+	}
+
+	public void setValNbCol(int valNbCol) {
+		this.valNbCol = valNbCol;
+	}
+
+	public int getValNbLig() {
+		return valNbLig;
+	}
+
+	public void setValNbLig(int valNbLig) {
+		this.valNbLig = valNbLig;
+	}
+
+	public int getValNbNiv() {
+		return valNbNiv;
+	}
+
+	public void setValNbNiv(int valNbNiv) {
+		this.valNbNiv = valNbNiv;
+	}
+
+	public int getValNbNeuPN() {
+		return valNbNeuPN;
+	}
+
+	public void setValNbNeuPN(int valNbNeuPN) {
+		this.valNbNeuPN = valNbNeuPN;
+	}
+
+	public void setValsSelonIntProp() {
+		this.valNbCol = this.nbColonnes.get();
+		this.valNbLig = this.nbLignes.get();
+		this.valNbNiv = this.nbNiveaux.get();
+		this.valNbNeuPN = this.nbNeuronesParNiveau.get();
+	}
+
+	public void setIntsPropsSelonVal() {
+		this.nbColonnes.set(valNbCol);
+		this.nbLignes.set(valNbLig);
+		this.nbNiveaux.set(valNbNiv);
+		this.nbNeuronesParNiveau.set(valNbNeuPN);
 	}
 
 }

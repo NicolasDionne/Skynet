@@ -3,6 +3,8 @@ package ai.coeur;
 import java.io.Serializable;
 import java.util.Objects;
 
+import utilitaires.Sortable;
+
 /**
  * La classe <code>Lien</code> permet de lier entre elles les neurones. Un lien
  * possède une neurone à partir de laquelle il provient, une neurone jusqu'à
@@ -16,7 +18,7 @@ import java.util.Objects;
  * @see Importance
  * @see Neurone
  */
-public class Lien implements Serializable {
+public class Lien implements Serializable, Sortable {
 
 	private static final long serialVersionUID = 2484872430905593388L;
 
@@ -212,6 +214,11 @@ public class Lien implements Serializable {
 	 */
 	public String getNom() {
 		return nom;
+	}
+
+	@Override
+	public int getValeurLorsSort() {
+		return getNom().hashCode();
 	}
 
 }

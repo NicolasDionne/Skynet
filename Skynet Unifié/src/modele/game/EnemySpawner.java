@@ -8,107 +8,126 @@ import modele.game.game_objects.Enemy;
 import modele.math.Vector2D;
 import utilitaires.MathUtilitaires;
 
-import java.awt.*;
-
+/**
+ *
+ * @author Bénange Breton
+ *
+ */
 public class EnemySpawner implements Bias {
 
-    public static final float SELF_ROTATION_BIAS = 0.3f;
-    public static final float SELF_ROTATION_START_VELOCITY_BIAS = 0.3f;
+	private static final int CONSTANT_VELOCITY = 5;
 
-    public static final float ORIGIN_ROTATION_BIAS = 0f;
-    public static final float ORIGIN_ROTATION_START_VELOCITY_BIAS = 0.3f;
+	static final public int MIN_HEIGHT = Controleur.PLAFOND;
+	static final public int MAX_HEIGHT = Controleur.PLANCHER;
 
-    public static final float START_VELOCITY_BIAS = 0.5f;
+	private Difficulty difficulty;
 
-    public HitBox spawn(short size) {
+	private int nbLanes;
+	private int laneIndex;
+	private int[] laneHeights;
 
-        RotationParameters rotP = new RotationParameters();
-        float startHeight = startHeight();
+	public EnemySpawner(int nbLanes, Difficulty diff) {
+		this.nbLanes = filterNbLanes(nbLanes);
+		this.difficulty = diff;
 
+		laneHeights = new int[nbLanes];
+		for (int i = 0; i < this.nbLanes; i++) {
+			laneHeights[i] = ((MAX_HEIGHT - MIN_HEIGHT) / this.nbLanes) * (i + 1) + MIN_HEIGHT;
+		}
+	}
 
-        if (testBias(ORIGIN_ROTATION_BIAS)) {
-            rotP = startOriginRotationParameters();
-            startHeight = Controleur.PLAFOND + Enemy.ENEMY_DIM + 5;
-        }
+	public HitBox spawn(short size) {
 
-        HitBox hb = new HitBox(size, size,
-                new MotionPoint(Controleur.EDGE + size, startHeight, new Vector2D(startVelocity(), 0),
-                        new Vector2D(startAcceleration(), 0), rotP),
-                startSelfRotationParameters());
+		HitBox hb = new HitBox(size, size, new MotionPoint(Controleur.EDGE + size, startHeight(),
+				new Vector2D(startVelocity(), 0), new Vector2D(startAcceleration(), 0), startOriginRotationParameters()),
+				startSelfRotationParameters());
 
-        hb.setOrigin(startOrigin(hb));
+		hb.setOrigin(startOrigin(hb));
 
-        return hb;
-    }
+		return hb;
+	}
 
-    private float startHeight() {
-        return randRange(Controleur.PLAFOND + Enemy.ENEMY_DIM / 2, Controleur.PLANCHER - Enemy.ENEMY_DIM / 2);
-    }
+	private float startHeight() {
+		int startHeight;
 
-    private float startAcceleration() {
-        return (-1) * randRange(0, MotionPoint.MAX_ACCELERATION);
-    }
+		if (difficulty.isCycleLanes()) {
+			startHeight = laneHeights[laneIndex];
+			laneIndex = (laneIndex + 1) % nbLanes;
+		} else
+			startHeight = (int) MathUtilitaires.getRandomInRange(MIN_HEIGHT, MAX_HEIGHT);
 
-    private float startVelocity() {
-        float vel = 0;
+		return startHeight;
+	}
 
-        if (testBias(START_VELOCITY_BIAS)) {
-            vel = (-1) * randRange(0, MotionPoint.MAX_VELOCITY);
-        }
-        return vel;
-    }
+	private float startAcceleration() {
+		return difficulty.isStartAcceleration()
+				? (-1) * randRange(MotionPoint.MIN_ACCELERATION, MotionPoint.MAX_ACCELERATION) : 0;
+	}
 
-    private MotionPoint startOrigin(HitBox hb) {
+	private float startVelocity() {
+		float vel = CONSTANT_VELOCITY;
 
-        MotionPoint o = new MotionPoint((float) hb.getCenterPoint().getX() - 30, Controleur.MID_HEIGHT);
-        o.setAccelerationX(hb.getCenterPoint().accelerationX());
-        o.setVelocityX(hb.getCenterPoint().velocityX());
+		if (!difficulty.isConstantVelocity() && testBias(difficulty.getStartVelocityBias())) {
+			vel = randRange(MotionPoint.MIN_VELOCITY, MotionPoint.MAX_VELOCITY);
+		}
+		return (-1) * vel * difficulty.getSpeedScaleFactor();
+	}
 
-        return o;
-    }
+	private MotionPoint startOrigin(HitBox hb) {
 
-    private RotationParameters startSelfRotationParameters() {
+		MotionPoint o = new MotionPoint((float) hb.getCenterPoint().getX(), Controleur.MID_HEIGHT);
+		o.setAccelerationX(hb.getCenterPoint().accelerationX());
+		o.setVelocityX(hb.getCenterPoint().velocityX());
 
-        RotationParameters rParams = new RotationParameters();
+		return o;
+	}
 
-        if (testBias(SELF_ROTATION_BIAS)) {
+	private RotationParameters startSelfRotationParameters() {
 
-            float acc = randRange(RotationParameters.MIN_ANGULAR_ACCELERATION, RotationParameters.MAX_ANGULAR_ACCELERATION);
+		RotationParameters rParams = new RotationParameters();
 
-            if (testBias(SELF_ROTATION_START_VELOCITY_BIAS)) {
-                float vel = randRange(RotationParameters.MIN_ANGULAR_VEL, RotationParameters.MAX_ANGULAR_VEL);
+		if (testBias(difficulty.getSelfRotationBias())) {
 
-                rParams.setAngularVelocity(vel);
-            }
-            rParams.setAngularAcceleration(acc);
-        }
+			float acc = randRange(RotationParameters.MIN_ANGULAR_ACCELERATION,
+					RotationParameters.MAX_ANGULAR_ACCELERATION);
 
-        return rParams;
-    }
+			if (testBias(difficulty.getSelfRotationStartVelocityBias())) {
+				float vel = randRange(RotationParameters.MIN_ANGULAR_VEL, RotationParameters.MAX_ANGULAR_VEL);
 
-    private RotationParameters startOriginRotationParameters() {
+				rParams.setAngularVelocity(vel);
+			}
+			rParams.setAngularAcceleration(acc);
+		}
 
-        RotationParameters rParams = new RotationParameters();
-        float acc = 0;
-        float vel = 0;
+		return rParams;
+	}
 
-        if (testBias(ORIGIN_ROTATION_BIAS)) {
+	private RotationParameters startOriginRotationParameters() {
 
-            acc = randRange(RotationParameters.MIN_ANGULAR_ACCELERATION, RotationParameters.MAX_ANGULAR_ACCELERATION);
+		RotationParameters rParams = new RotationParameters();
+		float acc = 0;
+		float vel = 0;
 
-            if (testBias(ORIGIN_ROTATION_START_VELOCITY_BIAS)) {
-                vel = randRange(RotationParameters.MIN_ANGULAR_VEL, RotationParameters.MAX_ANGULAR_VEL);
+		if (testBias(difficulty.getOriginRotationBias())) {
 
-                rParams.setAngularVelocity(vel);
-            }
-            rParams.setAngularAcceleration(acc);
-        }
+			acc = randRange(RotationParameters.MIN_ANGULAR_ACCELERATION, RotationParameters.MAX_ANGULAR_ACCELERATION);
 
-        // return new RotationParameters();
-        return rParams;
-    }
+			if (testBias(difficulty.getOriginRotationStarVelocityBias())) {
+				vel = randRange(RotationParameters.MIN_ANGULAR_VEL, RotationParameters.MAX_ANGULAR_VEL);
 
-    private float randRange(float min, float max) {
-        return MathUtilitaires.getRandomInRange(min, max);
-    }
+				rParams.setAngularVelocity(vel);
+			}
+			rParams.setAngularAcceleration(acc);
+		}
+
+		return rParams;
+	}
+
+	private float randRange(float min, float max) {
+		return MathUtilitaires.getRandomInRange(min, max);
+	}
+
+	private int filterNbLanes(int nbLanes) {
+		return nbLanes > 0 ? nbLanes : 1;
+	}
 }

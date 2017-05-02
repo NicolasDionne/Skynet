@@ -14,7 +14,7 @@ public class CompetitionInterLiens extends CompetitionInter implements Serializa
 	private static final long serialVersionUID = -7304761752225772866L;
 
 	private transient double valModification;
-	private GetValModification getValModification = new GetValModification();
+	private transient GetValModification getValModification; 
 
 	/**
 	 * @param listeReseauxEnCompetitions
@@ -27,7 +27,9 @@ public class CompetitionInterLiens extends CompetitionInter implements Serializa
 
 	@Override
 	protected void mettreAJourImportancesReseau() {
-		this.valModification = 5;
+		// GetValModification getValModification = new GetValModification();
+		// this.valModification = getValModification.getVal();
+		this.valModification = 25.0 / (((double) (iterationCourante)) / 5.0);
 		appliquerImportanceMeilleurReseau();
 		appliquerModificationImportance();
 	}
@@ -36,12 +38,13 @@ public class CompetitionInterLiens extends CompetitionInter implements Serializa
 	protected void avantEpoch() {
 		classerReseaux();
 		trouverMeilleurReseau();
-		listerMoinsBonsReseaux();
 	}
 
 	@Override
 	protected void apresEpoch() {
-
+		this.listeReseauxEnCompetitions.clear();
+		this.listeReseauxEnCompetitions.addAll(listeMeilleursReseaux);
+		this.listeReseauxEnCompetitions.addAll(listeMoinsBonsReseaux);
 	}
 
 	protected void classerReseaux() {
@@ -49,12 +52,12 @@ public class CompetitionInterLiens extends CompetitionInter implements Serializa
 	}
 
 	protected void trouverMeilleurReseau() {
-
 		listeMeilleursReseaux.set(0, this.listeReseauxEnCompetitions.get(0));
 		listerMoinsBonsReseaux();
 	}
 
 	private void listerMoinsBonsReseaux() {
+		listeMoinsBonsReseaux.clear();
 		for (int i = 1; i < listeReseauxEnCompetitions.size(); i++) {
 			listeMoinsBonsReseaux.add(listeReseauxEnCompetitions.get(i));
 		}
@@ -66,8 +69,7 @@ public class CompetitionInterLiens extends CompetitionInter implements Serializa
 			for (Lien lienMeilleurReseau : (ArrayList<Lien>) (meilleurReseau.getListeLiens())) {
 				for (Lien lien : (ArrayList<Lien>) reseau.getListeLiens()) {
 					if (lienMeilleurReseau.getNom().equals(lien.getNom())) {
-						lien.setImportance(lienMeilleurReseau.getImportance());
-					} else {
+						lien.getImportance().setValImportance(lienMeilleurReseau.getImportance().getValImportance());
 						break;
 					}
 				}
@@ -83,9 +85,15 @@ public class CompetitionInterLiens extends CompetitionInter implements Serializa
 				if (lien.getImportance().getValImportance() > importanceMax) {
 					lien.getImportance().setValImportance(
 							importanceMax - (lien.getImportance().getValImportance() - importanceMax));
+					if (lien.getImportance().getValImportance() > importanceMax) {
+						System.out.println("Fuck…");
+					}
 				} else if (lien.getImportance().getValImportance() < importanceMin) {
 					lien.getImportance().setValImportance(
 							importanceMin - (lien.getImportance().getValImportance() - importanceMin));
+					if (lien.getImportance().getValImportance() < importanceMin) {
+						System.out.println("Fuck…");
+					}
 				}
 			}
 		}

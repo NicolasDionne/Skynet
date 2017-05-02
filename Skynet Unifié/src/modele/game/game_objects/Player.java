@@ -8,6 +8,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import modele.elements.hitbox.HitBox;
 import modele.elements.hitbox.MotionPoint;
+import utilitaires.Parametres;
 import modele.elements.ai_related.VisionGrid;
 
 public class Player extends GameObject {
@@ -19,7 +20,7 @@ public class Player extends GameObject {
 	private IntegerProperty score;
 	protected List<Integer> listeIndexEntrees;
 
-	public Player(GameObjectType pType, HitBox hb) {
+	public Player(GameObjectType pType, HitBox hb, Parametres parametres) {
 		super(hb);
 
 		MotionPoint origin = new MotionPoint(0, 0);
@@ -27,8 +28,7 @@ public class Player extends GameObject {
 		getHitBox().setCanHitOthers(true);
 		setObjectType(pType);
 
-
-		vGrid = new VisionGrid(hb);
+		vGrid = new VisionGrid(hb, (short) parametres.getValNbLignes(), (short) parametres.getValNbColonnes());
 		score = new SimpleIntegerProperty();
 		listeIndexEntrees = new ArrayList<>();
 
@@ -81,6 +81,7 @@ public class Player extends GameObject {
 	public void setListeIndexEntrees(List<Integer> listeEntreesNumeriques) {
 		this.listeIndexEntrees = listeEntreesNumeriques;
 	}
+
 	public void appliquerIndex() {
 	}
 }
