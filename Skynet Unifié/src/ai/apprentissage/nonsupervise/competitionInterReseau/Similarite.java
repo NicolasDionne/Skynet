@@ -1,6 +1,6 @@
 package ai.apprentissage.nonsupervise.competitionInterReseau;
 
-import ai.apprentissage.nonsupervise.CompetitionInterReseaux;
+import ai.apprentissage.nonsupervise.competitionInter.CompetitionInterReseaux;
 
 /**
  * La classe <code>Similarite</code> sert à garder en mémoire quel

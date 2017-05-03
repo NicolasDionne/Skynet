@@ -291,7 +291,7 @@ public class Controleur implements Serializable {
 
 		animStarted = false;
 		displayJeu.getChildren().clear();
-		game = new Game((short) 0, (short) 0, graph, listeReseaux, this, Difficulty.LIKE_REALLY_REALLY_HARD);
+		game = new Game((short) 0, (short) 0, graph, listeReseaux, this, Difficulty.VERY_EASY);
 
 	}
 
@@ -303,7 +303,7 @@ public class Controleur implements Serializable {
 			regleApprentissageCompetitionInter.faireUneIterationApprentissage();
 		}
 		graph = new GraphiqueIA(affichageReseau, parametres);
-		Difficulty dif = Difficulty.LIKE_REALLY_REALLY_HARD;
+		Difficulty dif = Difficulty.VERY_EASY;
 		if (choixDifficulte.getValue() != null) {
 			switch (choixDifficulte.getValue()) {
 			case ("Très facile"):

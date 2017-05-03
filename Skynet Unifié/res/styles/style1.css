@@ -30,7 +30,7 @@
     -fx-alignment: CENTER;
 }
 
-.joueur {
+.joueurAI {
 	-fx-image: url("../images/joueur.png");
 }
 
@@ -40,4 +40,8 @@
 
 .voidImage {
 	-fx-image : url("../images/void.png");
+}
+
+.joueurHumain {
+	-fx-image: url("../images/joueurHumain.png");
 }

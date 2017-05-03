@@ -191,7 +191,7 @@ public class Game implements Bias, Update, Render, Spawn {
 			p = new Player(pType, hb, this.c.parametres);
 		}
 
-		ExtendedImageView eI = new ExtendedImageView(p, "joueur");
+		ExtendedImageView eI = new ExtendedImageView(p, p.getStyleName());
 		playerImagesSet.add(eI);
 
 		p.scoreProperty().bind(this.scoreProperty());
@@ -216,9 +216,10 @@ public class Game implements Bias, Update, Render, Spawn {
 	@Override
 	public void spawn() {
 		timeBetweenEnemies = 0;
+		timerScaleFactor += difficulty.getTimeBetweenEnemiesIncrement();
 
 		Enemy enemy = spawnEnemy();
-		ExtendedImageView r = new ExtendedImageView(enemy, "obstacle");
+		ExtendedImageView r = new ExtendedImageView(enemy, enemy.getStyleName());
 
 		enemyImagesSet.add(r);
 	}

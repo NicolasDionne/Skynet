@@ -12,15 +12,21 @@ public abstract class GameObject {
     public static final short MAX_DIM = 1000;
     public static final short MIN_DIM = 10;
 
+    private String styleName = "voidImage";
     private HitBox hitBox;
     protected GameObjectType gameObType = GameObjectType.VOID;
 
-    public GameObject(HitBox hb) {
+    public GameObject(HitBox hb, String styleName) {
         if (hb != null) {
             hitBox = hb;
             hitBox.setWidth(filterWidth(hb.getWidth()));
             hitBox.setHeight(filterHeigth(hb.getHeight()));
+            this.styleName = styleName;
         }
+    }
+
+    public String getStyleName(){
+    	return styleName;
     }
 
     protected void setObjectType(GameObjectType gameObType) {

@@ -6,10 +6,9 @@ import modele.elements.hitbox.MotionPoint;
 public class Enemy extends GameObject {
 
 	public static final short ENEMY_DIM = 32;
-	public static final String ENEMY_URL = "images/obstacle.png";
 
 	public Enemy(HitBox hb) {
-		super(hb);
+		super(hb, "obstacle");
 		setObjectType(GameObjectType.ENEMY);
 	}
 

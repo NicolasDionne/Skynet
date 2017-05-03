@@ -21,7 +21,7 @@ public class Player extends GameObject {
 	protected List<Integer> listeIndexEntrees;
 
 	public Player(GameObjectType pType, HitBox hb, Parametres parametres) {
-		super(hb);
+		super(hb, pType == GameObjectType.HUMAN ? "joueurHumain" : "joueurAI");
 
 		MotionPoint origin = new MotionPoint(0, 0);
 		getHitBox().setOrigin(origin);

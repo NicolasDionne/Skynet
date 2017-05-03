@@ -25,6 +25,7 @@ public class EnemySpawner implements Bias {
 	private int nbLanes;
 	private int laneIndex;
 	private int[] laneHeights;
+	boolean descending = true;
 
 	public EnemySpawner(int nbLanes, Difficulty diff) {
 		this.nbLanes = filterNbLanes(nbLanes);
@@ -35,6 +36,7 @@ public class EnemySpawner implements Bias {
 			laneHeights[i] = ((MAX_HEIGHT - MIN_HEIGHT) / this.nbLanes) * (i + 1) + MIN_HEIGHT;
 		}
 	}
+
 
 	public HitBox spawn(short size) {
 
@@ -50,13 +52,29 @@ public class EnemySpawner implements Bias {
 	private float startHeight() {
 		int startHeight;
 
-		if (difficulty.isCycleLanes()) {
+		if (difficulty.doesCycleLanes()) {
 			startHeight = laneHeights[laneIndex];
-			laneIndex = (laneIndex + 1) % nbLanes;
+			changeLane(difficulty.doesCyclesBackAndForth());
 		} else
 			startHeight = (int) MathUtilitaires.getRandomInRange(MIN_HEIGHT, MAX_HEIGHT);
 
 		return startHeight;
+	}
+
+	private void changeLane(boolean cycleBackAndForth) {
+		if (cycleBackAndForth) {
+
+			if (descending) {
+				laneIndex++;
+				if (laneIndex == nbLanes - 1)
+					descending = false;
+			} else {
+				laneIndex--;
+				if (laneIndex == 0)
+					descending = true;
+			}
+		} else
+			laneIndex = (laneIndex + 1) % nbLanes;
 	}
 
 	private float startAcceleration() {
