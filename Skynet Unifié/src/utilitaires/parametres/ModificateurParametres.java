@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.layout.VBox;
+import utilitaires.Parametres;
 
 public class ModificateurParametres {
 
@@ -30,35 +31,39 @@ public class ModificateurParametres {
 
 	@FXML
 	public void initialize() {
-		nbLignesSp = new IntegerSpinnerValueFactory(2, 6);
-		nbColonnesSp = new IntegerSpinnerValueFactory(2, 10);
-		nbNiveauxSp = new IntegerSpinnerValueFactory(1, 6);
-		nbNeuronesPNSp = new IntegerSpinnerValueFactory(2, 7);
 
-		spinnerNbLignes = new Spinner<>(nbLignesSp);
-		spinnerNbColonnes = new Spinner<>(nbColonnesSp);
-		spinnerNbNiveaux = new Spinner<>(nbNiveauxSp);
-		spinnerNbNeuronesPN = new Spinner<>(nbNeuronesPNSp);
-
-		lignesVBox.getChildren().add(spinnerNbLignes);
-		colonnesVBox.getChildren().add(spinnerNbColonnes);
-		niveauxVBox.getChildren().add(spinnerNbNiveaux);
-		neuronesVBox.getChildren().add(spinnerNbNeuronesPN);
 	}
 
 	public Spinner<Integer> getSpinnerNbLignes() {
-		return spinnerNbLignes;
+		return this.spinnerNbLignes;
 	}
 
 	public Spinner<Integer> getSpinnerNbColonnes() {
-		return spinnerNbColonnes;
+		return this.spinnerNbColonnes;
 	}
 
 	public Spinner<Integer> getSpinnerNbNiveaux() {
-		return spinnerNbNiveaux;
+		return this.spinnerNbNiveaux;
 	}
 
 	public Spinner<Integer> getSpinnerNbNeuronesPN() {
-		return spinnerNbNeuronesPN;
+		return this.spinnerNbNeuronesPN;
+	}
+
+	public void setSpinners(Parametres parametres) {
+		this.spinnerNbLignes = new Spinner<>(2, 6, parametres.getValNbLig());
+		this.spinnerNbColonnes = new Spinner<>(2, 10, parametres.getValNbCol());
+		this.spinnerNbNiveaux = new Spinner<>(1, 25, parametres.getValNbNiv());
+		this.spinnerNbNeuronesPN = new Spinner<>(2, 20, parametres.getValNbNeuPN());
+
+		this.spinnerNbLignes.setEditable(true);
+		this.spinnerNbColonnes.setEditable(true);
+		this.spinnerNbNiveaux.setEditable(true);
+		this.spinnerNbNeuronesPN.setEditable(true);
+
+		this.lignesVBox.getChildren().add(this.spinnerNbLignes);
+		this.colonnesVBox.getChildren().add(this.spinnerNbColonnes);
+		this.niveauxVBox.getChildren().add(this.spinnerNbNiveaux);
+		this.neuronesVBox.getChildren().add(this.spinnerNbNeuronesPN);
 	}
 }

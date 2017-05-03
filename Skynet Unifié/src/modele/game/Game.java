@@ -74,11 +74,12 @@ public class Game implements Bias, Update, Render, Spawn {
 		hbGen = new EnemySpawner(6, this.difficulty);
 		short trueNbHumans = filterNbHumans(nbHumans);
 
-		for (int i = 0; i < trueNbHumans; i++) {
-			createPlayer(GameObjectType.HUMAN, null);
-		}
 		for (int j = 0; j < nbAI; j++) {
 			createPlayer(GameObjectType.AI, this.listeReseauxCI.get(j));
+		}
+
+		for (int i = 0; i < trueNbHumans; i++) {
+			createPlayer(GameObjectType.HUMAN, null);
 		}
 
 		this.graph = graph;

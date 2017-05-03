@@ -19,6 +19,7 @@ import utilitaires.Parametres;
 public class GraphiqueIA {
 	private Pane zoneAffichage;
 	private int largeur = 20;
+	private int largeurRectangle = 20;
 	private int hauteur = 25;
 	private static final Color couleurOn = Color.GREEN;
 	private static final Color couleurOff = Color.ORANGE;
@@ -34,6 +35,8 @@ public class GraphiqueIA {
 	private int nbNiveau = 6;
 	private int nbNeuronesNiveau = 6;
 	private ArrayList<Line> listeLine;
+	private double ratioLargeur = 100;
+	private double ratioNeurones = 1;
 
 	/**
 	 * constructeur du GraphiqueIA, reçoit uniquement en paramètre sa zone
@@ -80,7 +83,7 @@ public class GraphiqueIA {
 		Rectangle r;
 		for (int col = 0; col < nbColonnesEntrees; col++) {
 			for (int li = 0; li < nbLignesEntrees; li++) {
-				r = new Rectangle(col * 25, li * 30 + 60, largeur, hauteur);
+				r = new Rectangle(col * 25, li * 30 + 30, largeurRectangle, hauteur);
 				r.setFill(couleurNeutre);
 				listeEntrants.add(r);
 				zoneAffichage.getChildren().add(r);
@@ -93,34 +96,19 @@ public class GraphiqueIA {
 	 * cercles et les place dans le listeNiveaux
 	 */
 	private void genererAffichageNiveaux() {
-		if (reseau != null) {
-			Circle r;
-			for (int col = 0; col < nbNiveau; col++) {
-				Label l = new Label(new Integer(col).toString());
-				l.setLayoutX(col * 100 + 107);
-				l.setLayoutY(23);
-				zoneAffichage.getChildren().add(l);
-				for (int li = 0; li < nbNeuronesNiveau; li++) {
-					r = new Circle(col * 100 + 100, li * 30 + 20, largeur);
-					r.setFill(couleurNeutre);
-					listeNiveaux.add(r);
-					zoneAffichage.getChildren().add(r);
-				}
-			}
-		} else {
-			Circle c;
-			for (int col = 0; col < nbNiveau; col++) {
-				Label l = new Label(new Integer(col).toString());
-				l.setLayoutX(col * 100 + 347);
-				l.setLayoutY(23);
 
-				zoneAffichage.getChildren().add(l);
-				for (int li = 0; li < nbNeuronesNiveau; li++) {
-					c = new Circle(col * 100 + 350, li * 30 + 50, largeur / 2);
-					c.setFill(couleurNeutre);
-					listeNiveaux.add(c);
-					zoneAffichage.getChildren().add(c);
-				}
+		Circle c;
+		for (int col = 0; col < nbNiveau; col++) {
+			Label l = new Label(new Integer(col).toString());
+			l.setLayoutX(col * ratioLargeur + 345);
+			l.setLayoutY(-5);
+
+			zoneAffichage.getChildren().add(l);
+			for (int li = 0; li < nbNeuronesNiveau; li++) {
+				c = new Circle(col * ratioLargeur + 350, li * ratioNeurones + 20, largeur / 2);
+				c.setFill(couleurNeutre);
+				listeNiveaux.add(c);
+				zoneAffichage.getChildren().add(c);
 			}
 		}
 
@@ -130,7 +118,7 @@ public class GraphiqueIA {
 	 * Génère l'affichage de la sortie
 	 */
 	private void genererAffichageOutput() {
-		Rectangle r = new Rectangle(50, 45, largeur + 5, hauteur);
+		Rectangle r = new Rectangle(55, 45, largeurRectangle + 5, hauteur);
 		r.setFill(couleurNeutre);
 		r.setX(925);
 		r.setY(75);
@@ -315,11 +303,46 @@ public class GraphiqueIA {
 
 	}
 
+	/**
+	 * prends un objet parametres et y transfert ses attributes au graphiqueIA
+	 * 
+	 * @param parametres
+	 *            l'objet auquel prendre les paramètres
+	 */
 	public void setParametres(Parametres parametres) {
 		this.nbLignesEntrees = parametres.getValNbLignes();
 		this.nbColonnesEntrees = parametres.getValNbColonnes();
 		this.nbNiveau = parametres.getValNbNiveaux();
 		this.nbNeuronesNiveau = parametres.getValNbNeuronesParNiveau();
+		setDecalageNiveaux(this.nbNiveau);
+		setDecalageNeurones(this.nbNeuronesNiveau);
+		setTailleNeurones(this.nbNeuronesNiveau);
 	}
 
+	/**
+	 * Calcule et assigne le decalage requis pour afficher correctement tous les
+	 * niveaux dans l'affichage
+	 * 
+	 * @param nbNiv
+	 */
+	private void setDecalageNiveaux(int nbNiv) {
+		ratioLargeur = 570 / nbNiv;
+
+	}
+
+	private void setDecalageNeurones(int nbNeur) {
+		ratioNeurones = 220 / nbNeur;
+	}
+
+	private void setTailleNeurones(int nbNeur) {
+		if (nbNeur < 11) {
+			largeur = 20;
+
+		} else if (nbNeur < 16) {
+			largeur = 15;
+		} else if (nbNeur < 21) {
+			largeur = 10;
+		}
+
+	}
 }

@@ -31,6 +31,7 @@ public class Parametres extends SimpleObjectProperty implements Serializable {
 		this.nbLignes.set(nbLignes);
 		this.nbNiveaux.set(nbNiveaux);
 		this.nbNeuronesParNiveau.set(nbNeuronesParNiveau);
+		setValsSelonIntProp();
 	}
 
 	public IntegerProperty getNbColonnes() {
@@ -137,10 +138,13 @@ public class Parametres extends SimpleObjectProperty implements Serializable {
 	}
 
 	public void setIntsPropsSelonVal() {
-		this.nbColonnes.set(valNbCol);
-		this.nbLignes.set(valNbLig);
-		this.nbNiveaux.set(valNbNiv);
-		this.nbNeuronesParNiveau.set(valNbNeuPN);
+		if (this.nbColonnes != null && this.nbLignes != null && this.nbNiveaux != null
+				&& this.nbNeuronesParNiveau != null) {
+			this.nbColonnes.set(valNbCol);
+			this.nbLignes.set(valNbLig);
+			this.nbNiveaux.set(valNbNiv);
+			this.nbNeuronesParNiveau.set(valNbNeuPN);
+		}
 	}
 
 }

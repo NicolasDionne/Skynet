@@ -15,11 +15,7 @@ import ai.apprentissage.nonsupervise.competitionInter.CompetitionInterLiens;
 import ai.coeur.Reseau;
 import application.Main;
 import javafx.animation.AnimationTimer;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -33,13 +29,11 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
@@ -143,49 +137,7 @@ public class Controleur implements Serializable {
 		KeyCodeCombination modifierMenuKeyCombination = new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN);
 		modifierMenu.setAccelerator(modifierMenuKeyCombination);
 
-		parametres.getNbLignes().addListener(new ChangeListener<Number>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-
-				if (oldValue != newValue) {
-					listeReseaux = null;
-					regleApprentissageCompetitionInter = null;
-				}
-			}
-		});
-		parametres.getNbColonnes().addListener(new ChangeListener<Number>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				if (oldValue != newValue) {
-					listeReseaux = null;
-					regleApprentissageCompetitionInter = null;
-				}
-			}
-		});
-
-		parametres.getNbNiveaux().addListener(new ChangeListener<Number>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				if (oldValue != newValue) {
-					listeReseaux = null;
-					regleApprentissageCompetitionInter = null;
-				}
-			}
-		});
-
-		parametres.getNbNeuronesParNiveau().addListener(new ChangeListener<Number>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				if (oldValue != newValue) {
-					listeReseaux = null;
-					regleApprentissageCompetitionInter = null;
-				}
-			}
-		});
+		initialiserParametres(this.parametres);
 
 		choixDifficulte.getItems().addAll("Très facile", "Facile", "Moyen", "Difficile", "Très difficile");
 
@@ -356,7 +308,7 @@ public class Controleur implements Serializable {
 	@FXML
 	void debutMouvement(KeyEvent event) {
 		if (game.getPlayersSet().size() > 0) {
-			Player p = game.getPlayersSet().get(0);
+			Player p = game.getPlayersSet().get(game.getPlayersSet().size() - 1);
 
 			if (p.getObjectType() == GameObjectType.HUMAN) {
 				switch (event.getCode()) {
@@ -382,7 +334,7 @@ public class Controleur implements Serializable {
 	void finMouvement() {
 
 		if (game.getPlayersSet().size() > 0) {
-			Player p = game.getPlayersSet().get(0);
+			Player p = game.getPlayersSet().get(game.getPlayersSet().size() - 1);
 			if (p.getObjectType() == GameObjectType.HUMAN)
 				p.changeDirection(0);
 		}
@@ -437,7 +389,7 @@ public class Controleur implements Serializable {
 			Controleur charge = (Controleur) inputStream.readObject();
 			this.listeReseaux = charge.listeReseaux;
 			this.regleApprentissageCompetitionInter = charge.regleApprentissageCompetitionInter;
-			this.parametres = charge.parametres;
+			initialiserParametres(charge.parametres);
 			this.parametres.setIntsPropsSelonVal();
 
 			inputStream.close();
@@ -459,18 +411,67 @@ public class Controleur implements Serializable {
 					getClass().getResource("/utilitaires/parametres/modificateurParametres/Vue.fxml"));
 			GridPane root = loader.load();
 			ModificateurParametres modificateurParametres = loader.getController();
+			modificateurParametres.setSpinners(this.parametres);
 			Scene s = new Scene(root);
 			stage = new Stage();
 			stage.setScene(s);
 			stage.showAndWait();
 
-			parametres.setValNbLignes(modificateurParametres.getSpinnerNbLignes().getValue());
-			parametres.setValNbColonnes(modificateurParametres.getSpinnerNbColonnes().getValue());
-			parametres.setValNbNiveaux(modificateurParametres.getSpinnerNbNiveaux().getValue());
-			parametres.setValNbNeuronesParNiveau(modificateurParametres.getSpinnerNbNeuronesPN().getValue());
+			this.parametres.setValNbLignes(modificateurParametres.getSpinnerNbLignes().getValue());
+			this.parametres.setValNbColonnes(modificateurParametres.getSpinnerNbColonnes().getValue());
+			this.parametres.setValNbNiveaux(modificateurParametres.getSpinnerNbNiveaux().getValue());
+			this.parametres.setValNbNeuronesParNiveau(modificateurParametres.getSpinnerNbNeuronesPN().getValue());
+			this.parametres.setValsSelonIntProp();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void initialiserParametres(Parametres parametres) {
+		this.parametres.setNbColonnes(new SimpleIntegerProperty(parametres.getValNbCol()));
+		this.parametres.setNbLignes(new SimpleIntegerProperty(parametres.getValNbLig()));
+		this.parametres.setNbNiveaux(new SimpleIntegerProperty(parametres.getValNbNiv()));
+		this.parametres.setNbNeuronesParNiveau(new SimpleIntegerProperty(parametres.getValNbNeuPN()));
+
+		this.parametres.getNbLignes().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				if (oldValue != newValue) {
+					listeReseaux = null;
+					regleApprentissageCompetitionInter = null;
+				}
+			}
+		});
+
+		this.parametres.getNbColonnes().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				if (oldValue != newValue) {
+					listeReseaux = null;
+					regleApprentissageCompetitionInter = null;
+				}
+			}
+		});
+
+		this.parametres.getNbNiveaux().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				if (oldValue != newValue) {
+					listeReseaux = null;
+					regleApprentissageCompetitionInter = null;
+				}
+			}
+		});
+
+		this.parametres.getNbNeuronesParNiveau().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				if (oldValue != newValue) {
+					listeReseaux = null;
+					regleApprentissageCompetitionInter = null;
+				}
+			}
+		});
 	}
 
 }
