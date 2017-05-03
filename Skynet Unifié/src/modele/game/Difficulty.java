@@ -21,7 +21,7 @@ public enum Difficulty {
 	private boolean startAcceleration, 				//Si un ennemi a une accélération
 	 				constantVelocity,				//Si tous les ennemis ont la même vitesse constante
 	 				cycleLanes,						//Si les ennemis apparaissent selon un cycle de rangées
-	 				cycleBackAndForth;				//Si on alterne mont�e/descente dans les rangées
+	 				cycleBackAndForth;				//Si on alterne montée/descente dans les rangées
 
 	private float startVelocityBias,				//La probabilité qu'un ennemi ait une vélocité au départ
 					selfRotationBias,				//La probabilité qu'un ennemi tourne sur lui même
