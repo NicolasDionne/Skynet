@@ -5,6 +5,13 @@ import javafx.scene.paint.Color;
 import modele.elements.hitbox.HitBox;
 import modele.game.game_objects.GameObject;
 
+/*
+*
+* @author Bénange Breton
+*
+* Classe de transition entre le modèle et le contrôleur
+*/
+
 public class VisualFactory {
 
     ExtendedRectangle getInstance(HitBox hb) {
