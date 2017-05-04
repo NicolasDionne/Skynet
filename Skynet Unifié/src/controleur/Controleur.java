@@ -382,22 +382,22 @@ public class Controleur implements Serializable {
 				initialDirectory.mkdirs();
 			}
 			chooser.setInitialDirectory(initialDirectory);
-
 			File selectedFile = chooser.showSaveDialog(Main.stage);
-			FileOutputStream fileOutputStream = new FileOutputStream(selectedFile);
-			ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
+			if (selectedFile != null && !selectedFile.isDirectory()) {
+				FileOutputStream fileOutputStream = new FileOutputStream(selectedFile);
+				ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
 
-			outputStream.writeObject(this);
+				outputStream.writeObject(this);
 
-			if (initialDirectory.isDirectory()) {
-				if (initialDirectory.list().length == 0) {
-					Path path = FileSystems.getDefault().getPath(initialDirectory.getPath());
-					Files.deleteIfExists(path);
+				if (initialDirectory.isDirectory()) {
+					if (initialDirectory.list().length == 0) {
+						Path path = FileSystems.getDefault().getPath(initialDirectory.getPath());
+						Files.deleteIfExists(path);
+					}
 				}
+
+				outputStream.close();
 			}
-
-			outputStream.close();
-
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -417,24 +417,31 @@ public class Controleur implements Serializable {
 			File initialDirectory = new File(pathName);
 			chooser.setInitialDirectory(initialDirectory);
 
-			File selectedFile = chooser.showOpenDialog(Main.stage);
-			FileInputStream fileInputStream = new FileInputStream(selectedFile);
-			ObjectInputStream inputStream = new ObjectInputStream(fileInputStream);
-
-			Controleur charge = (Controleur) inputStream.readObject();
-			this.listeReseaux = charge.listeReseaux;
-			this.regleApprentissageCompetitionInter = charge.regleApprentissageCompetitionInter;
-			initialiserParametres(charge.parametres);
-			this.parametres.setIntsPropsSelonVal();
-
-			if (initialDirectory.isDirectory()) {
-				if (initialDirectory.list().length == 0) {
-					Path path = FileSystems.getDefault().getPath(initialDirectory.getPath());
-					Files.deleteIfExists(path);
-				}
+			if (!initialDirectory.exists()) {
+				initialDirectory.mkdirs();
 			}
 
-			inputStream.close();
+			File selectedFile = chooser.showOpenDialog(Main.stage);
+
+			if (selectedFile != null && !selectedFile.isDirectory()) {
+				FileInputStream fileInputStream = new FileInputStream(selectedFile);
+				ObjectInputStream inputStream = new ObjectInputStream(fileInputStream);
+
+				Controleur charge = (Controleur) inputStream.readObject();
+				this.listeReseaux = charge.listeReseaux;
+				this.regleApprentissageCompetitionInter = charge.regleApprentissageCompetitionInter;
+				initialiserParametres(charge.parametres);
+				this.parametres.setIntsPropsSelonVal();
+
+				if (initialDirectory.isDirectory()) {
+					if (initialDirectory.list().length == 0) {
+						Path path = FileSystems.getDefault().getPath(initialDirectory.getPath());
+						Files.deleteIfExists(path);
+					}
+				}
+
+				inputStream.close();
+			}
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
