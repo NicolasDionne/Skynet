@@ -46,6 +46,7 @@ import modele.game.Game;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.GameObjectType;
 import modele.game.game_objects.Player;
+import modele.game.game_objects.PlayerAI;
 import modele.graphique.GraphiqueIA;
 import utilitaires.Parametres;
 import utilitaires.parametres.ModificateurParametres;
@@ -93,6 +94,9 @@ public class Controleur implements Serializable {
 	@FXML
 	private transient MenuItem modifierMenu;
 
+	@FXML
+	private transient MenuItem solutionFinaleMenu;
+
 	public transient static final int PLAFOND = 35;
 	public transient static final int PLANCHER = 220;
 	public transient static final int EDGE = 1066;
@@ -136,6 +140,10 @@ public class Controleur implements Serializable {
 
 		KeyCodeCombination modifierMenuKeyCombination = new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN);
 		modifierMenu.setAccelerator(modifierMenuKeyCombination);
+
+		KeyCodeCombination solutionFinaleMenuKeyCombination = new KeyCodeCombination(KeyCode.J,
+				KeyCombination.CONTROL_DOWN);
+		solutionFinaleMenu.setAccelerator(solutionFinaleMenuKeyCombination);
 
 		initialiserParametres(this.parametres);
 
@@ -472,6 +480,18 @@ public class Controleur implements Serializable {
 				}
 			}
 		});
+	}
+
+	@FXML
+	private void ctrlNbJ() {
+		if (!game.getPlayersSet().isEmpty()) {
+			for (Player player : game.getPlayersSet()) {
+				if (player.getClass() == PlayerAI.class) {
+					((PlayerAI) player).getReseau().setScore(game.getScore());
+				}
+			}
+			game.getPlayersSet().clear();
+		}
 	}
 
 }
