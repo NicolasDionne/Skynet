@@ -6,6 +6,12 @@ import modele.elements.hitbox.HitBox;
 import modele.game.game_objects.GameObject;
 import modele.game.game_objects.Player;
 
+/**
+*
+* @author Bénange Breton
+*
+* Classe qui permet de lier une ImageView avec un GameObject, pour des manipulations faciles.
+*/
 public class ExtendedImageView extends ImageView {
 
 	HitBox hb;
