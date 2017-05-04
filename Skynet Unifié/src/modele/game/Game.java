@@ -281,10 +281,13 @@ public class Game implements Bias, Update, Render, Spawn {
 		List<Player> playerBufferList = new LinkedList<>();
 		List<Enemy> enemyBufferList = new LinkedList<>();
 
-		playersSet.forEach(p -> {
-			p.checkObjectBeyondEdges();
-			handleMovement(p.getHitBox());
-		});
+		if (!playersSet.isEmpty()) {
+			playersSet.forEach(p -> {
+				p.checkObjectBeyondEdges();
+				handleMovement(p.getHitBox());
+			});
+		}
+
 		enemiesSet.forEach(e -> {
 			handleMovement(e.getHitBox());
 			if (e.checkObjectBeyondEdges())
@@ -293,38 +296,45 @@ public class Game implements Bias, Update, Render, Spawn {
 
 		score.set(score.get() + 1);
 
-		playersSet.forEach(p -> enemiesSet.forEach(e -> {
-			if (p.getHitBox().checkCollision(e.getHitBox())) {
-				playerBufferList.add(p);
-				if (p.getClass() == PlayerAI.class) {
-					listeReseauLive.remove(((PlayerAI) p).getReseau());
-					if (listeReseauLive.size() != 0) {
-						graph.setReseau(listeReseauLive.get(0));
+		if (!playersSet.isEmpty()) {
+			playersSet.forEach(p -> enemiesSet.forEach(e -> {
+				if (p.getHitBox().checkCollision(e.getHitBox())) {
+					playerBufferList.add(p);
+					if (p.getClass() == PlayerAI.class) {
+						((PlayerAI) p).getReseau().setScore(score.get());
+						listeReseauLive.remove(((PlayerAI) p).getReseau());
+						if (listeReseauLive.size() != 0) {
+							graph.setReseau(listeReseauLive.get(0));
+						}
 					}
 				}
-			}
-		}));
+			}));
+		}
 
 		collisionIndexList.clear();
 
-		playersSet.forEach(p -> {
-			ArrayList<Integer> indexListBuffer = new ArrayList<>();
+		if (!playersSet.isEmpty()) {
+			playersSet.forEach(p -> {
+				ArrayList<Integer> indexListBuffer = new ArrayList<>();
 
-			p.getvGrid().getHitBoxes().forEach(hb -> enemiesSet.forEach(e -> {
-				if (hb.checkCollision(e.getHitBox())) {
-					indexListBuffer.add(p.getvGrid().getHitBoxes().indexOf(hb));
+				p.getvGrid().getHitBoxes().forEach(hb -> enemiesSet.forEach(e -> {
+					if (hb.checkCollision(e.getHitBox())) {
+						indexListBuffer.add(p.getvGrid().getHitBoxes().indexOf(hb));
+					}
+				}));
+
+				collisionIndexList.add(indexListBuffer);
+				if (p.getClass() == PlayerAI.class) {
+					p.setListeIndexEntrees(indexListBuffer);
+					((PlayerAI) p).appliquerIndex();
 				}
-			}));
 
-			collisionIndexList.add(indexListBuffer);
-			if (p.getClass() == PlayerAI.class) {
-				p.setListeIndexEntrees(indexListBuffer);
-				((PlayerAI) p).appliquerIndex();
-			}
+			});
+		}
 
-		});
-
-		graph.refreshGraph(playersSet.get(0).getHitBox().getCenterPoint().velocityY(), collisionIndexList.get(0));
+		if (!playersSet.isEmpty()) {
+			graph.refreshGraph(playersSet.get(0).getHitBox().getCenterPoint().velocityY(), collisionIndexList.get(0));
+		}
 
 		playersSet.removeAll(playerBufferList);
 		enemiesSet.removeAll(enemyBufferList);
