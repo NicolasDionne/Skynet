@@ -275,6 +275,7 @@ public class Game implements Bias, Update, Render, Spawn {
 
 	}
 
+	@Override
 	public void update() {
 
 		List<Player> playerBufferList = new LinkedList<>();
