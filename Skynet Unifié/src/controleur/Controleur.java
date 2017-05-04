@@ -8,7 +8,18 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+import java.nio.file.WatchEvent.Kind;
+import java.nio.file.WatchEvent.Modifier;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import ai.apprentissage.nonsupervise.CompetitionInter;
 import ai.apprentissage.nonsupervise.competitionInter.CompetitionInterLiens;
@@ -57,6 +68,9 @@ public class Controleur implements Serializable {
 
 	@FXML
 	private transient Label scoreLabel;
+
+	@FXML
+	private transient Label generationLabel;
 
 	@FXML
 	private transient Pane displayJeu;
@@ -232,11 +246,14 @@ public class Controleur implements Serializable {
 	@FXML
 	void reinit(ActionEvent event) {
 		confirm.setTitle("Réinitialiser");
-		confirm.setContentText("Voulez-vous vraiment réinitialiser la progression et le score?");
+		confirm.setContentText(
+				"Voulez-vous vraiment réinitialiser la progression, les réseaux, l'apprentissage et le score?");
 
 		pause();
 
 		if (confirm.showAndWait().get() == ButtonType.OK) {
+			listeReseaux = null;
+			regleApprentissageCompetitionInter = null;
 			gameStop();
 		} else
 			play();
@@ -262,6 +279,8 @@ public class Controleur implements Serializable {
 			}
 			regleApprentissageCompetitionInter.faireUneIterationApprentissage();
 		}
+		generationLabel.setText("Génération #" + ((regleApprentissageCompetitionInter == null) ? 1
+				: regleApprentissageCompetitionInter.getIterationCourante()));
 		graph = new GraphiqueIA(affichageReseau, parametres);
 		Difficulty dif = Difficulty.VERY_EASY;
 		if (choixDifficulte.getValue() != null) {
@@ -369,6 +388,14 @@ public class Controleur implements Serializable {
 			ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
 
 			outputStream.writeObject(this);
+
+			if (initialDirectory.isDirectory()) {
+				if (initialDirectory.list().length == 0) {
+					Path path = FileSystems.getDefault().getPath(initialDirectory.getPath());
+					Files.deleteIfExists(path);
+				}
+			}
+
 			outputStream.close();
 
 		} catch (FileNotFoundException e) {
@@ -400,6 +427,13 @@ public class Controleur implements Serializable {
 			initialiserParametres(charge.parametres);
 			this.parametres.setIntsPropsSelonVal();
 
+			if (initialDirectory.isDirectory()) {
+				if (initialDirectory.list().length == 0) {
+					Path path = FileSystems.getDefault().getPath(initialDirectory.getPath());
+					Files.deleteIfExists(path);
+				}
+			}
+
 			inputStream.close();
 
 		} catch (FileNotFoundException e) {
@@ -413,7 +447,6 @@ public class Controleur implements Serializable {
 
 	@FXML
 	private void modifierParametres() {
-		pause();
 		Stage stage;
 		try {
 			FXMLLoader loader = new FXMLLoader(
@@ -425,7 +458,6 @@ public class Controleur implements Serializable {
 			stage = new Stage();
 			stage.setScene(s);
 			stage.showAndWait();
-			play();
 			this.parametres.setValNbLignes(modificateurParametres.getSpinnerNbLignes().getValue());
 			this.parametres.setValNbColonnes(modificateurParametres.getSpinnerNbColonnes().getValue());
 			this.parametres.setValNbNiveaux(modificateurParametres.getSpinnerNbNiveaux().getValue());
@@ -446,6 +478,7 @@ public class Controleur implements Serializable {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 				if (oldValue != newValue) {
+					ctrlNbJ();
 					listeReseaux = null;
 					regleApprentissageCompetitionInter = null;
 				}
@@ -456,6 +489,7 @@ public class Controleur implements Serializable {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 				if (oldValue != newValue) {
+					ctrlNbJ();
 					listeReseaux = null;
 					regleApprentissageCompetitionInter = null;
 				}
@@ -466,6 +500,7 @@ public class Controleur implements Serializable {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 				if (oldValue != newValue) {
+					ctrlNbJ();
 					listeReseaux = null;
 					regleApprentissageCompetitionInter = null;
 				}
@@ -476,6 +511,7 @@ public class Controleur implements Serializable {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 				if (oldValue != newValue) {
+					ctrlNbJ();
 					listeReseaux = null;
 					regleApprentissageCompetitionInter = null;
 				}
