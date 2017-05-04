@@ -5,6 +5,12 @@ import javafx.scene.shape.Rectangle;
 import modele.elements.hitbox.HitBox;
 import modele.game.game_objects.GameObject;
 
+/**
+*
+* @author Bénange Breton
+*
+* Classe qui permet de lier un Rectangle (javafx) avec un GameObject, pour des manipulations faciles.
+*/
 public class ExtendedRectangle extends Rectangle {
 
     public static final Color DEFAULT_COLOR = Color.ROSYBROWN;
