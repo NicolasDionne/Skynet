@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controleur.Controleur">
+<BorderPane xmlns="http://javafx.com/javafx/8.0.101" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controleur.Controleur">
 	<center>
 		<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#debutMouvement" onKeyReleased="#finMouvement" prefHeight="733.0" prefWidth="1067.0" styleClass="background" stylesheets="@../../res/styles/style1.css">
 			<children>
@@ -47,7 +47,8 @@
 				<Button fx:id="btnJouer" layoutX="701.0" layoutY="666.0" mnemonicParsing="false" onAction="#play" prefHeight="46.0" prefWidth="185.0" text="Jouer" />
 				<Button id="btnReinit" fx:id="btnReinit" layoutX="533.0" layoutY="667.0" mnemonicParsing="false" onAction="#reinit" text="Réinitialiser" />
 				<Button fx:id="btnQuit" layoutX="905.0" layoutY="667.0" mnemonicParsing="false" onAction="#quit" text="Quitter" />
-				<Label layoutX="404.0" layoutY="364.0" styleClass="labelScore" text="Score : " />
+				<Label layoutX="442.0" layoutY="364.0" styleClass="labelScore" text="Score : " />
+            <Label fx:id="generationLabel" layoutX="55.0" layoutY="362.0" styleClass="labelScore" text="Génération #" />
 				<Button layoutX="404.0" layoutY="667.0" mnemonicParsing="false" onAction="#pause" text="Pause" />
 				<Pane fx:id="affichageReseau" layoutX="14.0" layoutY="412.0" prefHeight="232.0" prefWidth="1039.0">
 					<children>
