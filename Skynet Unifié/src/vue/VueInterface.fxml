@@ -82,6 +82,11 @@
                   </MenuItem>
               </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="Utilitaire">
+              <items>
+                <MenuItem fx:id="solutionFinaleMenu" mnemonicParsing="false" onAction="#ctrlNbJ" text="Solution finale" />
+              </items>
+            </Menu>
 			</menus>
 		</MenuBar>
 	</top>
