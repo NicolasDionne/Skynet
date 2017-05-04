@@ -389,14 +389,14 @@ public class Controleur implements Serializable {
 
 				outputStream.writeObject(this);
 
-				if (initialDirectory.isDirectory()) {
-					if (initialDirectory.list().length == 0) {
-						Path path = FileSystems.getDefault().getPath(initialDirectory.getPath());
-						Files.deleteIfExists(path);
-					}
-				}
-
 				outputStream.close();
+			}
+
+			if (initialDirectory.isDirectory()) {
+				if (initialDirectory.list().length == 0) {
+					Path path = FileSystems.getDefault().getPath(initialDirectory.getPath());
+					Files.deleteIfExists(path);
+				}
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -433,14 +433,14 @@ public class Controleur implements Serializable {
 				initialiserParametres(charge.parametres);
 				this.parametres.setIntsPropsSelonVal();
 
-				if (initialDirectory.isDirectory()) {
-					if (initialDirectory.list().length == 0) {
-						Path path = FileSystems.getDefault().getPath(initialDirectory.getPath());
-						Files.deleteIfExists(path);
-					}
-				}
-
 				inputStream.close();
+			}
+
+			if (initialDirectory.isDirectory()) {
+				if (initialDirectory.list().length == 0) {
+					Path path = FileSystems.getDefault().getPath(initialDirectory.getPath());
+					Files.deleteIfExists(path);
+				}
 			}
 
 		} catch (FileNotFoundException e) {
