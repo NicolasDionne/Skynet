@@ -8,15 +8,17 @@
 
 .button {
 
--fx-background-color:
-                 linear-gradient(#CCFFFF 0.0%, #3399FF 50.0%, #3333FF 100.0%),
-                 linear-gradient(from 0.0% 0.0% to 15.0% 50.0%, rgba(255.0,255.0,255.0,0.9), rgba(255.0,255.0,255.0,0.0));
-             -fx-background-radius: 30.0;
-             -fx-background-insets: 0.0,1.0,2.0,3.0,0.0;
-             -fx-text-fill: #F5F5F5;
-             -fx-font-weight: bold;
-             -fx-font: 22.0 arial;
-             -fx-padding: 10.0 20.0 10.0 20.0;
+    -fx-background-color: 
+        #000000,
+        linear-gradient(#7ebcea, #2f4b8f),
+        linear-gradient(#426ab7, #263e75),
+        linear-gradient(#395cab, #223768);
+    -fx-background-insets: 0,1,2,3;
+    -fx-background-radius: 3,2,2,2;
+    -fx-padding: 12 30 12 30;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+
 }
 
 .labelScore {
