@@ -413,6 +413,7 @@ public class Controleur implements Serializable {
 
 	@FXML
 	private void modifierParametres() {
+		pause();
 		Stage stage;
 		try {
 			FXMLLoader loader = new FXMLLoader(
@@ -424,7 +425,7 @@ public class Controleur implements Serializable {
 			stage = new Stage();
 			stage.setScene(s);
 			stage.showAndWait();
-
+			play();
 			this.parametres.setValNbLignes(modificateurParametres.getSpinnerNbLignes().getValue());
 			this.parametres.setValNbColonnes(modificateurParametres.getSpinnerNbColonnes().getValue());
 			this.parametres.setValNbNiveaux(modificateurParametres.getSpinnerNbNiveaux().getValue());
