@@ -14,7 +14,7 @@ public class CompetitionInterLiens extends CompetitionInter implements Serializa
 	private static final long serialVersionUID = -7304761752225772866L;
 
 	private transient double valModification;
-	private transient GetValModification getValModification; 
+	private transient GetValModification getValModification;
 
 	/**
 	 * @param listeReseauxEnCompetitions
@@ -29,7 +29,7 @@ public class CompetitionInterLiens extends CompetitionInter implements Serializa
 	protected void mettreAJourImportancesReseau() {
 		// GetValModification getValModification = new GetValModification();
 		// this.valModification = getValModification.getVal();
-		this.valModification = 25.0 / (((double) (iterationCourante)) / 5.0);
+		this.valModification = 50.0 / ((Integer.MAX_VALUE - listeMeilleursReseaux.get(0).getScore())/600000000);
 		appliquerImportanceMeilleurReseau();
 		appliquerModificationImportance();
 	}
