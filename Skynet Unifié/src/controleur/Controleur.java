@@ -223,6 +223,7 @@ public class Controleur implements Serializable {
 						timer.stop();
 						timerScaleFactor = 1;
 						timeBetweenEnemies = 0;
+						play();
 					}
 				}
 			};
@@ -264,7 +265,6 @@ public class Controleur implements Serializable {
 		graph = null;
 		affichageReseau.getChildren().clear();
 
-		System.out.println("qwe");
 
 		animStarted = false;
 		displayJeu.getChildren().clear();
@@ -309,7 +309,6 @@ public class Controleur implements Serializable {
 			game = new Game((short) 0, (short) 25, graph, listeReseaux, this, dif);
 		}
 
-		System.out.println(game.getDifficulty());
 
 		// Les ennemis "floor" et "roof" sont pour que l'intelligence
 		// artificielle reconnaisse qu'il y a des murs.
