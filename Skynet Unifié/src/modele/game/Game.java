@@ -50,7 +50,6 @@ public class Game implements Bias, Update, Render, Spawn {
 		score = new SimpleIntegerProperty();
 
 		if (listeReseauxCI == null && nbAI != 0) {
-			System.out.println("asd");
 
 			GenerateurReseauCIL g = new GenerateurReseauCIL();
 			g.genererReseauCIL(nbAI, (this.c.parametres.getValNbColonnes() * this.c.parametres.getValNbLignes()), 1,
@@ -340,7 +339,6 @@ public class Game implements Bias, Update, Render, Spawn {
 		enemiesSet.removeAll(enemyBufferList);
 
 		if (playersSet.size() == 0) {
-			System.out.println("score: " + score.intValue());
 			stop();
 			enemiesSet.clear();
 		} else {
