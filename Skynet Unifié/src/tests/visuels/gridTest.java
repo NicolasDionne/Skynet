@@ -13,11 +13,13 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import modele.elements.BoxFactory;
-import modele.elements.HitBox;
-import modele.elements.MotionPoint;
-import modele.elements.VisionGrid;
+import modele.elements.ai_related.VisionGrid;
+import modele.elements.hitbox.HitBox;
+import modele.elements.hitbox.MotionPoint;
+import modele.game.game_objects.GameObjectType;
 import modele.game.game_objects.Player;
 import modele.game.game_objects.PlayerType;
+import utilitaires.Parametres;
 
 /**
  * Les crashs/problèmes sont tout à fait normaux. Ces tests sont des
@@ -36,7 +38,7 @@ public class gridTest extends Application {
 		root.setPrefWidth(1500);
 
 		HitBox h = new HitBox((short) 20, (short) 20, 600, 200);
-		Player p = new Player(PlayerType.HUMAN, h);
+		Player p = new Player(GameObjectType.HUMAN, h,new Parametres(0, 0, 0, 0));
 
 		VisionGrid v = new VisionGrid(h);
 

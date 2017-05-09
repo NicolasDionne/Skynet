@@ -17,7 +17,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import modele.elements.BoxFactory;
-import modele.elements.HitBox;
+import modele.elements.hitbox.HitBox;
 import modele.game.Game;
 import modele.game.game_objects.Player;
 
@@ -31,7 +31,7 @@ public class gameTest extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
-		Game g = new Game((short) 1, (short) 0);
+		Game g = new Game((short) 1, (short) 0, null, null, null, null);
 		BoxFactory boxFactory = new BoxFactory();
 
 		Pane root = new Pane();

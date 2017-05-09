@@ -6,7 +6,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import modele.elements.HitBox;
+import modele.elements.hitbox.HitBox;
 
 import java.util.ArrayList;
 
@@ -30,7 +30,7 @@ public class CollisionTest extends Application {
 
 				HitBox hb = new HitBox((short) 40, (short) 40, (float) event.getX(), (float) event.getY());
 
-				hb.setHitsOthers(true);
+				hb.setCanHitOthers(true);
 				double randomAngle = Math.random() * (Math.PI * 2);
 
 				hb.getSelfRotationParameters().setAngle(randomAngle);

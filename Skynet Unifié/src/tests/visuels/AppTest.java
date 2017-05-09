@@ -12,6 +12,9 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import modele.elements.*;
+import modele.elements.hitbox.HitBox;
+import modele.elements.hitbox.MotionPoint;
+import modele.elements.hitbox.RotationParameters;
 import modele.math.Vector2D;
 import utilitaires.MathUtilitaires;
 
@@ -63,10 +66,10 @@ public class AppTest extends Application {
 			hbList.add(hb3);
 			hbList.add(hb4);
 
-			hb1.setHitsOthers(true);
-			hb2.setHitsOthers(true);
-			hb3.setHitsOthers(true);
-			hb4.setHitsOthers(true);
+			 hb1.setCanHitOthers(true);
+			hb2.setCanHitOthers(true);
+			hb3.setCanHitOthers(true);
+			hb4.setCanHitOthers(true);
 
 			Circle c1 = new Circle(5, Paint.valueOf("Green"));
 			Circle c2 = new Circle(5, Paint.valueOf("Green"));

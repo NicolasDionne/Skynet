@@ -1,4 +1,4 @@
-package tests_visuels;
+package tests.visuels;
 
 
 import javafx.application.Application;
@@ -10,7 +10,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import modele.elements.BoxFactory;
-import modele.elements.HitBox;
+import modele.elements.hitbox.HitBox;
 
 
 public class ImageViewFactoryTest extends Application {

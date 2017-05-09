@@ -12,8 +12,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import modele.elements.HitBox;
-import modele.elements.MotionPoint;
+import modele.elements.hitbox.HitBox;
+import modele.elements.hitbox.MotionPoint;
 
 import java.util.ArrayList;
 
@@ -70,7 +70,7 @@ public class rotateTest extends Application {
 				rot.pivotXProperty().bind(hb.getOrigin().xProperty());
 				rot.pivotYProperty().bind(hb.getOrigin().yProperty());
 
-				hb.setHitsOthers(true);
+				hb.setCanHitOthers(true);
 
 				Service serv = new Service() {
 					@Override
