@@ -6,6 +6,12 @@ import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.layout.VBox;
 import utilitaires.Parametres;
 
+/**
+ * Controleur pour la vue lors de la sélection des attributs de
+ * <code>Parametres</code>.
+ * 
+ * @see Parametres
+ */
 public class ModificateurParametres {
 
 	@FXML

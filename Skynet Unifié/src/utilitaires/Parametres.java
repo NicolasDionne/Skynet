@@ -4,9 +4,12 @@ import java.io.Serializable;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 
-public class Parametres extends SimpleObjectProperty implements Serializable {
+/**
+ * Cette classe est utilisée pour déterminer l'apparence des
+ * <code>Reseau</code>x.
+ */
+public class Parametres implements Serializable {
 
 	private static final long serialVersionUID = 8644035316408438516L;
 
