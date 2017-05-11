@@ -8,6 +8,8 @@ import ai.coeur.donnee.EnsembleDonnees;
 
 /**
  * Classe de base pour toutes les règles d'apprentissage itératives.
+ * <P>
+ * Cette classe hérite de <code>RegleApprentissage</code>.
  * 
  * @see RegleApprentissage
  */

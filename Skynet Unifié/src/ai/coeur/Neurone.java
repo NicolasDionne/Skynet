@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import ai.coeur.entree.FonctionEntree;
 import ai.coeur.entree.SommeImportance;
-import ai.coeur.transfers.Etape;
+import ai.coeur.transfers.Escalier;
 import ai.coeur.transfers.FonctionTransfers;
 
 /**
@@ -90,7 +90,7 @@ public class Neurone implements Serializable, Cloneable {
 	 */
 	public Neurone() {
 		this.fonctionEntree = new SommeImportance();
-		this.fonctionTransfers = new Etape();
+		this.fonctionTransfers = new Escalier();
 		this.liensEntree = new ArrayList<>();
 		this.liensSortie = new ArrayList<>();
 	}

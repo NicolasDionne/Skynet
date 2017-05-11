@@ -10,13 +10,9 @@ import ai.coeur.Lien;
 import ai.coeur.Niveau;
 import ai.coeur.Reseau;
 import modele.exceptions.ConstructorException;
-import utilitaires.QuickSort;
 
 public class CompetitionInterReseaux extends CompetitionInter implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -315153809902585523L;
 
 	private transient LinkedList<Similarite> listeSimilaritesMeilleursReseauxGenerationPrecedente;
@@ -82,10 +78,6 @@ public class CompetitionInterReseaux extends CompetitionInter implements Seriali
 		System.out.println("tailleSimilarites: " + listeSimilaritesMeilleursReseaux.size());
 		System.out.println("learnigDone");
 
-	}
-
-	protected void classerReseaux() {
-		listeReseauxEnCompetitions = (ArrayList<Reseau>) QuickSort.sort(listeReseauxEnCompetitions);
 	}
 
 	protected void trouverMeilleurReseau() {
@@ -367,14 +359,6 @@ public class CompetitionInterReseaux extends CompetitionInter implements Seriali
 
 		return so;
 
-	}
-
-	public ArrayList<Reseau> getListeReseauxEnCompetitions() {
-		return listeReseauxEnCompetitions;
-	}
-
-	public ArrayList<Reseau> getListeMeilleursReseaux() {
-		return listeMeilleursReseaux;
 	}
 
 	public LinkedList<Similarite> getListeSimilaritesMeilleursReseaux() {

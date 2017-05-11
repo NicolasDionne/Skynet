@@ -13,30 +13,94 @@ import ai.coeur.apprentissage.erreur.FonctionErreur;
 import ai.coeur.donnee.EnsembleDonnees;
 import ai.coeur.donnee.LigneEnsembleDonnees;
 
+/**
+ * Classe de base pour toutes les règles d'apprentissage supervisées.
+ * <code>ApprentissageSupervise</code> hérite
+ * d'<code>ApprentissageIteratif</code>.
+ * 
+ * @see ApprentissageIteratif
+ */
 public abstract class ApprentissageSupervise extends ApprentissageIteratif {
 
-	// TODO Javadoc
 	private static final long serialVersionUID = -1418951059208713829L;
 
+	/**
+	 * Erreur total du réseau lors de l'époch précédente.
+	 */
 	private double erreurEpochPrecedente;
+
+	/**
+	 * L'erreur maximale qu'un réseau peut avoir (condition pour arréter
+	 * l'apprentissage).
+	 */
 	private double erreurMax = 0.01;
+
+	/**
+	 * Condition d'arret: l'entrainement cesse si l'erreur totale du réseau est
+	 * plus petite que {@link #limiteIterationsChangementErreur}.
+	 * 
+	 */
 	private double erreurIterationChangementMin = Double.POSITIVE_INFINITY;
+
+	/**
+	 * Le nombre maximal d'itérations où {@link #erreurEpochPrecedente} est plus
+	 * petite que {@link #erreurIterationChangementMin}.
+	 */
 	private int limiteIterationsChangementErreur = Integer.MAX_VALUE;
+
+	/**
+	 * Le nombre d'itérations où {@link #erreurEpochPrecedente} est plus petite
+	 * que {@link #erreurIterationChangementMin}.
+	 */
 	private int compteurIterationChangementErreur;
+
+	/**
+	 * Détermine si la mise à jour de l'importance des liens est faite en mode
+	 * batch.
+	 */
 	private boolean modeBatch = false;
 	private FonctionErreur fonctionErreur;
 
+	/**
+	 * Crée une nouvelle instance de la règle d'apprentissage supervisé.
+	 */
 	public ApprentissageSupervise() {
 		super();
 		this.fonctionErreur = new ErreurQuadratiqueMoyenne();
 		this.conditionsArret.add(new ArretMaxErreur(this));
 	}
 
+	/**
+	 * Entraine le réseau pour la liste voulue selon la liste pour
+	 * l'apprentissage et l'erreur maximale possible. Paramétrise
+	 * {@link #erreurMax} puis lance {@link #apprendre(EnsembleDonnees)}, avec
+	 * <code>ensembleEntrainement</code> comme paramètre.
+	 * 
+	 * @param ensembleEntrainement
+	 *            <code>EnsembleDonnees</code>, la liste des situations pour
+	 *            l'apprentissage.
+	 * @param erreurMax
+	 *            <code>double</code>, la valeur maximale d'erreur comme
+	 *            condition d'arrêt.
+	 */
 	public void apprendre(EnsembleDonnees ensembleEntrainement, double erreurMax) {
 		this.erreurMax = erreurMax;
 		this.apprendre(ensembleEntrainement);
 	}
 
+	/**
+	 * Fait la même chose que {@link #apprendre(EnsembleDonnees, double)}, mais
+	 * en mettant un nombre maximal d'itérations.
+	 * 
+	 * @param ensembleEntrainement
+	 *            <code>EnsembleDonnees</code>, la liste des situations pour
+	 *            l'apprentissage.
+	 * @param erreurMax
+	 *            <code>double</code>, la valeur maximale d'erreur comme
+	 *            condition d'arrêt.
+	 * @param iterationsMax
+	 *            <code>int<code>, le nombre maximal d'itérations possibles.
+	 */
 	public void apprendre(EnsembleDonnees ensembleEntrainement, double erreurMax, int iterationsMax) {
 		this.erreurMax = erreurMax;
 		this.setIterationsMax(iterationsMax);
@@ -80,6 +144,14 @@ public abstract class ApprentissageSupervise extends ApprentissageIteratif {
 		}
 	}
 
+	/**
+	 * Entraine le réseau selon la situation donnée.
+	 * 
+	 * @param elementEntrainement
+	 *            <code>LigneEnsembleDonnees</code>, la situation spécifique
+	 *            contenant une situation d'entrées possible et la sortie
+	 *            attendue pour cette situation d'entrées.
+	 */
 	protected void patternApprentissage(LigneEnsembleDonnees elementEntrainement) {
 		double[] entrees = elementEntrainement.getEntrees();
 		this.reseau.setValEntree(entrees);
@@ -95,6 +167,16 @@ public abstract class ApprentissageSupervise extends ApprentissageIteratif {
 
 	}
 
+	/**
+	 * Met à jour les <code>Importance</code> du réseau en mode batch.
+	 * <P>
+	 * Cela utilise le changement d'importance enregistré dans
+	 * {@link Importance#changementImportance}. C'est exécuté après chaque epoch
+	 * d'apprentissage, mais seulement si l'apprentissage est fait en mode
+	 * batch.
+	 * 
+	 * @see #faireEpochApprentissage(EnsembleDonnees)
+	 */
 	protected void faireMiseAJourImportancesBatch() {
 		ArrayList<Niveau> niveaux = this.reseau.getListeNiveaux();
 

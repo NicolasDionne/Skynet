@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 public class SeparateurEnTableau {
-	// TODO Javadoc
 	public static ArrayList<Integer> separateurInteger(String str) {
 		StringTokenizer tok = new StringTokenizer(str);
 		ArrayList<Integer> retour = new ArrayList<>();

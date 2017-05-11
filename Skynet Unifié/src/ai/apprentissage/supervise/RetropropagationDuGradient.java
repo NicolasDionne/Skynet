@@ -8,12 +8,8 @@ import ai.coeur.Niveau;
 import ai.coeur.transfers.FonctionTransfers;
 
 public class RetropropagationDuGradient extends LMS {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2684509305765169733L;
 
-	// TODO Javadoc
 	public RetropropagationDuGradient() {
 		super();
 	}

@@ -7,8 +7,10 @@ import ai.coeur.Neurone;
 import ai.coeur.Niveau;
 import ai.coeur.Reseau;
 
+/**
+ * Permet d'avoir une valeur random pour l'importance.
+ */
 public class RandomizerImportance {
-	// TODO Javadoc
 	protected Random randomizer;
 
 	public RandomizerImportance() {

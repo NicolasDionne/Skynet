@@ -1,7 +1,11 @@
 package ai.utilitaire.random;
 
+/**
+ * Permet d'avoir une importance aléatoire entre deux bornes.
+ * 
+ * @see RandomizerImportance
+ */
 public class RandomiserALimites extends RandomizerImportance {
-	// TODO Javadoc
 	protected double min;
 
 	protected double max;

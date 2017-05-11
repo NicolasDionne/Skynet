@@ -10,17 +10,17 @@ import ai.coeur.apprentissage.RegleApprentissage;
  * Cette classe est la collection de
  * <span style="text-decoration:underline">toutes</span> les situations
  * d'entrées <b>qui peuvent arriver</b>, et ce,
- * <b><span style="text-decoration:underline">même si la probabilité frôle le 1
- * sur &#x221e</span></b>.
+ * <b><span style="text-decoration:underline">même si la probabilité qu'elle
+ * arrive frôle le 1 sur &#x221e</span></b>.
  * <P>
- * Cette classe est utilisée par la majorité des algorithmes d'apprentissage.
+ * Cette classe est utilisée par la majorité des règles d'apprentissage, mais
+ * pas par toutes.
  * 
  * @see LigneEnsembleDonnees
  * @see Reseau
  * @see RegleApprentissage
  */
 public class EnsembleDonnees {
-	// TODO Javadoc
 
 	private ArrayList<LigneEnsembleDonnees> lignes;
 
@@ -34,10 +34,6 @@ public class EnsembleDonnees {
 
 	private String nom;
 
-	/**
-	 * 
-	 * @param tailleEntree
-	 */
 	public EnsembleDonnees(int tailleEntree) {
 		this.lignes = new ArrayList<>();
 		this.tailleEntree = tailleEntree;
@@ -45,10 +41,6 @@ public class EnsembleDonnees {
 		this.nomsLignes = new String[tailleEntree];
 	}
 
-	/**
-	 * @param tailleEntree
-	 * @param tailleSortie
-	 */
 	public EnsembleDonnees(int tailleEntree, int tailleSortie) {
 		this.lignes = new ArrayList<>();
 		this.tailleEntree = tailleEntree;
@@ -101,9 +93,6 @@ public class EnsembleDonnees {
 		return this.lignes.get(index);
 	}
 
-	/**
-	 * 
-	 */
 	public void clear() {
 		this.lignes.clear();
 	}
@@ -144,10 +133,6 @@ public class EnsembleDonnees {
 		nomsLignes[position] = nomLigne;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public int getTailleEntrees() {
 		return this.tailleEntree;
 	}

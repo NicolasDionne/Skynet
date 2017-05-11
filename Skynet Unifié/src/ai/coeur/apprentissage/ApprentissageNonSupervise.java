@@ -11,6 +11,10 @@ import ai.coeur.donnee.LigneEnsembleDonnees;
  * Une règle d'entrainement est considérée comme étant non-supervisée lorsque
  * toutes les {@link LigneEnsembleDonnees} de l'{@link EnsembleDonnees} que la
  * règle utilise n'ont pas de sortie prévue.
+ * <P>
+ * Cette classe hérite de <code>ApprentissageIteratif</code>.
+ * 
+ * @see ApprentissageIteratif
  */
 public abstract class ApprentissageNonSupervise extends ApprentissageIteratif {
 
