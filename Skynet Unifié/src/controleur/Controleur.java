@@ -52,6 +52,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import modele.elements.hitbox.HitBox;
 import modele.elements.visuals.ExtendedImageView;
+import modele.elements.visuals.VisualFactory;
 import modele.game.Difficulty;
 import modele.game.Game;
 import modele.game.game_objects.Enemy;
@@ -116,6 +117,7 @@ public class Controleur implements Serializable {
 	public transient static final int EDGE = 1066;
 	public transient static final int MID_HEIGHT = PLAFOND + ((PLANCHER - PLAFOND) / 2);
 	public transient static final float DIFFICULTY_INCREMENT = 0.05f;
+	public transient static final int NB_PLAYER_AI = 25;
 
 	public transient static final float TIME_BETWEEN_DEFAULT = 2f;
 
@@ -134,6 +136,8 @@ public class Controleur implements Serializable {
 	transient float timeBetweenEnemies = 0;
 	transient float timerScaleFactor = 1;
 
+	private transient VisualFactory vF;
+
 	public ArrayList<Reseau> getListeReseaux() {
 		return listeReseaux;
 	}
@@ -144,6 +148,8 @@ public class Controleur implements Serializable {
 
 	@FXML
 	public void initialize() {
+
+		vF = new VisualFactory();
 		this.parametres = new Parametres(8, 4, 8, 10);
 		KeyCodeCombination chargerMenuKeyCombination = new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN);
 		chargerMenu.setAccelerator(chargerMenuKeyCombination);
@@ -265,13 +271,16 @@ public class Controleur implements Serializable {
 		graph = null;
 		affichageReseau.getChildren().clear();
 
-
 		animStarted = false;
 		displayJeu.getChildren().clear();
 		game = new Game((short) 0, (short) 0, graph, listeReseaux, this, Difficulty.VERY_EASY);
 
 	}
 
+	/**
+	 * Méthode qui crée une nouvelle partie et génère les éléments nécessaires
+	 * pour son fonctionnement.
+	 */
 	private void newGame() {
 		if (listeReseaux != null) {
 			if (regleApprentissageCompetitionInter == null) {
@@ -304,27 +313,25 @@ public class Controleur implements Serializable {
 			}
 		}
 		if (boxJoueurHumain.isSelected()) {
-			game = new Game((short) 1, (short) 25, graph, listeReseaux, this, dif);
+			game = new Game((short) 1, (short) NB_PLAYER_AI, graph, listeReseaux, this, dif);
 		} else {
-			game = new Game((short) 0, (short) 25, graph, listeReseaux, this, dif);
+			game = new Game((short) 0, (short) NB_PLAYER_AI, graph, listeReseaux, this, dif);
 		}
-
 
 		// Les ennemis "floor" et "roof" sont pour que l'intelligence
 		// artificielle reconnaisse qu'il y a des murs.
 		Enemy roof = new Enemy(new HitBox((short) 1000, (short) PLAFOND, 500, -PLAFOND));
 		game.getEnemiesSet().add(roof);
-		ExtendedImageView roofIV = new ExtendedImageView(roof, "voidImage");
+		ExtendedImageView roofIV = vF.getInstance(roof, GameObjectType.VOID.getStyle());
 		game.getEnemyImagesSet().add(roofIV);
 
 		Enemy floor = new Enemy(new HitBox((short) 1000, (short) PLAFOND, 500, PLANCHER + 2 * PLAFOND));
 		game.getEnemiesSet().add(floor);
-		ExtendedImageView floorIV = new ExtendedImageView(floor, "voidImage");
+		ExtendedImageView floorIV = vF.getInstance(floor, GameObjectType.VOID.getStyle());
 		game.getEnemyImagesSet().add(floorIV);
 
 		game.getPlayersSet().forEach(p -> {
-			ExtendedImageView iv = new ExtendedImageView(p, "joueur");
-			// ExtendedRectangle iv = new ExtendedRectangle(p);
+			ExtendedImageView iv = vF.getInstance(p, p.getObjectType().getStyle());
 			displayJeu.getChildren().add(iv);
 		});
 		scoreLabel.textProperty().bind(game.scoreProperty().asString());

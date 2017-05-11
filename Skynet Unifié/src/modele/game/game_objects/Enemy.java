@@ -3,12 +3,13 @@ package modele.game.game_objects;
 import modele.elements.hitbox.HitBox;
 import modele.elements.hitbox.MotionPoint;
 
+
 public class Enemy extends GameObject {
 
 	public static final short ENEMY_DIM = 32;
 
 	public Enemy(HitBox hb) {
-		super(hb, "obstacle");
+		super(hb);
 		setObjectType(GameObjectType.ENEMY);
 	}
 

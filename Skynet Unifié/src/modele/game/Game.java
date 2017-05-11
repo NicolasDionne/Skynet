@@ -12,6 +12,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.layout.Pane;
 import modele.elements.hitbox.HitBox;
 import modele.elements.visuals.ExtendedImageView;
+import modele.elements.visuals.VisualFactory;
 import modele.game.game_objects.Enemy;
 import modele.game.game_objects.GameObjectType;
 import modele.game.game_objects.Player;
@@ -19,6 +20,12 @@ import modele.game.game_objects.PlayerAI;
 import modele.graphique.GraphiqueIA;
 import modele.reseau.GenerateurReseauCIL;
 
+/**
+ *
+ * @author Bénange Breton, Vincent Girard
+ *
+ *         Classe principale du jeu.
+ */
 public class Game implements Bias, Update, Render, Spawn {
 
 	public static final short MAX_NB_PLAYERS = 20;
@@ -37,13 +44,34 @@ public class Game implements Bias, Update, Render, Spawn {
 	private GraphiqueIA graph;
 	private ArrayList<Reseau> listeReseauxCI;
 	private ArrayList<Reseau> listeReseauLive;
+	private VisualFactory vF;
 
 	private float timeBetweenEnemies = 0;
 	private float timerScaleFactor = 1;
 	private Difficulty difficulty = Difficulty.VERY_EASY;
 
+	/**
+	 * Constructeur principal du jeu, établit tous les paramètres nécessaires au
+	 * fonctionnement du programme
+	 *
+	 * @param nbHumans
+	 *            le nombre de joueurs humains
+	 * @param nbAI
+	 *            le nombre de jouers AI
+	 * @param graph
+	 *            le graphe d'un réseau
+	 * @param listeReseauxCI
+	 *            la liste des réseaux en compétition
+	 * @param c
+	 *            le contrôleur de la scène, avec lequel on utilise les
+	 *            Paramètres de réseau
+	 * @param difficulty
+	 *            la difficulté du jeu
+	 */
 	public Game(short nbHumans, short nbAI, GraphiqueIA graph, ArrayList<Reseau> listeReseauxCI, Controleur c,
 			Difficulty difficulty) {
+
+		vF = new VisualFactory();
 		this.difficulty = difficulty;
 		this.listeReseauLive = new ArrayList<>();
 		this.c = c;
@@ -160,6 +188,11 @@ public class Game implements Bias, Update, Render, Spawn {
 		this.timerScaleFactor = timerScaleFactor;
 	}
 
+	/**
+	 * Crée un ennemi
+	 *
+	 * @return un nouvel ennemi
+	 */
 	public Enemy spawnEnemy() {
 		HitBox hb = hbGen.spawn(Enemy.ENEMY_DIM);
 
@@ -181,6 +214,14 @@ public class Game implements Bias, Update, Render, Spawn {
 
 	}
 
+	/**
+	 * Crée un joueur d'un certain type
+	 *
+	 * @param pType
+	 *            le type de joueur voulu
+	 * @param reseau
+	 *            le réseau qu'on attache au joueur si il est gouverné par un AI
+	 */
 	public void createPlayer(GameObjectType pType, Reseau reseau) {
 		HitBox hb = new HitBox(Player.PLAYER_DIM, Player.PLAYER_DIM, 50, Controleur.MID_HEIGHT);
 		Player p;
@@ -191,7 +232,7 @@ public class Game implements Bias, Update, Render, Spawn {
 			p = new Player(pType, hb, this.c.parametres);
 		}
 
-		ExtendedImageView eI = new ExtendedImageView(p, p.getStyleName());
+		ExtendedImageView eI = vF.getInstance(p, p.getObjectType().getStyle());
 		playerImagesSet.add(eI);
 
 		p.scoreProperty().bind(this.scoreProperty());
@@ -219,7 +260,7 @@ public class Game implements Bias, Update, Render, Spawn {
 		timerScaleFactor += difficulty.getTimeBetweenEnemiesIncrement();
 
 		Enemy enemy = spawnEnemy();
-		ExtendedImageView r = new ExtendedImageView(enemy, enemy.getStyleName());
+		ExtendedImageView r = vF.getInstance(enemy, enemy.getObjectType().getStyle());
 
 		enemyImagesSet.add(r);
 	}
@@ -257,13 +298,13 @@ public class Game implements Bias, Update, Render, Spawn {
 		// présentement d'image
 		playersSet.forEach(p -> {
 			if (!playerBufferList.contains(p)) {
-				ExtendedImageView eIV = new ExtendedImageView(p, "joueur");
+				ExtendedImageView eIV = vF.getInstance(p, p.getObjectType().getStyle());
 				playerImagesSet.add(eIV);
 			}
 		});
-		enemiesSet.forEach(p -> {
-			if (!enemyBufferList.contains(p)) {
-				ExtendedImageView eIV = new ExtendedImageView(p, "obstacle");
+		enemiesSet.forEach(e -> {
+			if (!enemyBufferList.contains(e)) {
+				ExtendedImageView eIV = vF.getInstance(e, e.getObjectType().getStyle());
 				enemyImagesSet.add(eIV);
 			}
 		});

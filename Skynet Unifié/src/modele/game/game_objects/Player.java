@@ -11,6 +11,12 @@ import modele.elements.hitbox.MotionPoint;
 import utilitaires.Parametres;
 import modele.elements.ai_related.VisionGrid;
 
+/**
+ *
+ * @author Bénange Breton
+ *
+ *         Classe qui instancie un joueur
+ */
 public class Player extends GameObject {
 
 	public static final short PLAYER_DIM = 20;
@@ -21,7 +27,7 @@ public class Player extends GameObject {
 	protected List<Integer> listeIndexEntrees;
 
 	public Player(GameObjectType pType, HitBox hb, Parametres parametres) {
-		super(hb, pType == GameObjectType.HUMAN ? "joueurHumain" : "joueurAI");
+		super(hb);
 
 		MotionPoint origin = new MotionPoint(0, 0);
 		getHitBox().setOrigin(origin);
@@ -46,6 +52,13 @@ public class Player extends GameObject {
 		return vGrid;
 	}
 
+	/**
+	 * Change la direction du déplacement selon un paramètres
+	 *
+	 * @param i
+	 *            int qui est soit 1 (monter), soit -1 (descendre) ou autre
+	 *            (arrêter)
+	 */
 	public void changeDirection(int i) {
 
 		if (i >= 1)

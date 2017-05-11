@@ -8,57 +8,60 @@ import utilitaires.AddressString;
 
 public class Point implements AddressString {
 
-    private DoubleProperty x;
-    private DoubleProperty y;
+	private DoubleProperty x;
+	private DoubleProperty y;
 
-    public Point(float a, float b) {
-        x = new SimpleDoubleProperty();
-        y = new SimpleDoubleProperty();
+	public Point(float a, float b) {
+		x = new SimpleDoubleProperty();
+		y = new SimpleDoubleProperty();
 
-        setX(a);
-        setY(b);
-    }
+		setX(a);
+		setY(b);
+	}
 
-    public Point() {
-        this(0, 0);
-    }
+	public Point() {
+		this(0, 0);
+	}
 
-    public double getX() {
-        return x.get();
-    }
+	public double getX() {
+		return x.get();
+	}
 
-    public DoubleProperty xProperty() {
-        return x;
-    }
+	public DoubleProperty xProperty() {
+		return x;
+	}
 
-    public void setX(double x) {
-        this.x.set(x);
-    }
+	public void setX(double x) {
+		this.x.set(x);
+	}
 
-    public double getY() {
-        return y.get();
-    }
+	public double getY() {
+		return y.get();
+	}
 
-    public DoubleProperty yProperty() {
-        return y;
-    }
+	public DoubleProperty yProperty() {
+		return y;
+	}
 
-    public void setY(double y) {
-        this.y.set(y);
-    }
+	public void setY(double y) {
+		this.y.set(y);
+	}
 
-    public String toString() {
-        return address() + "(" + x.get() + ", " + y.get() + ")";
-    }
+	public String toString() {
+		return address() + "(" + x.get() + ", " + y.get() + ")";
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null || getClass() != obj.getClass())
+			return false;
 
-        Point point = (Point) obj;
-        if (x.get() != point.getX()) return false;
+		Point point = (Point) obj;
+		if (x.get() != point.getX())
+			return false;
 
-        return y.get() == point.getY();
-    }
+		return y.get() == point.getY();
+	}
 }

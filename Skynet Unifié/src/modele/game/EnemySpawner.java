@@ -12,6 +12,8 @@ import utilitaires.MathUtilitaires;
  *
  * @author Bénange Breton
  *
+ *         Classe qui permet d'instancier des ennemis qui possèdent les
+ *         paramètres voulus par la difficulté.
  */
 public class EnemySpawner implements Bias {
 
@@ -37,11 +39,20 @@ public class EnemySpawner implements Bias {
 		}
 	}
 
-
+	/**
+	 * Selon un paramètre de taille, donne une HitBox avec des paramètres de
+	 * mouvement/rotation déterminés selon la difficulté
+	 *
+	 * @param size
+	 *            la taille de la HitBox
+	 * @return une HitBox avec des paramètres pré-générés
+	 *
+	 */
 	public HitBox spawn(short size) {
 
-		HitBox hb = new HitBox(size, size, new MotionPoint(Controleur.EDGE + size, startHeight(),
-				new Vector2D(startVelocity(), 0), new Vector2D(startAcceleration(), 0), startOriginRotationParameters()),
+		HitBox hb = new HitBox(size, size,
+				new MotionPoint(Controleur.EDGE + size, startHeight(), new Vector2D(startVelocity(), 0),
+						new Vector2D(startAcceleration(), 0), startOriginRotationParameters()),
 				startSelfRotationParameters());
 
 		hb.setOrigin(startOrigin(hb));
@@ -49,6 +60,11 @@ public class EnemySpawner implements Bias {
 		return hb;
 	}
 
+	/**
+	 * Calcule la coordonnée Y de départ
+	 *
+	 * @return un float qui sera la coordonnée Y de la HitBox
+	 */
 	private float startHeight() {
 		int startHeight;
 
@@ -61,6 +77,13 @@ public class EnemySpawner implements Bias {
 		return startHeight;
 	}
 
+	/**
+	 * Méthode qui permet de changer de rangée si les hauteurs de spawn sont
+	 * fixes.
+	 *
+	 * @param cycleBackAndForth
+	 *            si on alterne montée/descente ou non
+	 */
 	private void changeLane(boolean cycleBackAndForth) {
 		if (cycleBackAndForth) {
 
@@ -77,11 +100,21 @@ public class EnemySpawner implements Bias {
 			laneIndex = (laneIndex + 1) % nbLanes;
 	}
 
+	/**
+	 * Calcule l'accélération de départ
+	 *
+	 * @return un float qui est l'accélération de départ
+	 */
 	private float startAcceleration() {
 		return difficulty.isStartAcceleration()
 				? (-1) * randRange(MotionPoint.MIN_ACCELERATION, MotionPoint.MAX_ACCELERATION) : 0;
 	}
 
+	/**
+	 * Calcule la vélocité de départ
+	 *
+	 * @return un float qui est la vélocité de départ
+	 */
 	private float startVelocity() {
 		float vel = CONSTANT_VELOCITY;
 
@@ -91,6 +124,14 @@ public class EnemySpawner implements Bias {
 		return (-1) * vel * difficulty.getSpeedScaleFactor();
 	}
 
+	/**
+	 * Donne à la HitBox un origine de rotation prédéfini
+	 *
+	 * @param hb
+	 *            la HitBox par rapport à laquelle on définit les coordonnées de
+	 *            l'origine
+	 * @return un point d'origine
+	 */
 	private MotionPoint startOrigin(HitBox hb) {
 
 		MotionPoint o = new MotionPoint((float) hb.getCenterPoint().getX(), Controleur.MID_HEIGHT);
@@ -100,6 +141,11 @@ public class EnemySpawner implements Bias {
 		return o;
 	}
 
+	/**
+	 * Crée les paramètres de rotation de la HitBox autour de soi même.
+	 *
+	 * @return les paramètres de rotation
+	 */
 	private RotationParameters startSelfRotationParameters() {
 
 		RotationParameters rParams = new RotationParameters();
@@ -120,6 +166,12 @@ public class EnemySpawner implements Bias {
 		return rParams;
 	}
 
+	/**
+	 * Crée les paramètres de rotation de la HitBox autour d'un origine
+	 * prédéfini
+	 *
+	 * @return les paramètres de rotation
+	 */
 	private RotationParameters startOriginRotationParameters() {
 
 		RotationParameters rParams = new RotationParameters();
